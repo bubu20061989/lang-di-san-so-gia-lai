@@ -28,7 +28,7 @@ body{background:var(--night);color:var(--ink);font-family:var(--font-body);font-
 canvas#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
 button{font:inherit;color:inherit;cursor:pointer}
 button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
-.glass{background:rgba(21,17,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px}
+.glass{background:rgba(24,19,15,.93);border:1px solid var(--line);border-radius:14px}
 .brocade{height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='8'%3E%3Crect width='24' height='8' fill='%23181210'/%3E%3Cpath d='M0 4 L4 0 L8 4 L4 8Z' fill='%23b0462b'/%3E%3Cpath d='M12 4 L16 0 L20 4 L16 8Z' fill='%23e3aa3e'/%3E%3Cpath d='M8 4 L10 2 L12 4 L10 6Z M20 4 L22 2 L24 4 L22 6Z' fill='%23f5eee2'/%3E%3C/svg%3E") repeat-x;border-radius:2px}
 
 /* Thanh tiêu đề */
@@ -227,7 +227,7 @@ body.previewing #brand,body.previewing #passport,body.previewing #nav,body.previ
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 
 /* Hành trình */
-#compass{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(460px,calc(100% - 760px));min-width:280px;height:40px;z-index:5;overflow:hidden;border-radius:12px;background:rgba(21,17,14,.72);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#compass{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(460px,calc(100% - 760px));min-width:280px;height:40px;z-index:5;overflow:hidden;border-radius:12px;background:rgba(21,17,14,.72);border:1px solid var(--line);}
 #compass[hidden]{display:none}
 #compass::after{content:"";position:absolute;left:50%;top:4px;bottom:4px;width:2px;background:var(--bronze);transform:translateX(-50%);border-radius:2px}
 #compass .cd{position:absolute;top:9px;left:0;font:800 15px var(--font-display);color:var(--ink);transition:opacity .2s}
@@ -241,6 +241,7 @@ body.previewing #brand,body.previewing #passport,body.previewing #nav,body.previ
 #miniWrap .hud b{color:var(--ink)}
 body:not(.exploring) #miniWrap,body:not(.exploring) #compass,body.touring #miniWrap,body.touring #compass{display:none}
 body.panel-open #miniWrap{display:none}
+body.panel-open #tags,body.panel-open #compass{display:none}
 #banner{position:fixed;left:50%;top:22%;transform:translate(-50%,-10px);z-index:15;text-align:center;pointer-events:none;opacity:0;display:flex;flex-direction:column;gap:4px;align-items:center}
 #banner small{font:700 13px var(--font-body);letter-spacing:.24em;color:#ffd27a;text-shadow:0 1px 8px rgba(0,0,0,.8)}
 #banner b{font:800 clamp(30px,5vw,58px)/1.05 var(--font-display);color:#fff;text-shadow:0 3px 24px rgba(0,0,0,.75),0 0 40px rgba(255,190,90,.45)}
@@ -460,7 +461,7 @@ body.touring #skipTour{display:inline-flex}
   <div class="box glass">
     <div class="brocade" aria-hidden="true"></div>
     <span class="eyebrow">Dự án KHKT · THCS Quy Nhơn Bắc</span>
-    <h2 id="wTitle">Chào mừng đến Làng di sản số</h2>
+    <h2 id="wTitle">Chào mừng đến Làng di sản số Gia Lai</h2>
     <p>Em sẽ đi qua 4 trạm: Bản đồ di sản, Nhà Rông, Luyện nói với Mr. David và Explorer Quest. Hoàn thành mỗi trạm, hộ chiếu của em được đóng một con dấu.</p>
     <form id="wForm" class="field" novalidate>
       <label for="maHS">Mã học sinh</label>
@@ -1024,7 +1025,7 @@ let drawTableBg;
     poly(GEO.qn,'#d2c59e','#8f8160',3); poly(GEO.dl,'#d2c59e','#8f8160',3);
     g.save(); g.strokeStyle='rgba(255,255,255,.22)'; g.lineWidth=3; for(let i=0;i<140;i++){ const py=rnd()*CH, lat=fromMap(0,py/PX-TB.D/2)[1], e=landEdge(lat); const x0=(e===null?0:P(e,lat)[0])+30+rnd()*(CW*.25); if(x0>CW-20) continue; g.beginPath(); g.arc(x0,py,14+rnd()*10,Math.PI*1.15,Math.PI*1.85); g.stroke(); } g.restore();
     poly(GEO.prov,null,'rgba(40,30,20,.55)',14);
-    txt('CAMPUCHIA',107.36,13.55,{rot:-Math.PI/2,size:40,col:'#6f6348',ls:14});
+    txt('CAMPUCHIA',107.36,13.8,{rot:-Math.PI/2,size:40,col:'#6f6348',ls:14});
     txt('QUẢNG NGÃI',108.55,14.77,{size:36,col:'#6f6348',ls:10}); txt('ĐẮK LẮK',108.5,12.97,{size:36,col:'#6f6348',ls:10});
     txt('BIỂN ĐÔNG',109.39,13.25,{rot:-Math.PI/2,size:44,col:'rgba(255,255,255,.75)',ls:16,italic:true});
     // tiêu đề
@@ -1035,15 +1036,18 @@ let drawTableBg;
     const [nx,ny]=[CW-110,120]; g.save(); g.translate(nx,ny); g.fillStyle='rgba(21,17,14,.7)'; g.beginPath(); g.arc(0,0,74,0,7); g.fill();
     g.fillStyle='#e3aa3e'; g.beginPath(); g.moveTo(0,-58); g.lineTo(18,0); g.lineTo(0,-8); g.lineTo(-18,0); g.closePath(); g.fill(); g.fillStyle='#f5eee2'; g.beginPath(); g.moveTo(0,58); g.lineTo(18,0); g.lineTo(0,8); g.lineTo(-18,0); g.closePath(); g.fill();
     g.font='800 30px "Be Vietnam Pro",sans-serif'; g.fillStyle='#fff'; g.textAlign='center'; g.fillText('B',0,-66+0); g.restore();
-    // thước tỉ lệ 50 km
-    const kmDeg=50/(111.32*TB.COS), sw=kmDeg*TB.K*TB.COS*PX; const sx0=40, sy0=CH-70; g.save(); g.fillStyle='rgba(21,17,14,.75)'; g.fillRect(sx0-16,sy0-46,sw+80,80);
-    g.fillStyle='#f5eee2'; g.fillRect(sx0,sy0,sw,10); g.fillStyle='#e3aa3e'; g.fillRect(sx0,sy0,sw/2,10); g.font='700 24px "Be Vietnam Pro",sans-serif'; g.fillStyle='#fff'; g.fillText('0',sx0-6,sy0-14); g.fillText('25',sx0+sw/2-12,sy0-14); g.fillText('50 km',sx0+sw-20,sy0-14); g.restore();
-    // chú giải
-    const lx=CW-520, ly=CH-210; g.save(); g.fillStyle='rgba(21,17,14,.78)'; g.fillRect(lx,ly,500,190); g.font='600 25px "Be Vietnam Pro",sans-serif'; g.fillStyle='#f5eee2'; g.textBaseline='middle';
-    g.strokeStyle='#ffd27a'; g.lineWidth=7; g.setLineDash([16,10]); g.beginPath(); g.moveTo(lx+24,ly+40); g.lineTo(lx+90,ly+40); g.stroke(); g.setLineDash([]); g.fillText('Ranh giới Gia Lai cũ – Bình Định cũ',lx+108,ly+40);
-    g.strokeStyle='#f3e2b8'; g.lineWidth=9; g.beginPath(); g.moveTo(lx+24,ly+88); g.lineTo(lx+90,ly+88); g.stroke(); g.fillText('Quốc lộ 19',lx+108,ly+88);
-    g.fillStyle='#e3aa3e'; g.beginPath(); for(let k=0;k<10;k++){ const a=k*Math.PI/5-Math.PI/2, r=k%2?8:18; g.lineTo(lx+57+Math.cos(a)*r, ly+136+Math.sin(a)*r); } g.closePath(); g.fill(); g.fillStyle='#f5eee2'; g.fillText('Trung tâm hành chính tỉnh',lx+108,ly+136);
-    g.font='500 17px "Be Vietnam Pro",sans-serif'; g.fillStyle='rgba(245,238,226,.7)'; g.fillText('Địa hình nổi minh hoạ · dữ liệu ranh giới mở',lx+24,ly+172); g.restore();
+    // chú giải + thước tỉ lệ: góc dưới trái, khoảng trống dưới ranh giới tỉnh
+    { const kmDeg=50/(111.32*TB.COS), sw=kmDeg*TB.K*TB.COS*PX; g.save(); g.font='600 23px "Be Vietnam Pro",sans-serif';
+      const rows=['Ranh giới tỉnh cũ (trước 2025)','Quốc lộ 19','Trung tâm hành chính tỉnh'];
+      const LW=Math.max(Math.ceil(Math.max(...rows.map(t=>g.measureText(t).width)))+124, sw+70), lx=24, top=CH-250;
+      g.fillStyle='rgba(21,17,14,.84)'; g.fillRect(lx,top,LW,230); g.fillStyle='#e3aa3e'; g.fillRect(lx,top,8,230);
+      g.textBaseline='middle'; g.fillStyle='#f5eee2';
+      g.strokeStyle='#ffd27a'; g.lineWidth=6; g.setLineDash([14,9]); g.beginPath(); g.moveTo(lx+26,top+30); g.lineTo(lx+86,top+30); g.stroke(); g.setLineDash([]); g.fillText(rows[0],lx+104,top+30);
+      g.strokeStyle='#f3e2b8'; g.lineWidth=8; g.beginPath(); g.moveTo(lx+26,top+68); g.lineTo(lx+86,top+68); g.stroke(); g.fillText(rows[1],lx+104,top+68);
+      g.fillStyle='#e3aa3e'; g.beginPath(); for(let k=0;k<10;k++){ const an=k*Math.PI/5-Math.PI/2, r=k%2?7:16; g.lineTo(lx+56+Math.cos(an)*r, top+106+Math.sin(an)*r); } g.closePath(); g.fill(); g.fillStyle='#f5eee2'; g.fillText(rows[2],lx+104,top+106);
+      const sx0=lx+26, sy0=top+162; g.font='700 21px "Be Vietnam Pro",sans-serif'; g.fillStyle='#fff'; g.textAlign='left'; g.fillText('0',sx0-4,sy0-18); g.textAlign='center'; g.fillText('25',sx0+sw/2,sy0-18); g.textAlign='right'; g.fillText('50 km',sx0+sw+6,sy0-18); g.textAlign='left';
+      g.fillStyle='#f5eee2'; g.fillRect(sx0,sy0,sw,10); g.fillStyle='#e3aa3e'; g.fillRect(sx0,sy0,sw/2,10);
+      g.font='500 16px "Be Vietnam Pro",sans-serif'; g.fillStyle='rgba(245,238,226,.7)'; g.fillText('Địa hình nổi minh hoạ, không theo tỉ lệ độ cao',sx0,top+206); g.restore(); }
     bgTex.needsUpdate=true;
   };
   drawTableBg(); if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ drawTableBg(); });
@@ -1077,7 +1081,7 @@ let drawTableBg;
   { const [lo,la]=CITY.quynhon, v=toMap(lo,la), y=reliefY(lo,la); const st=new THREE.Shape(); for(let k=0;k<10;k++){ const a=k*Math.PI/5+Math.PI/2, r=k%2?.07:.17; k?st.lineTo(Math.cos(a)*r,Math.sin(a)*r):st.moveTo(Math.cos(a)*r,Math.sin(a)*r); }
     const star=new THREE.Mesh(new THREE.ExtrudeGeometry(st,{depth:.04,bevelEnabled:false}), new THREE.MeshStandardMaterial({color:0xe3aa3e, emissive:0x7a4a00, metalness:.6, roughness:.35})); star.position.set(v.x,y+.32,v.y); T.add(star); mapStar=star;
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.3,6), M.darkwood); pole.position.set(v.x,y+.15,v.y); T.add(pole);
-    const lb=labelSprite('Quy Nhơn · trung tâm hành chính',{h:.2}); lb.position.set(v.x-.15,y+.58,v.y); T.add(lb); }
+    const lb=labelSprite('★ Quy Nhơn',{h:.2}); lb.position.set(v.x+.55,y+.5,v.y+.1); T.add(lb); }
   { const [lo,la]=CITY.pleiku, v=toMap(lo,la), y=reliefY(lo,la); const dot=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.05,20), new THREE.MeshStandardMaterial({color:0xf5eee2})); dot.position.set(v.x,y+.03,v.y); T.add(dot);
     const lb=labelSprite('Pleiku',{h:.24,border:'#f5eee2'}); lb.position.set(v.x-.35,y+.12,v.y+.25); T.add(lb); }
   // ghim 6 địa danh
@@ -1771,13 +1775,16 @@ function setHero(kind){ const next = kind==='girl'?playerGirl:player; if(next===
 const COLLIDERS = [
   [-4,0,3.4],[0,0,3.6],[4,0,3.4],[-5.6,1.6,2.4],[5.6,1.6,2.4],[0,4.9,1],
   [-6.6,7.7,.5],[-2.6,8.7,.5],[-4.6,8.2,.9],[4.8,6.6,.75],[5.9,7.6,.6],[-9.3,-2,3.5],[2.2,13,.35],
-  [-15,9,6.3],[15,9,2.1],[14.06,10.31,.45],[17,-11,3.6],[14.9,-12.2,3.4],[19.1,-9.6,3.4],[FIRE_POS.x,FIRE_POS.z,1.35],
+  [15,9,2.1],[14.06,10.31,.45],[17,-11,3.6],[14.9,-12.2,3.4],[19.1,-9.6,3.4],[FIRE_POS.x,FIRE_POS.z,1.35],
   [POND.x,POND.y,POND_R+.6],
 ];
 [[-20,-12],[-8,-21],[8,-21],[-25,1],[27,1],[-24,20],[26,19]].forEach(([x,z])=>COLLIDERS.push([x,z,2.6]));
 COLLIDERS.push([-58,52,7.6],[-58.9,40.7,.45],[-53.7,41.5,.45],[FALL.x,FALL.y,5.6],[108,-24,5.4],[150,36,2.7],[142,41,3.4],[157,42,3.4],[141,27,3.4],[182,-42,7.6],[175.6,-44.2,6],[188.4,-39.8,6],[194.6,-38.2,4.6],[169.4,-45.8,4.6]);
 treeSpots.forEach(([x,z])=>COLLIDERS.push([x,z,.55]));
+const BOXES=[[-15,9,(TB.W+.5)/2,(TB.D+.5)/2,.45]];
 function collide(p){
+  for(const [cx,cz,hw,hd,rot] of BOXES){ const c=Math.cos(rot), sn=Math.sin(rot), dx=p.x-cx, dz=p.z-cz; let lx=dx*c-dz*sn, lz=dx*sn+dz*c; const W=hw+.32, D=hd+.32;
+    if(Math.abs(lx)<W && Math.abs(lz)<D){ if(W-Math.abs(lx) < D-Math.abs(lz)) lx=Math.sign(lx||1)*W; else lz=Math.sign(lz||1)*D; p.x=cx+lx*c+lz*sn; p.z=cz-lx*sn+lz*c; } }
   for(let pass=0;pass<2;pass++) for(const [cx,cz,r] of COLLIDERS){ const dx=p.x-cx, dz=p.z-cz, d=Math.hypot(dx,dz), R=r+.32; if(d<R && d>1e-4){ p.x=cx+dx/d*R; p.z=cz+dz/d*R; } }
   p.x=Math.min(Math.max(p.x,WORLD.x0+8),203); p.z=Math.min(Math.max(p.z,WORLD.z0+8),WORLD.z1-8);
 }
@@ -2096,7 +2103,7 @@ function updateCompass(){
 // ---------- Vòng sáng đánh dấu trạm ----------
 const STATIONS = {
   overview:{ cam:[34,22,40], tgt:[0,4,0] },
-  map:{ anchor:[-15,3.6,9], cam:[-9.2,10.6,18.6], tgt:[-15,1.3,8.8], title:'Bản đồ di sản', sub:'Trạm 1 · Interactive Heritage Map of Gia Lai' },
+  map:{ anchor:[-15,3.6,9], cam:[-7.4,13.6,21.6], tgt:[-15,1.1,8.6], title:'Bản đồ di sản', sub:'Trạm 1 · Interactive Heritage Map of Gia Lai' },
   rong:{ anchor:[0,17.6,0], cam:[5,6.5,18.5], tgt:[0,6.2,1.5], title:'Nhà Rông', sub:'Trạm 2 · Virtual Rong House' },
   buddy:{ anchor:[15,3.6,9], cam:[10.2,3.1,15.2], tgt:[14.4,1.7,9.6], title:'Luyện nói với Mr. David', sub:'Trạm 3 · Heritage Speaking Buddy' },
   quest:{ anchor:[17,9.6,-11], cam:[3,8,3], tgt:[17.5,3.6,-11.5], title:'Gia Lai Explorer Quest', sub:'Trạm 4 · 3 chặng, đạt từ 80 điểm nhận huy hiệu' },
@@ -2503,13 +2510,14 @@ const welcome=document.getElementById('welcome');
 let previewing=false;
 function showWelcome(){ welcome.hidden=false; welcome.classList.add('preview'); document.body.classList.add('previewing'); previewing=true; hidePanel(); explore=false; controls.enabled=false;
   if(window.gsap){ gsap.killTweensOf(camera.position); gsap.killTweensOf(controls.target); } flying=false;
-  const av=(document.querySelector('input[name=av]:checked')||{}).value||'boy'; setHero(av); hero.root.position.set(3,heightAt(3,27),27); hero.root.rotation.y=Math.PI; vel.set(0,0,0); dest=null;
+  const av=(document.querySelector('input[name=av]:checked')||{}).value||'boy'; setHero(av); hero.root.position.set(PV.x,heightAt(PV.x,PV.z),PV.z); hero.root.rotation.y=0; vel.set(0,0,0); dest=null; if(gtaoPass) gtaoPass.enabled=false; PV.t0=performance.now();
   { const {cam,tgt}=previewPose(); camera.position.copy(cam); controls.target.copy(tgt); camera.lookAt(tgt); }
   setTimeout(()=>hero.wave(),900); setTimeout(()=>document.getElementById('maHS').focus(),50); }
-document.querySelectorAll('input[name=av]').forEach(r=>r.addEventListener('change',()=>{ if(!previewing) return; setHero(r.value); hero.root.position.set(3,heightAt(3,27),27); hero.wave(); sparkle(hero.root.position.clone().add(new THREE.Vector3(0,1.2,0)),10); }));
-function previewPose(){ const p=hero.root.position, wide=innerWidth>760; const cam=new THREE.Vector3(p.x+(wide?.95:0), p.y+1.08, p.z-3.0), tgt=new THREE.Vector3(p.x+(wide?.95:0), p.y+.78, p.z);
-  if(!wide){ cam.y+=.55; cam.z-=1.2; tgt.y+=.55; } return {cam,tgt}; }
-function updatePreview(t,dt){ if(!previewing) return; hero.root.rotation.y=Math.PI+Math.sin(t*.45)*.55;
+document.querySelectorAll('input[name=av]').forEach(r=>r.addEventListener('change',()=>{ if(!previewing) return; setHero(r.value); hero.root.position.set(PV.x,heightAt(PV.x,PV.z),PV.z); hero.root.rotation.y=0; hero.wave(); sparkle(hero.root.position.clone().add(new THREE.Vector3(0,1.2,0)),10); }));
+const PV={x:2.5,z:19,t0:0};
+function previewPose(){ const p=hero.root.position, wide=innerWidth>760; const cam=new THREE.Vector3(p.x-(wide?1.0:0), p.y+1.25, p.z+3.3), tgt=new THREE.Vector3(p.x-(wide?1.0:0), p.y+.95, p.z);
+  if(!wide){ cam.y+=.55; cam.z+=1.2; tgt.y+=.55; } return {cam,tgt}; }
+function updatePreview(t,dt){ if(!previewing) return; hero.root.rotation.y=Math.sin(t*.4)*.4; hero.root.visible = KK.ready || KK.failed || performance.now()-PV.t0>15000;
   const {cam,tgt}=previewPose(); const k=1-Math.exp(-dt*6); camera.position.lerp(cam,k); controls.target.lerp(tgt,k); camera.lookAt(controls.target);
   if(!updatePreview.n || t>updatePreview.n){ updatePreview.n=t+7+Math.random()*3; if(updatePreview.n>8) hero.wave(); } }
 function startAs(code){
@@ -2519,7 +2527,7 @@ function startAs(code){
   sess = { id:Date.now().toString(36), pre:null, post:null, turnsAtPre:0 }; mission=null; for(const k in mUsed) delete mUsed[k];
   log('app','start'); renderStamps(); welcome.hidden=true; welcome.classList.remove('preview'); document.body.classList.remove('previewing'); previewing=false; controls.enabled=true;
   if(!ambient.on) ambient.toggle(true);
-  setHero((document.querySelector('input[name=av]:checked')||{}).value||'boy'); hero.setOutfit(state.items.length>=ITEM_GOAL); drawMinimap(true); hero.root.position.set(3,heightAt(3,27),27); hero.root.rotation.y=Math.PI; vel.set(0,0,0); dest=null;
+  setHero((document.querySelector('input[name=av]:checked')||{}).value||'boy'); hero.setOutfit(state.items.length>=ITEM_GOAL); drawMinimap(true); if(gtaoPass) gtaoPass.enabled=!PERF.noAO; hero.root.visible=true; hero.root.position.set(PV.x,heightAt(PV.x,PV.z),PV.z); hero.root.rotation.y=Math.PI; vel.set(0,0,0); dest=null;
   explore=true; document.body.classList.add('exploring'); setTimeout(showHelpOnStart,600); document.getElementById('tWalk').setAttribute('aria-pressed',true); controls.minDistance=2.8; controls.maxDistance=34; controls.enablePan=false;
   { const f=followPose(); if(!(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO'))) flyToPose(f.cam,f.tgt,1.6); }
   if(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO')) playTour(); else toast('Chào '+code+'! Đi tới các vòng sáng để mở trạm, tìm 7 điểm khám phá trên la bàn.');
@@ -2720,7 +2728,7 @@ function adoptKK(target, specKey, extra){
 }
 async function upgradeCharacters(){
   const lb=document.getElementById('kkLoad');
-  try{ await loadKK(p=>{ if(lb) lb.style.setProperty('--p',p); }); }catch(e){ console.warn('Không tải được mẫu nhân vật, giữ nhân vật dựng sẵn', e); if(lb) lb.hidden=true; return; }
+  try{ await loadKK(p=>{ if(lb) lb.style.setProperty('--p',p); }); }catch(e){ console.warn('Không tải được mẫu nhân vật, giữ nhân vật dựng sẵn', e); KK.failed=true; if(lb) lb.hidden=true; return; }
   const outfit = state && state.items && state.items.length>=ITEM_GOAL;
   adoptKK(player,'boy'); adoptKK(playerGirl,'girl');
   adoptKK(davidChar,'david',c=>{ c.root.traverse(o=>{ if(o.isMesh){ groupOf.set(o,buddy); o.userData.kind='station'; o.userData.id='buddy'; o.userData.tip='Trò chuyện với Mr. David'; clickables.push(o); } }); });
@@ -2728,7 +2736,7 @@ async function upgradeCharacters(){
   villagers.forEach((v,i)=>adoptKK(v.c, vk[i]||'walker'));
   dancerChars.forEach(c=>adoptKK(c,'dancer',d=>{ d.A.dance=true; }));
   if(outfit) hero.setOutfit(true);
-  if(previewing){ hero.wave(); }
+  if(previewing){ hero.root.visible=true; hero.wave(); }
   if(lb){ lb.classList.add('done'); setTimeout(()=>lb.hidden=true,600); }
   renderPortraits();
 }
@@ -2754,10 +2762,10 @@ function renderPortraits(){
 const v3=new THREE.Vector3(); const clock=new THREE.Clock();
 const PERF={ last:performance.now(), acc:0, n:0, warm:0 };
 function autoQuality(){ // máy yếu: tự giảm hiệu ứng để điều khiển không bị giật
-  const now=performance.now(), d=now-PERF.last; PERF.last=now; if(document.hidden || d>500 || !student) { PERF.acc=PERF.n=0; return; }
+  const now=performance.now(), d=now-PERF.last; PERF.last=now; if(document.hidden || d>500 || (!student && !previewing)) { PERF.acc=PERF.n=0; return; }
   PERF.warm+=d; if(PERF.warm<4000) return; PERF.acc+=d; PERF.n++;
   if(PERF.acc>3000){ const fps=1000*PERF.n/PERF.acc; PERF.acc=PERF.n=0;
-    if(HQ && gtaoPass && gtaoPass.enabled && fps<40){ gtaoPass.enabled=false; }
+    if(HQ && gtaoPass && gtaoPass.enabled && fps<40){ gtaoPass.enabled=false; PERF.noAO=true; }
     else if(HQ && fps<28){ HQ=false; store.set('gl_hq',false); applyQuality(); toast('Máy hơi chậm nên đã chuyển sang đồ hoạ nhẹ cho mượt. Có thể bật lại ở nút ✦.'); }
     else if(!HQ && fps<22 && renderer.getPixelRatio()>.8){ renderer.setPixelRatio(.75); } } }
 function frame(){
