@@ -1,0 +1,5 @@
+qt_statue.json — "Quang Trung King statue" by MetaArt (https://sketchfab.com/MetaArtVN)
+Source: https://sketchfab.com/3d-models/quang-trung-king-statue-65cfa933df534748b5ff138f78736d6c
+License: CC BY-NC-SA 4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+Changes: original pedestal removed, converted from USDZ to glTF (base64), texture resized to 1536 px.
+This adapted model is shared under the same license (CC BY-NC-SA 4.0). Non-commercial use only.

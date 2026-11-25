@@ -500,6 +500,7 @@ body.inside #compass,body.inside #miniWrap{opacity:.35}
     <li class="touch"><span class="keys"><kbd>Chạm đất</kbd></span>Tự đi tới chỗ đã chạm</li>
     <li class="touch"><span class="keys"><kbd>Nút vàng</kbd></span>Chạm để tương tác</li>
   </ul>
+  <p class="credit" style="font-size:11px;opacity:.75;margin:8px 0 0;line-height:1.4">Mô hình tượng Hoàng đế Quang Trung: <a href="https://sketchfab.com/3d-models/quang-trung-king-statue-65cfa933df534748b5ff138f78736d6c" target="_blank" rel="noopener" style="color:inherit">MetaArt (Sketchfab)</a>, giấy phép CC BY-NC-SA 4.0, đã cắt bỏ bệ gốc.</p>
 </aside>
 <div id="hoverTip"></div>
 
@@ -2165,7 +2166,7 @@ const drum = new THREE.Group();
   K.add('graniteBlack',BOX(3.4,3.9,3.1),0,1.34+1.95,SZ); for(let k=1;k<4;k++) K.add('dark',BOX(3.42,.04,3.12),0,1.34+k*.98,SZ);
   K.add('bronze',BOX(3.75,.34,3.45),0,5.41,SZ);
   for(const ox of [-1.55,0,1.55]){ for(const sd of [-1,1]) K.add('gold',new THREE.TorusGeometry(.16,.035,6,12,Math.PI*1.5),ox+sd*.2,1.06,SZ+2.02,0,0,sd*1.2); K.add('gold',BOX(ox?0.5:.7,.05,.03),ox,1.06,SZ+2.02); }
-  robedFigure(K,'bronze',0,5.58,SZ,0,6.2,{crown:true,sword:true,cape:true});
+  REG.qtSlot={y:5.58, z:SZ, H:6.2};
   cc(0,SZ,3.6);
   // chậu cây cảnh đỏ hai bên tượng, cây tròn cắt tỉa, thông tán tầng
   const potG=new THREE.LatheGeometry([[0,0],[.75,0],[.85,.15],[1.15,.55],[1.25,.75],[1.15,.8],[0,.8]].map(([a,b])=>new THREE.Vector2(a,b)),24);
@@ -2207,7 +2208,7 @@ const drum = new THREE.Group();
   drum.rotation.z=Math.PI/2; drum.position.set(dx0,2.2,dz0-6.2); G.add(drum); for(const sd of [-1,1]){ const leg=new THREE.Mesh(BOX(.22,1.5,1.7), MAT.darkTimber); leg.position.set(dx0+sd*1.0,1.0,dz0-6.2); G.add(leg); }
   REG.flags=REG.flags||[]; for(const [x,z] of []){ const fl=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.2,8,1), new THREE.MeshStandardMaterial({color:0xc3241c, roughness:.7, side:THREE.DoubleSide})); fl.position.set(x+.9,5.6,z); G.add(fl); REG.flags.push(fl);
     const bd=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.9,8,1), new THREE.MeshStandardMaterial({color:0xf0c040, roughness:.7, side:THREE.DoubleSide, transparent:true, opacity:0})); }
-  shadowAll(G); onGround(G,cx,cz); REG.drumHall=G;
+  shadowAll(G); onGround(G,cx,cz); REG.drumHall=G; REG.qtSlot.G=G;
   cc(dx0,dz0-6.2,1.6);
 }
 // ----- Nón ngựa: vành rộng, lòng nông, chóp bạc chạm trổ có ngù, thêu hoa văn tứ linh -----
@@ -3823,6 +3824,17 @@ function adoptKK(target, specKey, extra){
   for(let i=clickables.length-1;i>=0;i--){ let o=clickables[i], inOld=false; while(o){ if(o===old){ inOld=true; break; } o=o.parent; } if(inOld) clickables.splice(i,1); }
   for(const k of Object.keys(target)) delete target[k]; Object.assign(target, kk); if(extra) extra(target); return target;
 }
+// Tượng Hoàng đế Quang Trung: mô hình quét 3D của MetaArt (Sketchfab, CC BY-NC-SA 4.0), tải nền sau khi cảnh đã chạy
+async function loadQTStatue(){ const S=REG.qtSlot; if(!S||S.loaded) return; S.loaded=true;
+  try{ const r=await fetch('models/qt_statue.json'); if(!r.ok) throw new Error('HTTP '+r.status); const j=await r.json(); const bin=Uint8Array.from(atob(j.glb),c=>c.charCodeAt(0)).buffer;
+    const g=await new Promise((res,rej)=>new GLTFLoader().parse(bin,'',res,rej)); const root=g.scene; let map=null;
+    root.traverse(o=>{ if(o.isMesh){ map=map||o.material.map; o.geometry.computeVertexNormals(); o.castShadow=true; o.receiveShadow=true; } });
+    if(map){ map.colorSpace=THREE.SRGBColorSpace; map.anisotropy=8; }
+    const mat=new THREE.MeshStandardMaterial({map, color:0xffe6bd, metalness:.22, roughness:.46, envMapIntensity:.8});
+    root.traverse(o=>{ if(o.isMesh) o.material=mat; });
+    const b=new THREE.Box3().setFromObject(root), k=S.H/Math.max(1e-6,b.max.y-b.min.y); root.scale.setScalar(k); root.position.set(0,S.y-b.min.y*k,S.z);
+    S.G.add(root); S.mesh=root; }
+  catch(e){ console.warn('Không tải được tượng Quang Trung', e); S.loaded=false; } }
 async function upgradeCharacters(){
   const lb=document.getElementById('kkLoad');
   try{ await loadKK(p=>{ if(lb) lb.style.setProperty('--p',p); }); }catch(e){ console.warn('Không tải được mẫu nhân vật, giữ nhân vật dựng sẵn', e); KK.failed=true; if(lb) lb.hidden=true; return; }
@@ -4389,7 +4401,7 @@ function trackMission(t){
   return null;
 }
 
-collectMats(); applyEnv(); applyQuality(); buildMapImage(); upgradeCharacters();
+collectMats(); applyEnv(); applyQuality(); buildMapImage(); upgradeCharacters(); setTimeout(loadQTStatue,1200);
 window.__dbg={ perf:PERF, setHQ:(v)=>{ HQ=v; applyQuality(); }, hero:()=>hero, controls, camera, travel, openStation, setNight, KK, setExplore, closePanel, enterRong, exitRong };
 canvas.style.cursor='grab';
 requestAnimationFrame(frame);
