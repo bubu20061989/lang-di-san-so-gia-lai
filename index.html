@@ -847,7 +847,7 @@ const smooth=(a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*
 const WORLD = { x0:-170, x1:290, z0:-150, z1:150 };
 const POND = new THREE.Vector2(-85,-68), POND_R = 30;          // Biển Hồ T'Nưng
 const FALL = new THREE.Vector2(-112,78);
-const LM_CLEAR=[[-85,-68,54],[182,-44,64],[-58,52,60],[108,-24,31],[150,33,20],[-112,78,14]];                         // hồ dưới chân thác Phú Cường
+const LM_CLEAR=[[-85,-68,54],[182,-44,26],[-58,52,25],[108,-24,31],[150,33,20],[-112,78,14]];                         // hồ dưới chân thác Phú Cường
 const ROADS = [
   [[24,2],[45,4],[60,-4],[74,4],[88,-6],[104,-12],[122,-4],[142,16],[160,10],[178,-18],[196,-6],[208,2]],   // Quốc lộ 19 ra biển
   [[142,16],[148,28]], [[178,-18],[181,-30]],
@@ -2682,14 +2682,14 @@ document.getElementById('tWalk').addEventListener('click',()=>setExplore(!explor
    4f. HÀNH TRÌNH PHIÊU LƯU: 7 ĐIỂM KHÁM PHÁ, MẢNH THỔ CẨM, LA BÀN, BẢN ĐỒ
    ========================================================= */
 const DISC = [
-  { id:'bienho', vi:"Biển Hồ T'Nưng", en:"T'Nung Lake", p:[-64,-39], look:[-85,-62], cam:[-48,15,-20], site:'bienho' },
+  { id:'bienho', vi:"Biển Hồ T'Nưng", en:"T'Nung Lake", p:[-64,-39], look:[-85,-68], cam:[-100,14,-30], site:'bienho' },
   { id:'minhthanh', vi:'Chùa Minh Thành', en:'Minh Thanh Pagoda', p:[-56,36], look:[-58,52], cam:[-38,11,34], site:'minhthanh' },
   { id:'phucuong', vi:'Thác Phú Cường', en:'Phu Cuong Waterfall', p:[-101,72], look:[-115,78], cam:[-92,8,62],
     text:"Phu Cuong Waterfall is in Chu Se. It is about 45 metres high, and the water falls over dark volcanic rocks. It is one of the most beautiful waterfalls in the Central Highlands.",
     vocab:[['waterfall','thác nước'],['metre','mét'],['rock','đá'],['volcanic','thuộc núi lửa'],['beautiful','đẹp']] },
   { id:'quangtrung', vi:'Trống trận Tây Sơn', en:'Tay Son war drum', p:[100.9,-4.7], look:[108.8,-22.2], cam:[117.4,6.2,-2.0], site:'quangtrung', action:{label:'Đánh trống trận', fn:()=>beatDrum()} },
-  { id:'gogang', vi:'Làng nón ngựa Gò Găng', en:'Go Gang Hat Village', p:[146,24], look:[150,35], cam:[139,9,15], site:'gogang', action:{label:'Đội thử nón ngựa', fn:()=>wearHat()} },
-  { id:'thapdoi', vi:'Tháp Đôi Quy Nhơn', en:'Thap Doi (Twin Towers)', p:[180,-27], look:[182,-42], cam:[168,11,-13], site:'thapdoi' },
+  { id:'gogang', vi:'Làng nón ngựa Gò Găng', en:'Go Gang Hat Village', p:[146,24], look:[150,33], cam:[139,11,47], site:'gogang', action:{label:'Đội thử nón ngựa', fn:()=>wearHat()} },
+  { id:'thapdoi', vi:'Tháp Đôi Quy Nhơn', en:'Thap Doi (Twin Towers)', p:[180,-27], look:[182,-44], cam:[160,18,-12], site:'thapdoi' },
   { id:'bien', vi:'Biển Quy Nhơn', en:'Quy Nhon Beach', p:[200,5], look:[214,8], cam:[190,7,19],
     text:"Quy Nhon has long and beautiful beaches. Local fishermen use thung chai, round basket boats woven from bamboo, to go fishing near the shore.",
     vocab:[['beach','bãi biển'],['fisherman','ngư dân'],['basket boat','thúng chai'],['shore','bờ biển'],['wave','sóng biển']],
@@ -2717,8 +2717,6 @@ const DISC_BY = Object.fromEntries(DISC.map(d=>[d.id,d]));
       else { K.add('steel',new THREE.CylinderGeometry(.55,.55,1.3,12),x+Math.cos(a)*d*.25,h+H+1,z+Math.sin(a)*d*.25); K.add('cityRoof',BOX(w,.9,.18),x+fx*.98,h+H+.6,z+fz*.98,ry); }
       COLLIDERS.push([x,z,Math.min(w,d)*.55+1]); }
     K.build(G); scene.add(G); return G; };
-  cityRing(182,-44,30,62,46,91,(x,z)=>x>SHORE_X-14);      // Tháp Đôi trong lòng TP Quy Nhơn
-  cityRing(-58,52,28,46,30,92);                          // chùa Minh Thành giữa phố Pleiku
 }
 // Dọn cây đâm xuyên nhà: bỏ các cây (dạng instanced) mọc lấn vào chân công trình
 { const obs=COLLIDERS.filter(c=>c[2]>=1.4), m=new THREE.Matrix4(), p=new THREE.Vector3(), q=new THREE.Quaternion(), sc=new THREE.Vector3(), col=new THREE.Color(); let removed=0;
@@ -2887,7 +2885,7 @@ const STATIONS = {
   map:{ anchor:[-15,3.6,9], cam:[-7.4,13.6,21.6], tgt:[-15,1.1,8.6], title:'Bản đồ di sản', sub:'Trạm 1 · Interactive Heritage Map of Gia Lai' },
   rong:{ anchor:[0,17.6,0], cam:[5,6.5,18.5], tgt:[0,6.2,1.5], title:'Nhà Rông', sub:'Trạm 2 · Virtual Rong House' },
   buddy:{ anchor:[15,3.6,9], cam:[10.2,3.1,15.2], tgt:[14.4,1.7,9.6], title:'Luyện nói với Mr. David', sub:'Trạm 3 · Heritage Speaking Buddy' },
-  quest:{ anchor:[17,9.6,-11], cam:[3,8,3], tgt:[17.5,3.6,-11.5], title:'Gia Lai Explorer Quest', sub:'Trạm 4 · 3 chặng, đạt từ 80 điểm nhận huy hiệu' },
+  quest:{ anchor:[17,9.6,-11], cam:[30,9,-14], tgt:[17.5,3.6,-11.5], title:'Gia Lai Explorer Quest', sub:'Trạm 4 · 3 chặng, đạt từ 80 điểm nhận huy hiệu' },
 };
 const rings = [];
 for(const [k,s] of Object.entries(STATIONS)){ if(!s.anchor) continue;
@@ -4350,7 +4348,7 @@ const TOUR = [
   { cam:[13,9,17], tgt:[0,8,0], vi:'Trạm 2 · Nhà Rông', en:'Station 2: the Rong house, the heart of the village', d:'Em có thể đi vào bên trong để đánh cồng chiêng, đánh trống, chơi đàn T’rưng và đeo thử gùi.', sfx:()=>strikeGong(196,.4) },
   { cam:[-2.2,2.1,15.6], tgt:[-4.6,2.0,8.2], vi:'Không gian văn hoá Cồng chiêng', en:'The Space of Gong Culture, recognised by UNESCO', d:'Cồng chiêng làm bằng đồng, vang lên trong mọi lễ hội của buôn làng.', sfx:()=>gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.35); g.userData.swing=1; }, i*450)) },
   { cam:[11.2,2.8,14.6], tgt:[15,2,9], vi:'Trạm 3 · Luyện nói với Mr. David', en:'Station 3: Speaking practice with Mr. David', d:'Hỏi Mr. David về di sản, lễ hội và món ngon Gia Lai bằng tiếng Anh.', sfx:()=>{ davidChar.wave(); } },
-  { cam:[5,5.5,-1], tgt:[17,4.5,-11], vi:'Trạm 4 · Explorer Quest', en:'Station 4: Explorer Quest', d:'Vượt 3 chặng thử thách để nhận huy hiệu Junior Gia Lai Ambassador.' },
+  { cam:STATIONS.quest.cam, tgt:STATIONS.quest.tgt, vi:'Trạm 4 · Explorer Quest', en:'Station 4: Explorer Quest', d:'Vượt 3 chặng thử thách để nhận huy hiệu Junior Gia Lai Ambassador.' },
   { ...discCam('bienho'), vi:"Biển Hồ T'Nưng", en:"T'Nung Lake, the eyes of Pleiku", d:'Hồ nước trên miệng núi lửa cũ, cách Pleiku khoảng 7 km.' },
   { ...discCam('minhthanh'), vi:'Chùa Minh Thành', en:'Minh Thanh Pagoda in Pleiku', d:'Ngôi chùa với tháp cao và khu vườn yên bình giữa phố núi.' },
   { ...discCam('phucuong'), vi:'Thác Phú Cường', en:'Phu Cuong Waterfall', d:'Thác cao khoảng 45 m, nước đổ qua vách đá núi lửa.' },
@@ -4360,7 +4358,7 @@ const TOUR = [
   { ...discCam('bien'), vi:'Biển Quy Nhơn', en:'The beaches of Quy Nhon', d:'Thúng chai, ngư dân và những con sóng xanh.' },
   { cam:STATIONS.overview.cam, tgt:STATIONS.overview.tgt, vi:'Hành trình của em bắt đầu!', en:"Let's begin your journey!", d:'Đi tới các vòng sáng để mở trạm. Gần mỗi địa điểm sẽ có thẻ từ vựng cho em học.' },
 ];
-const TOUR_FLY=3.2, TOUR_HOLD=3.8;
+const TOUR_FLY=3.2, TOUR_HOLD=3.8; window.__TOUR=TOUR;
 let tourTl=null, tourI=0;
 const capEl=document.getElementById('caption');
 function showCaption(k,i){ capEl.classList.remove('on'); setTimeout(()=>{ if(!document.body.classList.contains('touring')) return; capEl.querySelector('.vi').textContent=k.vi; capEl.querySelector('.en').textContent=k.en; capEl.querySelector('.d').textContent=k.d||'';
