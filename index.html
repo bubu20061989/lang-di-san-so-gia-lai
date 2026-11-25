@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<link rel="preload" href="models/kk_rogue.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="models/kk_knight.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="models/anims.json" as="fetch" crossorigin="anonymous">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Làng di sản số Gia Lai</title>
@@ -501,7 +504,6 @@ body.inside #compass,body.inside #miniWrap{opacity:.35}
     <li class="touch"><span class="keys"><kbd>Nút vàng</kbd></span>Chạm để tương tác</li>
   </ul>
   <p class="credit" style="font-size:11px;opacity:.75;margin:8px 0 0;line-height:1.4">Mô hình tượng Hoàng đế Quang Trung: <a href="https://sketchfab.com/3d-models/quang-trung-king-statue-65cfa933df534748b5ff138f78736d6c" target="_blank" rel="noopener" style="color:inherit">MetaArt (Sketchfab)</a>, giấy phép CC BY-NC-SA 4.0, đã cắt bỏ bệ gốc.</p>
-  <p class="credit" style="font-size:11px;opacity:.75;margin:4px 0 0;line-height:1.4">Nhân vật người thật và hoạt ảnh: Universal Base Characters, Universal Animation Library – Quaternius (CC0).</p>
 </aside>
 <div id="hoverTip"></div>
 
@@ -845,7 +847,7 @@ const smooth=(a,b,x)=>{ const t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*
 const WORLD = { x0:-170, x1:290, z0:-150, z1:150 };
 const POND = new THREE.Vector2(-85,-68), POND_R = 30;          // Biển Hồ T'Nưng
 const FALL = new THREE.Vector2(-112,78);
-const LM_CLEAR=[[-85,-68,54],[182,-44,24],[-58,52,23],[108,-24,31],[150,33,20],[-112,78,14]];                         // hồ dưới chân thác Phú Cường
+const LM_CLEAR=[[-85,-68,54],[182,-44,64],[-58,52,60],[108,-24,31],[150,33,20],[-112,78,14]];                         // hồ dưới chân thác Phú Cường
 const ROADS = [
   [[24,2],[45,4],[60,-4],[74,4],[88,-6],[104,-12],[122,-4],[142,16],[160,10],[178,-18],[196,-6],[208,2]],   // Quốc lộ 19 ra biển
   [[142,16],[148,28]], [[178,-18],[181,-30]],
@@ -2256,7 +2258,7 @@ function makeHat(r=1){ const g=new THREE.Group();
   K.add('timber',BOX(3,.12,1.4),3,1,-5.8); for(const [a,b] of [[-1.3,-.55],[1.3,-.55],[-1.3,.55],[1.3,.55]]) K.add('timber',BOX(.1,1,.1),3+a,.5,-5.8+b);
   for(let k=0;k<12;k++){ const a=k/12*6.28; K.add('timber',new THREE.CylinderGeometry(.012,.012,.62,4),3+Math.cos(a)*.27,1.3,-5.8+Math.sin(a)*.27,0,Math.sin(a)*-.75,Math.cos(a)*.75); }
   // lũy tre làng
-  const R=mulberry(12); for(const [bx,bz] of [[-16,-1],[15,-6],[-4,14],[16,14],[-17,13]]) for(let c=0;c<16;c++){ const a=R()*6.28, rr=R()*1.4, x=bx+Math.cos(a)*rr, z=bz+Math.sin(a)*rr, h=7+R()*4, lean=.12+R()*.18;
+  const R=mulberry(12); for(const [bx,bz] of [[-16,-1],[15,-6],[-4,14],[16,14],[-17,13]]) for(let c=0;c<16;c++){ const a=Math.atan2(bz,bx)+(R()-.5)*1.4, rr=R()*1.4, x=bx+Math.cos(a)*rr, z=bz+Math.sin(a)*rr, h=7+R()*4, lean=.05+R()*.1;
       K.add('bamboo',new THREE.CylinderGeometry(.06,.09,h,7),x+Math.cos(a)*Math.sin(lean)*h/2,h/2*Math.cos(lean),z+Math.sin(a)*Math.sin(lean)*h/2,-a+Math.PI/2,0,-lean,1.2);
       for(let l=0;l<3;l++) K.add('~light',new THREE.SphereGeometry(.9,8,6),x+Math.cos(a)*Math.sin(lean)*h*(.8+l*.1),h*Math.cos(lean)*(.82+l*.07),z+Math.sin(a)*Math.sin(lean)*h*(.8+l*.1),R()*3,0,0,0,1.5,.45,1.5); }
   MAT.teal=new THREE.MeshStandardMaterial({color:0x2f6e6a, roughness:.6}); MAT.leafB=new THREE.MeshStandardMaterial({color:0x5f8a35, roughness:.75});
@@ -2694,6 +2696,38 @@ const DISC = [
     action:{label:'Bắn pháo hoa mừng hành trình', fn:()=>fireworks()} },
 ];
 const DISC_BY = Object.fromEntries(DISC.map(d=>[d.id,d]));
+// ----- Phố thị quanh các di tích trong thành phố (Tháp Đôi giữa lòng Quy Nhơn, chùa Minh Thành giữa phố Pleiku): nhà ống nhiều tầng, mái bằng có bồn nước, ban công, mái tôn/ngói -----
+{
+  const facade=new THREE.CanvasTexture(cnv(256,g=>{ g.fillStyle='#ffffff'; g.fillRect(0,0,256,256);
+    for(let fl=0;fl<2;fl++){ const y=fl*128; g.fillStyle='rgba(0,0,0,.10)'; g.fillRect(0,y+118,256,10);
+      for(const x of [28,148]){ g.fillStyle='#3d4a55'; g.fillRect(x,y+30,80,62); g.fillStyle='rgba(255,255,255,.35)'; g.fillRect(x+4,y+34,30,54); g.fillStyle='rgba(0,0,0,.25)'; g.fillRect(x-4,y+92,88,8); g.strokeStyle='rgba(60,60,60,.7)'; g.lineWidth=3; for(let k=0;k<6;k++){ g.beginPath(); g.moveTo(x+8+k*13,y+92); g.lineTo(x+8+k*13,y+112); g.stroke(); } } } }));
+  facade.wrapS=facade.wrapT=THREE.RepeatWrapping; facade.colorSpace=THREE.SRGBColorSpace; facade.anisotropy=4;
+  const PAL=[0xf2d27a,0xbfe0c4,0xf3b9a6,0xe9e4d6,0xa9cfe6,0xf6dfb0,0xe7b6c8,0xd8e6a2];
+  PAL.forEach((c,i)=>{ MAT['city'+i]=new THREE.MeshStandardMaterial({map:facade, color:c, roughness:.85}); });
+  MAT.cityRoof=new THREE.MeshStandardMaterial({color:0x9c9a94, roughness:.95}); MAT.cityTin=new THREE.MeshStandardMaterial({color:0x8a3a2c, roughness:.6, metalness:.3}); MAT.cityShop=new THREE.MeshStandardMaterial({color:0x2b2f33, roughness:.5, metalness:.2});
+  const cityRing=(cx,cz,rIn,rOut,n,seed,skip)=>{ const R=mulberry(seed), K=new Kit(), G=new THREE.Group(), placed=[];
+    for(let k=0;k<n*6 && placed.length<n;k++){ const a=R()*6.283, r=rIn+R()*(rOut-rIn), x=cx+Math.cos(a)*r, z=cz+Math.sin(a)*r;
+      if(skip&&skip(x,z)) continue; const h=heightAt(x,z); if(h<.4) continue; if(Math.abs(heightAt(x+3,z)-heightAt(x-3,z))+Math.abs(heightAt(x,z+3)-heightAt(x,z-3))>2.2) continue;
+      if(roadDist(x,z)<4.5) continue; if(DISC.some(d=>distSeg(x,z,d.cam[0],d.cam[2],d.look[0],d.look[1])<9)) continue; if(Math.hypot(x,z)<48) continue; if(placed.some(([px,pz])=>Math.hypot(px-x,pz-z)<7.5)) continue; placed.push([x,z]);
+      const w=4+R()*2, d=9+R()*6, fl=2+Math.floor(R()*3), H=fl*3.3, ry=-a+Math.PI/2, key='city'+Math.floor(R()*PAL.length);
+      K.add(key,BOX(w,H+2,d),x,h-2+(H+2)/2,z,ry,0,0,6.6);
+      const fx=Math.cos(a)*-(d/2+.06), fz=Math.sin(a)*-(d/2+.06); K.add('cityShop',BOX(w*.86,2.4,.1),x+fx,h+1.2,z+fz,ry);
+      K.add('cityRoof',BOX(w+.2,.35,d+.2),x,h+H+.17,z,ry);
+      if(R()<.45) K.add('cityTin',FRUST(.2,Math.max(w,d)*.9,1.6),x,h+H+.95,z,ry,0,0,0,w/Math.max(w,d),1,d/Math.max(w,d));
+      else { K.add('steel',new THREE.CylinderGeometry(.55,.55,1.3,12),x+Math.cos(a)*d*.25,h+H+1,z+Math.sin(a)*d*.25); K.add('cityRoof',BOX(w,.9,.18),x+fx*.98,h+H+.6,z+fz*.98,ry); }
+      COLLIDERS.push([x,z,Math.min(w,d)*.55+1]); }
+    K.build(G); scene.add(G); return G; };
+  cityRing(182,-44,30,62,46,91,(x,z)=>x>SHORE_X-14);      // Tháp Đôi trong lòng TP Quy Nhơn
+  cityRing(-58,52,28,46,30,92);                          // chùa Minh Thành giữa phố Pleiku
+}
+// Dọn cây đâm xuyên nhà: bỏ các cây (dạng instanced) mọc lấn vào chân công trình
+{ const obs=COLLIDERS.filter(c=>c[2]>=1.4), m=new THREE.Matrix4(), p=new THREE.Vector3(), q=new THREE.Quaternion(), sc=new THREE.Vector3(), col=new THREE.Color(); let removed=0;
+  scene.traverse(im=>{ if(!im.isInstancedMesh || im.count<1) return; const g=im.geometry; if(!g.boundingSphere) g.computeBoundingSphere(); const br=g.boundingSphere.radius; if(br<1.2) return;
+    let w=0; for(let i=0;i<im.count;i++){ im.getMatrixAt(i,m); m.decompose(p,q,sc); const can=Math.min(3.2,br*Math.max(sc.x,sc.z)*.42);
+      if(obs.some(([x,z,r])=>Math.hypot(p.x-x,p.z-z)<r+can)){ removed++; continue; }
+      if(w!==i){ im.setMatrixAt(w,m); if(im.instanceColor){ im.getColorAt(i,col); im.setColorAt(w,col); } } w++; }
+    if(w!==im.count){ im.count=w; im.instanceMatrix.needsUpdate=true; if(im.instanceColor) im.instanceColor.needsUpdate=true; } });
+  console.log('cây lấn nhà đã dọn:',removed); }
 // cột sáng dẫn đường
 const beamTex = canvasTex(8,128,(g,w,h)=>{ const gr=g.createLinearGradient(0,h,0,0); gr.addColorStop(0,'rgba(255,220,140,.9)'); gr.addColorStop(.5,'rgba(255,200,110,.35)'); gr.addColorStop(1,'rgba(255,200,110,0)'); g.fillStyle=gr; g.fillRect(0,0,w,h); });
 beamTex.wrapS=beamTex.wrapT=THREE.ClampToEdgeWrapping;
@@ -3716,23 +3750,23 @@ function kkRecolor(tex, map, key){
     g.putImageData(d,cx*cw,ry*chh); }
   const t=new THREE.CanvasTexture(c); t.flipY=false; t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; KK.texCache.set(ck,t); return t;
 }
+const KK_GET=async u=>{ const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status+' '+u); const j=await r.json(); const bin=Uint8Array.from(atob(j.glb),c=>c.charCodeAt(0)).buffer; return await new Promise((res,rej)=>new GLTFLoader().parse(bin,'',res,rej)); };
+// tải nhanh: trước hết chỉ tải bộ khung dùng cho học sinh (rogue + đầu knight) và hoạt ảnh; các mẫu khác tải sau
 async function loadKK(onProgress){
-  const L=new GLTFLoader();
-  const get=async u=>{ const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status+' '+u); const j=await r.json(); const bin=Uint8Array.from(atob(j.glb),c=>c.charCodeAt(0)).buffer; return await new Promise((res,rej)=>L.parse(bin,'',res,rej)); };
-  let n=0; const tot=5;
-  const step=()=>onProgress&&onProgress(++n/tot);
-  const [m,k,r,b,a]=await Promise.all([get(KK_FILES.mage).then(x=>{step();return x;}),get(KK_FILES.knight).then(x=>{step();return x;}),get(KK_FILES.rogue).then(x=>{step();return x;}),get(KK_FILES.barbarian).then(x=>{step();return x;}),get('models/anims.json').then(x=>{step();return x;})]);
-  KK.src={mage:m,knight:k,rogue:r,barbarian:b}; KK.clips=a.animations;
-  m.scene.updateMatrixWorld(true); const box=new THREE.Box3().setFromObject(m.scene,true); KK.H0=(box.max.y-box.min.y)>0.5?(box.max.y-box.min.y):2.05; KK.ready=true;
+  let n=0; const step=x=>{ onProgress&&onProgress(++n/3); return x; };
+  const [r,k,a]=await Promise.all([KK_GET(KK_FILES.rogue).then(step),KK_GET(KK_FILES.knight).then(step),KK_GET('models/anims.json').then(step)]);
+  KK.src={rogue:r,knight:k}; KK.clips=a.animations;
+  r.scene.updateMatrixWorld(true); const box=new THREE.Box3().setFromObject(r.scene,true); KK.H0=(box.max.y-box.min.y)>0.5?(box.max.y-box.min.y):2.05; KK.ready=true;
 }
+async function loadKKRest(){ const [m,b]=await Promise.all([KK_GET(KK_FILES.mage),KK_GET(KK_FILES.barbarian)]); KK.src.mage=m; KK.src.barbarian=b; KK.rest=true; }
 const PART_RE={head:/_Head$/, body:/_Body$/, armL:/_ArmLeft$/, armR:/_ArmRight$/, legL:/_LegLeft$/, legR:/_LegRight$/};
 function kkModel(spec){
-  const base=SkeletonUtils.clone(KK.src[spec.skel||'mage'].scene); let skel=null;
+  const base=SkeletonUtils.clone((KK.src[spec.skel||'mage']||KK.src.rogue).scene); let skel=null;
   base.traverse(o=>{ if(o.isSkinnedMesh && !skel) skel=o.skeleton; });
   const kill=[]; base.traverse(o=>{ if(o.isSkinnedMesh) kill.push(o); }); kill.forEach(o=>o.removeFromParent());
   const parent=base.getObjectByName('Rig')||base;
   for(const [part,re] of Object.entries(PART_RE)){
-    const srcKey=(spec.parts&&spec.parts[part])||spec.skel||'mage'; let found=null;
+    let srcKey=(spec.parts&&spec.parts[part])||spec.skel||'mage'; if(!KK.src[srcKey]) srcKey='rogue'; let found=null;
     SkeletonUtils.clone(KK.src[srcKey].scene).traverse(o=>{ if(o.isSkinnedMesh && re.test(o.name) && !found) found=o; });
     if(!found) continue; found.removeFromParent(); parent.add(found); found.bind(skel, found.bindMatrix);
     const map=(spec.colors&&(spec.colors[part]||spec.colors.all))||null; const mat=found.material.clone(); mat.map=kkRecolor(found.material.map,map,srcKey+part); mat.roughness=.75; rimify(mat);
@@ -3758,124 +3792,36 @@ const KK_SPECS = {
   walker:{ skel:'mage', parts:{head:'knight'}, h:1.7, glasses:true, colors:{ head:{'0,1':'#2a1d14'}, body:{'1,0':'#d6c7a5','1,1':'#d6c7a5','0,4':'#d6c7a5','0,5':'#3a3028','2,2':'#3a3028','1,7':'#3a3028'}, armL:{'1,0':'#d6c7a5','0,4':'#d6c7a5'}, armR:{'1,0':'#d6c7a5','0,4':'#d6c7a5'}, legL:{'2,3':'#3a3028','1,7':'#3a3028'}, legR:{'2,3':'#3a3028','1,7':'#3a3028'} } },
   dancer:{ skel:'rogue', h:1.52, colors:{ head:{'0,1':'#17110f','0,0':KK_DARKSKIN,'0,3':'#d9a441'}, body:{'1,0':'#17110f','1,1':'#c0392b','0,6':'#c0392b','0,5':'#d9a441','0,3':'#d9a441','1,7':'#c0392b','0,0':KK_DARKSKIN}, armL:{'2,5':KK_DARKSKIN,'1,0':'#17110f','0,5':'#d9a441','1,1':'#c0392b'}, armR:{'2,5':KK_DARKSKIN,'1,0':'#17110f','0,5':'#d9a441','1,1':'#c0392b'}, legL:{'2,3':'#3a2a1e','1,7':'#c0392b','0,0':KK_DARKSKIN}, legR:{'2,3':'#3a2a1e','1,7':'#c0392b','0,0':KK_DARKSKIN} } },
 };
-/* =========================================================
-   4h. NHÂN VẬT NGƯỜI THẬT (Quaternius Universal Base Characters + Universal Animation Library, CC0)
-   Quần áo được "may" thẳng lên ảnh da theo vị trí 3D của từng tam giác: áo trắng, khăn quàng đỏ, quần xanh đen…
-   ========================================================= */
-const UBC={ ready:false, src:{}, img:{}, clips:[], texCache:new Map(), H:{male:1.84, female:1.78} };
-async function loadUBC(onProgress){
-  const L=new GLTFLoader(); let n=0; const step=()=>onProgress&&onProgress(++n/3);
-  const img=u=>new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=u; });
-  const get=async u=>{ const r=await fetch(u); if(!r.ok) throw new Error('HTTP '+r.status+' '+u); const j=await r.json(); const bin=Uint8Array.from(atob(j.glb),c=>c.charCodeAt(0)).buffer; const g=await new Promise((res,rej)=>L.parse(bin,'',res,rej)); g.json=j; step(); return g; };
-  const [m,f,a]=await Promise.all([get('models/ubc_male.json'),get('models/ubc_female.json'),get('models/ubc_anims.json')]);
-  for(const [k,g] of [['male',m],['female',f]]){ UBC.src[k]=g; UBC.img[k+'light']=await img(g.json.light); UBC.img[k+'dark']=await img(g.json.dark); UBC.img.eye=UBC.img.eye||await img(g.json.eye); delete g.json; }
-  const MAP={ Idle_Loop:'Idle', Walk_Loop:'Walking_A', Jog_Fwd_Loop:'Running_A', Jump_Loop:'Jump_Idle', Jump_Land:'Jump_Land', Dance_Loop:'Walking_C', Sitting_Idle_Loop:'Sit_Floor_Idle', Interact:'Interact', PickUp_Table:'Use_Item', Idle_Talking_Loop:'Talk' };
-  UBC.clips=a.animations.filter(c=>MAP[c.name]).map(c=>{ const k=c.clone(); k.name=MAP[c.name]; return k; });
-  UBC.ready=true;
-}
-// tô quần áo lên ảnh da: phân vùng theo toạ độ 3D (tư thế chữ T, trục y hướng lên, nhân vật nhìn về +z)
-function ubcPaint(gender, spec){
-  const R=spec.real, o=R.outfit||{}, key=gender+JSON.stringify(R)+(spec._brocade?'B':''); if(UBC.texCache.has(key)) return UBC.texCache.get(key);
-  const S=1024, cv=document.createElement('canvas'); cv.width=cv.height=S; const g=cv.getContext('2d'); g.drawImage(UBC.img[gender+(R.skin||'light')],0,0,S,S);
-  let body=null; UBC.src[gender].scene.updateMatrixWorld(true); UBC.src[gender].scene.traverse(x=>{ if(x.isSkinnedMesh && /hero/i.test(x.name)) body=x; });
-  const H=UBC.H[gender], P=body.geometry.attributes.position, U=body.geometry.attributes.uv, I=body.geometry.index, M=body.bindMatrix, v=new THREE.Vector3();
-  const shirt=spec._brocade?'#17110f':(o.shirt||'#f7f5f0'), pants=o.pants||'#24315a', shoes=o.shoes||'#efefef', sleeve=spec._brocade?'long':(o.sleeve||'short');
-  const bands=spec._brocade?[[.60,.615,'#c0392b'],[.64,.65,'#d9a441'],[.70,.712,'#c0392b'],[.15,.18,'#c0392b'],[.2,.205,'#d9a441']]:(o.bands||[]);
-  const cls=(x,y)=>{ const r=y/H, ax=Math.abs(x)/H; let c=null;
-    if(r>.815) return null;
-    if(ax>.115){ if(r<.7) c=r>=.53?shirt:null; else { const lim=sleeve==='long'?.31:sleeve==='mid'?.25:.19; c=ax<lim?shirt:null; } }
-    else if(r>=.53) c=shirt; else if(r>=.055) c=pants; else c=o.shoes===null?null:shoes;
-    if(c && c!==shoes) for(const [a,b,col] of bands) if(r>=a&&r<b) c=col;
-    return c; };
-  const cnt=I?I.count:P.count; const vi=k=>I?I.getX(k):k;
-  if(!body.geometry.boundingBox) body.geometry.computeBoundingBox(); const gb=body.geometry.boundingBox, zUp=(gb.max.z-gb.min.z)>(gb.max.y-gb.min.y);
-  for(let t=0;t<cnt;t+=3){ let cx=0,cy=0; const pts=[]; for(let k=0;k<3;k++){ const i=vi(t+k); v.fromBufferAttribute(P,i); cx+=v.x; cy+=zUp?v.z:v.y; pts.push([U.getX(i)*S,(1-U.getY(i))*S]); }
-    const col=cls(cx/3,cy/3); if(!col) continue; g.fillStyle=col; g.strokeStyle=col; g.lineWidth=2.2; g.beginPath(); g.moveTo(...pts[0]); g.lineTo(...pts[1]); g.lineTo(...pts[2]); g.closePath(); g.fill(); g.stroke(); }
-  const tex=new THREE.CanvasTexture(cv); tex.flipY=true; tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=4; UBC.texCache.set(key,tex); return tex;
-}
-function makeReal(specKey){
-  const spec=KK_SPECS[specKey], R=spec.real, gender=R.g; const root=new THREE.Group();
-  const model=SkeletonUtils.clone(UBC.src[gender].scene); model.updateMatrixWorld(true);
-  const bodyMat=rimify(new THREE.MeshStandardMaterial({map:ubcPaint(gender,spec), roughness:.72}));
-  const eyeT=UBC.eyeTex||(UBC.eyeTex=(()=>{ const t=new THREE.Texture(UBC.img.eye); t.needsUpdate=true; t.flipY=true; t.colorSpace=THREE.SRGBColorSpace; return t; })());
-  let eyes=null, top=0;
-  model.traverse(o=>{ if(!o.isSkinnedMesh) return; o.castShadow=true; o.receiveShadow=true; o.frustumCulled=false;
-    if(/Hair_/.test(o.name)){ o.visible=o.name===R.hair; o.material=rimify(new THREE.MeshStandardMaterial({color:R.hairColor||0x15100c, roughness:.6})); }
-    else if(/hero/i.test(o.name)) o.material=bodyMat;
-    else if(/Eyes/.test(o.name)){ eyes=o; o.material=new THREE.MeshStandardMaterial({map:eyeT, roughness:.25}); o.castShadow=false; }
-    else if(/Eyebrows/.test(o.name)){ o.material=new THREE.MeshStandardMaterial({color:R.hairColor||0x1a130e, roughness:.8}); o.castShadow=false; } });
-  const bb=new THREE.Box3().setFromObject(model,true); top=bb.max.y;
-  const bone=n=>model.getObjectByName(n); const B={ head:bone('Head'), chest:bone('spine_03'), neck:bone('neck_01'), uaR:bone('upperarm_r'), uaL:bone('upperarm_l'), laR:bone('lowerarm_r') };
-  const eyeC=eyes? new THREE.Box3().setFromObject(eyes,true).getCenter(new THREE.Vector3()) : new THREE.Vector3(0,top-.12,.08);
-  const headRest=B.head.getWorldPosition(new THREE.Vector3()), eyeD=eyeC.clone().sub(headRest), topD=top-headRest.y;
-  const mixer=new THREE.AnimationMixer(model), act={}; const LOOP=['Idle','Walking_A','Running_A','Jump_Idle','Walking_C','Sit_Floor_Idle','Talk'];
-  for(const c of UBC.clips){ const a=mixer.clipAction(c); if(!LOOP.includes(c.name)){ a.setLoop(THREE.LoopOnce,1); a.clampWhenFinished=true; } act[c.name]=a; }
-  if(act.Idle){ act.Idle.play(); mixer.update(0); model.updateMatrixWorld(true); }
-  const hp=B.head.getWorldPosition(new THREE.Vector3());
-  // gắn phụ kiện vào xương theo toạ độ của nhân vật ở tư thế đứng
-  const attach=(b,obj,px,py,pz)=>{ const m=new THREE.Matrix4().compose(new THREE.Vector3(px,py,pz),new THREE.Quaternion(),new THREE.Vector3(1,1,1)); const loc=b.matrixWorld.clone().invert().multiply(m); loc.decompose(obj.position,obj.quaternion,obj.scale); b.add(obj); return obj; };
-  const std=c=>rimify(new THREE.MeshStandardMaterial({color:c, roughness:.65})); const J={};
-  if(R.scarf){ const red=std(0xd0242c), g=new THREE.Group(); const nk=new THREE.Vector3(); B.neck.getWorldPosition(nk);
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(.068,.016,8,26),red); ring.rotation.x=Math.PI/2+.42; ring.scale.set(1.15,1,1); g.add(ring);
-    const knot=new THREE.Mesh(new THREE.SphereGeometry(.022,10,8),red); knot.position.set(0,-.045,.085); g.add(knot);
-    J.tails=new THREE.Group(); J.tails.position.set(0,-.05,.088); g.add(J.tails); for(const sx of [-1,1]){ const tl=new THREE.Mesh(new THREE.BoxGeometry(.03,.11,.008),red); tl.position.set(sx*.015,-.05,0); tl.rotation.z=sx*.28; J.tails.add(tl); }
-    attach(B.chest,g,0,nk.y-.03,nk.z+.01); }
-  if(spec.backpack){ const bm=std(spec.backpack), g=new THREE.Group(); const bp=new THREE.Mesh(new RoundedBoxGeometry(.3,.36,.13,4,.04),bm); g.add(bp); const pk=new THREE.Mesh(new RoundedBoxGeometry(.2,.13,.05,3,.02),bm); pk.position.set(0,-.08,-.08); g.add(pk);
-    const c=new THREE.Vector3(); B.chest.getWorldPosition(c); attach(B.chest,g,0,c.y-.02,c.z-.2); J.pack=g; g.traverse(x=>{ if(x.isMesh) x.castShadow=true; }); }
-  if(spec.glasses){ const gm=new THREE.MeshBasicMaterial({color:0x1b1410}), gl=new THREE.Group(); for(const sx of [-1,1]){ const r=new THREE.Mesh(new THREE.TorusGeometry(.021,.0028,6,20),gm); r.position.set(sx*.032,0,0); gl.add(r); } const br=new THREE.Mesh(new THREE.BoxGeometry(.02,.003,.003),gm); gl.add(br);
-    attach(B.head,gl,hp.x+eyeD.x,hp.y+eyeD.y,hp.z+eyeD.z+.02); }
-  { const hat=makeHat(1.55); const hb=new THREE.Box3().setFromObject(hat), w=hb.max.x-hb.min.x||1; const hg=new THREE.Group(); hat.scale.multiplyScalar(.5/w); hat.position.y=-(hb.min.y*.5/w); hat.rotation.x=-.08; hg.add(hat); attach(B.head,hg,hp.x+eyeD.x,hp.y+topD-.05,hp.z+eyeD.z-.07); J.hat=hg; hg.visible=!!spec.hat; }
-  if(specKey==='bana_woman' && typeof gui!=='undefined'){ const g2=gui.clone(); const gb=new THREE.Box3().setFromObject(g2), gh=gb.max.y-gb.min.y||1; g2.scale.multiplyScalar(.55/gh); const c=new THREE.Vector3(); B.chest.getWorldPosition(c); attach(B.chest,g2,0,c.y-.25,c.z-.26); }
-  const k=(spec.h||1.55)/UBC.H[gender]; model.scale.setScalar(k); root.add(model);
-  const blob=new THREE.Mesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({map:blobTex, transparent:true, depthWrite:false})); blob.rotation.x=-Math.PI/2; blob.position.y=.02; blob.renderOrder=1; root.add(blob); J.blob=blob;
-  J.vest={visible:false}; J.band={visible:false};
-  const ALIAS={ Cheer:'Interact', '1H_Melee_Attack_Chop':'Interact', Use_Item:'Use_Item', Interact:'Interact' };
-  const A={ speed:0, yawVel:0, cur:null, one:null, oneT:0, waveT:0, talkT:0, talkNext:0, prevPh:0, dance:false, sit:false, look:0 };
-  const play=(name,fade=.25)=>{ if(A.cur===name||!act[name]) return; const a=act[name]; a.reset(); a.setEffectiveTimeScale(1); a.setEffectiveWeight(1); a.fadeIn(fade).play(); if(A.cur&&act[A.cur]) act[A.cur].fadeOut(fade); A.cur=name; };
-  const oneShot=(name,dur)=>{ name=ALIAS[name]||name; if(!act[name]) return; A.one=name; A.oneT=dur; A.cur=null; play(name,.18); };
-  play('Idle',0);
-  // xoay xương quanh một trục của thế giới (không phụ thuộc trục riêng của từng xương)
-  const qP=new THREE.Quaternion(), qA=new THREE.Quaternion(), ax=new THREE.Vector3();
-  const rotW=(b,axis,ang)=>{ if(!b) return; b.parent.getWorldQuaternion(qP); ax.copy(axis).applyQuaternion(root.quaternion); qA.setFromAxisAngle(ax,ang); b.quaternion.premultiply(qP.clone().invert().multiply(qA).multiply(qP)); b.updateMatrixWorld(true); };
-  const X=new THREE.Vector3(1,0,0), Y=new THREE.Vector3(0,1,0), Z=new THREE.Vector3(0,0,1), headK=R.headScale||1;
-  function update(dt,t,opt={}){
-    const sp=opt.speed??0; A.speed=sp; A.waveT=Math.max(0,A.waveT-dt); A.talkT=Math.max(0,A.talkT-dt);
-    let base = A.dance ? 'Walking_C' : A.sit ? 'Sit_Floor_Idle' : opt.air ? 'Jump_Idle' : sp>3.3 ? 'Running_A' : sp>.18 ? 'Walking_A' : A.talkT>0 ? 'Talk' : 'Idle';
-    if(A.oneT>0){ A.oneT-=dt; if(A.oneT<=0) A.one=null; }
-    if(!A.one) play(base);
-    const ca=act[A.cur]; if(ca && !A.one){ if(base==='Walking_A') ca.timeScale=THREE.MathUtils.clamp(sp/1.25,.6,1.8); else if(base==='Running_A') ca.timeScale=THREE.MathUtils.clamp(sp/4.4,.8,1.5); else ca.timeScale=1; }
-    mixer.update(dt); if(B.head && headK!==1) B.head.scale.setScalar(headK);
-    root.updateMatrixWorld(true);
-    if(opt.onStep && ca && !A.one && (base==='Walking_A'||base==='Running_A')){ const ph=(ca.time/ca.getClip().duration)%1; const s=ph<.5?0:1; if(s!==A.prevPh) opt.onStep(s?'L':'R'); A.prevPh=s; }
-    const ly=(opt.lookYaw!==undefined && Math.abs(opt.lookYaw)<1.9) ? THREE.MathUtils.clamp(opt.lookYaw,-1,1) : 0; A.look=THREE.MathUtils.lerp(A.look,ly,1-Math.exp(-dt*4));
-    if(Math.abs(A.look)>.01) rotW(B.head,Y,A.look*.7);
-    if(A.waveT>0){ const w=Math.min(1,Math.min(A.waveT,2.2-A.waveT)/.3); rotW(B.uaR,Z,-2.4*w); rotW(B.laR,Z,(-.5+Math.sin(t*11)*.35)*w); }
-    if(J.tails) J.tails.rotation.x=(.15+Math.min(1,sp/2.5)*.6)+Math.sin(t*12)*.08*Math.min(1,sp/2);
-  }
-  function face(targetYaw,dt,rate=10){ let d=targetYaw-root.rotation.y; d=Math.atan2(Math.sin(d),Math.cos(d)); const step=d*(1-Math.exp(-dt*rate)); root.rotation.y+=step; A.yawVel=THREE.MathUtils.lerp(A.yawVel, step/Math.max(dt,1e-3), .2); }
-  function setOutfit(v){ spec._brocade=!!v; bodyMat.map=ubcPaint(gender,spec); bodyMat.needsUpdate=true; spec._brocade=false; }
-  return { root, J, A, kk:true, real:true, update, face, setOutfit, setHat(v){ J.hat.visible=v; }, wave(){ A.waveT=2.2; }, talk(s=2.5){ A.talkT=Math.max(A.talkT,s); }, strike(){ oneShot('Interact',.9); }, cheer(){ oneShot('Interact',1.4); }, land(){ if(!A.one) oneShot('Jump_Land',.3); } };
-}
-
-// trang phục người thật cho từng nhân vật
-const REAL_SPECS={
-  boy:{ g:'male', hair:'Hair_SimpleParted', scarf:true, headScale:1.1, outfit:{ shirt:'#f7f5f0', pants:'#24315a', shoes:'#f2f2f2' } },
-  girl:{ g:'female', hair:'Hair_Long', scarf:true, headScale:1.08, outfit:{ shirt:'#f7f5f0', pants:'#24315a', shoes:'#f2f2f2' } },
-  david:{ g:'male', hair:'Hair_SimpleParted', hairColor:0x3a2a1c, outfit:{ shirt:'#2f6f73', sleeve:'long', pants:'#3a2a1e', shoes:'#2a1d14' } },
-  bana_woman:{ g:'female', hair:'Hair_Buns', skin:'dark', outfit:{ shirt:'#17110f', sleeve:'long', pants:'#17110f', shoes:null, bands:[[.6,.62,'#b0462b'],[.68,.69,'#d9a441'],[.12,.16,'#b0462b'],[.3,.31,'#d9a441']] } },
-  bana_man:{ g:'male', hair:'Hair_Buzzed', skin:'dark', outfit:{ shirt:'#211b18', sleeve:'mid', pants:'#211b18', shoes:null, bands:[[.6,.63,'#b0462b'],[.47,.5,'#b0462b']] } },
-  kid:{ g:'male', hair:'Hair_Buzzed', skin:'dark', headScale:1.15, outfit:{ shirt:'#b0462b', pants:'#17110f', shoes:null } },
-  fisher:{ g:'male', hair:'Hair_Buzzed', outfit:{ shirt:'#3c6e8f', sleeve:'long', pants:'#2a2520', shoes:'#2a2520' } },
-  hatmaker:{ g:'female', hair:'Hair_Buns', outfit:{ shirt:'#7a4b8c', sleeve:'long', pants:'#17110f', shoes:'#2a2520' } },
-  walker:{ g:'male', hair:'Hair_SimpleParted', hairColor:0x2a1d14, outfit:{ shirt:'#d6c7a5', pants:'#3a3028', shoes:'#3a3028' } },
-  dancer:{ g:'female', hair:'Hair_Long', skin:'dark', outfit:{ shirt:'#17110f', sleeve:'long', pants:'#17110f', shoes:null, bands:[[.6,.62,'#c0392b'],[.66,.67,'#d9a441'],[.14,.18,'#c0392b'],[.25,.26,'#d9a441']] } },
-};
-for(const [k,v] of Object.entries(REAL_SPECS)) if(KK_SPECS[k]) KK_SPECS[k].real=v;
+for(const k of ['girl','bana_woman','hatmaker','dancer']) if(KK_SPECS[k]) KK_SPECS[k].girlFace=true;
+for(const k of ['bana_woman','bana_man','kid','dancer']) if(KK_SPECS[k]) KK_SPECS[k].faceSkin=KK_DARKSKIN;
 const OUTFIT_BROCADE = { body:{'1,0':'#17110f','1,1':'#c0392b','0,4':'#c0392b','0,3':'#d9a441','2,0':'#c0392b','0,6':'#c0392b','0,5':'#d9a441'}, armL:{'1,0':'#17110f','0,4':'#c0392b','2,5':'#17110f','0,5':'#d9a441','1,1':'#c0392b'}, armR:{'1,0':'#17110f','0,4':'#c0392b','2,5':'#17110f','0,5':'#d9a441','1,1':'#c0392b'} };
 window.__kk={ KK, KK_SPECS, makeKK, kkModel, renderer, THREE };
 const KK_LOOP=['Idle','Walking_A','Running_A','Jump_Idle','Walking_C','Sit_Floor_Idle','Unarmed_Idle','Spellcasting'];
+// gương mặt dễ thương: mắt to hơn, lông mày cong hiền (thay lông mày xếch), đốm sáng trong mắt, má hồng
+const CUTE_MAT={ hi:new THREE.MeshBasicMaterial({color:0xffffff}), cheek:new THREE.MeshBasicMaterial({color:0xff8a9a, transparent:true, opacity:.55, depthWrite:false}) };
+function cuteHead(model, headBone){
+  let hm=null; model.traverse(o=>{ if(o.isSkinnedMesh && o.userData.part==='head') hm=o; }); if(!hm) return;
+  const g=hm.geometry, sk=hm.skeleton, hi=sk.bones.indexOf(headBone); if(hi<0) return;
+  const toB=new THREE.Matrix4().multiplyMatrices(sk.boneInverses[hi], hm.bindMatrix), toG=toB.clone().invert();
+  if(!g.userData.cute){ const P=g.attributes.position, U=g.attributes.uv, v=new THREE.Vector3(), dark=[];
+    for(let i=0;i<P.count;i++){ const cu=Math.floor(U.getX(i)*8), cv=Math.floor(U.getY(i)*4); if(cv===0&&cu===2){ v.fromBufferAttribute(P,i).applyMatrix4(toB); if(v.z>.2) dark.push([i,v.clone()]); } }
+    const ys=dark.map(d=>d[1].y).sort((a,b)=>a-b); let gap=0, split=null; for(let k=1;k<ys.length;k++) if(ys[k]-ys[k-1]>gap){ gap=ys[k]-ys[k-1]; split=(ys[k]+ys[k-1])/2; }
+    const info={eyes:[]};
+    if(split!==null && gap>.012){
+      for(const side of [-1,1]){ const eye=dark.filter(d=>d[1].y<split && Math.sign(d[1].x)===side), brow=dark.filter(d=>d[1].y>=split && Math.sign(d[1].x)===side);
+        if(eye.length){ const c=new THREE.Vector3(); eye.forEach(d=>c.add(d[1])); c.multiplyScalar(1/eye.length); let zmax=-1e9; eye.forEach(d=>zmax=Math.max(zmax,d[1].z));
+          eye.forEach(([i,p])=>{ const q=new THREE.Vector3(c.x+(p.x-c.x)*1.32, c.y+(p.y-c.y)*1.45-.012, p.z+.004).applyMatrix4(toG); P.setXYZ(i,q.x,q.y,q.z); });
+          info.eyes.push({c:c.clone().setY(c.y-.01), z:zmax+.004, side}); }
+        if(brow.length){ const c=new THREE.Vector3(); brow.forEach(d=>c.add(d[1])); c.multiplyScalar(1/brow.length);
+          brow.forEach(([i,p])=>{ const dx=p.x-c.x; const q=new THREE.Vector3(c.x+dx*.85, c.y+.05+(p.y-c.y)*.22-2.6*dx*dx, p.z).applyMatrix4(toG); P.setXYZ(i,q.x,q.y,q.z); }); } }
+      P.needsUpdate=true; g.computeBoundingSphere(); }
+    g.userData.cute=info; }
+  const info=g.userData.cute; if(!info.eyes) return;
+  for(const e of info.eyes){ const h=new THREE.Mesh(new THREE.CircleGeometry(.03,12),CUTE_MAT.hi); h.position.set(e.c.x-e.side*.028,e.c.y+.035,e.z+.012); headBone.add(h);
+    const h2=new THREE.Mesh(new THREE.CircleGeometry(.011,10),CUTE_MAT.hi); h2.position.set(e.c.x+e.side*.024,e.c.y-.03,e.z+.012); headBone.add(h2);
+    const ck=new THREE.Mesh(new THREE.CircleGeometry(.075,18),CUTE_MAT.cheek); ck.position.set(e.c.x*1.25+e.side*.06,e.c.y-.12,e.z+.012); ck.scale.y=.6; ck.renderOrder=2; headBone.add(ck); }
+}
 function makeKK(specKey){
-  if(UBC.ready && KK_SPECS[specKey] && KK_SPECS[specKey].real) return makeReal(specKey);
   const spec=KK_SPECS[specKey]; const root=new THREE.Group(); const model=kkModel(spec); root.add(model);
   const bone=n=>model.getObjectByName(n); const B={ head:bone('head'), chest:bone('chest'), uaR:bone('upperarmr'), uaL:bone('upperarml'), laR:bone('lowerarmr') };
   const J={};
@@ -3890,6 +3836,7 @@ function makeKK(specKey){
     const pk=new THREE.Mesh(new RoundedBoxGeometry(.34,.2,.09,3,.035),bm); pk.position.set(0,-.08,-.56); B.chest.add(pk);
     const zip=new THREE.Mesh(new THREE.BoxGeometry(.26,.02,.02),std(0xe3aa3e)); zip.position.set(0,.22,-.545); B.chest.add(zip); [bp,pk].forEach(o=>o.castShadow=true); }
   if(spec.glasses){ const gm=new THREE.MeshBasicMaterial({color:0x1b1410}); const gl=new THREE.Group(); for(const sx of [-1,1]){ const r=new THREE.Mesh(new THREE.TorusGeometry(.085,.013,8,22),gm); r.position.set(sx*.13,.36,.385); gl.add(r); } const br=new THREE.Mesh(new THREE.BoxGeometry(.08,.014,.014),gm); br.position.set(0,.37,.39); gl.add(br); B.head.add(gl); }
+  if(B.head) cuteHead(model, B.head);
   J.hat=makeHat(1.55); J.hat.position.set(0,.62,0); J.hat.rotation.x=-.1; B.head.add(J.hat); J.hat.visible=!!spec.hat;
   if(specKey==='bana_woman'){ const g2=gui.clone(); g2.scale.setScalar(.7); g2.position.set(0,-.55,-.52); g2.rotation.x=.12; B.chest.add(g2); }
   if(specKey==='bana_man'){ const w=new THREE.Group(); w.position.set(.2,.42,-.1); w.rotation.z=1.25; for(let k=0;k<5;k++){ const s=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1.3,6), M.darkwood); s.position.set((k%3-1)*.09,0,(k>2?.07:-.03)); s.castShadow=true; w.add(s); } B.chest.add(w); }
@@ -3913,7 +3860,7 @@ function makeKK(specKey){
     if(!A.one) play(base);
     const ca=act[A.cur]; if(ca && !A.one){ if(base==='Walking_A') ca.timeScale=THREE.MathUtils.clamp(sp/1.45,.55,1.7); else if(base==='Running_A') ca.timeScale=THREE.MathUtils.clamp(sp/5.2,.8,1.35); else if(base==='Walking_C') ca.timeScale=.7; else ca.timeScale=1; }
     for(const [b,q] of REST) b.quaternion.copy(q);
-    mixer.update(dt);
+    mixer.update(dt); if(B.head) B.head.scale.setScalar(spec.headK||1.12);
     if(opt.onStep && ca && !A.one && (base==='Walking_A'||base==='Running_A')){ const ph=(ca.time/ca.getClip().duration)%1; const s=ph<.5?0:1; if(s!==A.prevPh) opt.onStep(s?'L':'R'); A.prevPh=s; }
     // quay đầu nhìn trạm / người chơi
     const ly = (opt.lookYaw!==undefined && Math.abs(opt.lookYaw)<1.9) ? THREE.MathUtils.clamp(opt.lookYaw,-1,1) : 0; A.look=THREE.MathUtils.lerp(A.look,ly,1-Math.exp(-dt*4));
@@ -3952,18 +3899,19 @@ async function loadQTStatue(){ const S=REG.qtSlot; if(!S||S.loaded) return; S.lo
   catch(e){ console.warn('Không tải được tượng Quang Trung', e); S.loaded=false; } }
 async function upgradeCharacters(){
   const lb=document.getElementById('kkLoad');
-  let pk=0, pu=0; const prog=()=>{ if(lb) lb.style.setProperty('--p',(pk+pu)/2); };
-  try{ await Promise.all([loadKK(p=>{ pk=p; prog(); }), loadUBC(p=>{ pu=p; prog(); }).catch(e=>{ pu=1; console.warn('Không tải được nhân vật người thật, dùng nhân vật hoạt hình',e); })]); }catch(e){ console.warn('Không tải được mẫu nhân vật, giữ nhân vật dựng sẵn', e); KK.failed=true; if(lb) lb.hidden=true; return; }
+  try{ await loadKK(p=>{ if(lb) lb.style.setProperty('--p',p); }); }catch(e){ console.warn('Không tải được mẫu nhân vật, giữ nhân vật dựng sẵn', e); KK.failed=true; if(lb) lb.hidden=true; return; }
   const outfit = state && state.items && state.items.length>=ITEM_GOAL;
   adoptKK(player,'boy'); adoptKK(playerGirl,'girl');
+  if(lb){ lb.classList.add('done'); setTimeout(()=>lb.hidden=true,600); }
+  if(outfit) hero.setOutfit(true);
+  if(previewing){ hero.root.visible=true; hero.wave(); }
+  renderPortraits();
+  try{ await loadKKRest(); }catch(e){ console.warn('Không tải được mẫu nhân vật phụ', e); }
   adoptKK(davidChar,'david',c=>{ c.root.traverse(o=>{ if(o.isMesh){ groupOf.set(o,buddy); o.userData.kind='station'; o.userData.id='buddy'; o.userData.tip='Trò chuyện với Mr. David'; clickables.push(o); } }); });
   const vk=['bana_woman','bana_man','kid','fisher','hatmaker','walker'];
   villagers.forEach((v,i)=>adoptKK(v.c, vk[i]||'walker'));
   dancerChars.forEach(c=>adoptKK(c,'dancer',d=>{ d.A.dance=true; }));
-  if(outfit) hero.setOutfit(true);
-  if(previewing){ hero.root.visible=true; hero.wave(); }
-  if(lb){ lb.classList.add('done'); setTimeout(()=>lb.hidden=true,600); }
-  renderPortraits();
+  setTimeout(loadQTStatue,6000);
 }
 // Ảnh chân dung cho thẻ chọn nhân vật
 function renderPortraits(){
@@ -4400,7 +4348,7 @@ const TOUR = [
   { cam:[78,52,92], tgt:[0,6,0], vi:'Chào mừng đến Làng di sản số Gia Lai', en:'Welcome to the Digital Heritage Village of Gia Lai', d:'Từ 1/7/2025, Gia Lai và Bình Định hợp thành tỉnh Gia Lai mới: từ đại ngàn Tây Nguyên đến biển xanh Quy Nhơn.' },
   { cam:[-7.4,9.5,19], tgt:[-15,1.3,8.8], vi:'Trạm 1 · Bản đồ di sản', en:'Station 1: the Heritage Map', d:'Sa bàn 3D tỉnh Gia Lai mới. Bấm từng địa điểm để nghe giới thiệu, luyện nói và trả lời câu hỏi.' },
   { cam:[13,9,17], tgt:[0,8,0], vi:'Trạm 2 · Nhà Rông', en:'Station 2: the Rong house, the heart of the village', d:'Em có thể đi vào bên trong để đánh cồng chiêng, đánh trống, chơi đàn T’rưng và đeo thử gùi.', sfx:()=>strikeGong(196,.4) },
-  { cam:[-1.5,2.8,13.2], tgt:[-4.6,2.2,8.2], vi:'Không gian văn hoá Cồng chiêng', en:'The Space of Gong Culture, recognised by UNESCO', d:'Cồng chiêng làm bằng đồng, vang lên trong mọi lễ hội của buôn làng.', sfx:()=>gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.35); g.userData.swing=1; }, i*450)) },
+  { cam:[-2.2,2.1,15.6], tgt:[-4.6,2.0,8.2], vi:'Không gian văn hoá Cồng chiêng', en:'The Space of Gong Culture, recognised by UNESCO', d:'Cồng chiêng làm bằng đồng, vang lên trong mọi lễ hội của buôn làng.', sfx:()=>gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.35); g.userData.swing=1; }, i*450)) },
   { cam:[11.2,2.8,14.6], tgt:[15,2,9], vi:'Trạm 3 · Luyện nói với Mr. David', en:'Station 3: Speaking practice with Mr. David', d:'Hỏi Mr. David về di sản, lễ hội và món ngon Gia Lai bằng tiếng Anh.', sfx:()=>{ davidChar.wave(); } },
   { cam:[5,5.5,-1], tgt:[17,4.5,-11], vi:'Trạm 4 · Explorer Quest', en:'Station 4: Explorer Quest', d:'Vượt 3 chặng thử thách để nhận huy hiệu Junior Gia Lai Ambassador.' },
   { ...discCam('bienho'), vi:"Biển Hồ T'Nưng", en:"T'Nung Lake, the eyes of Pleiku", d:'Hồ nước trên miệng núi lửa cũ, cách Pleiku khoảng 7 km.' },
@@ -4517,7 +4465,7 @@ function trackMission(t){
   return null;
 }
 
-collectMats(); applyEnv(); applyQuality(); buildMapImage(); upgradeCharacters(); setTimeout(loadQTStatue,1200);
+collectMats(); applyEnv(); applyQuality(); buildMapImage(); upgradeCharacters();
 window.__dbg={ perf:PERF, setHQ:(v)=>{ HQ=v; applyQuality(); }, hero:()=>hero, controls, camera, travel, openStation, setNight, KK, setExplore, closePanel, enterRong, exitRong };
 canvas.style.cursor='grab';
 requestAnimationFrame(frame);

@@ -1,1 +1,0 @@
-ubc_male.json, ubc_female.json, ubc_anims.json — Universal Base Characters [Standard] and Universal Animation Library [Standard] by Quaternius (https://quaternius.com), CC0 1.0. Converted from FBX/GLB, hair rebound to body skeleton, textures resized.
