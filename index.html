@@ -110,6 +110,9 @@ body.panel-open #nav{left:calc((100% - 460px)/2)}
 .msg .who{display:block;font-size:11.5px;color:var(--muted);margin-bottom:2px;font-weight:600;letter-spacing:.03em}
 .recast{align-self:flex-end;font-size:12.5px;color:#d9ecd2;background:rgba(127,179,111,.12);border:1px dashed rgba(127,179,111,.6);border-radius:10px;padding:5px 9px;max-width:88%}
 .hint{align-self:flex-start;font-size:12.5px;color:var(--muted);font-style:italic}
+.msg .chips.ask{margin-top:8px}
+.msg .chips.ask .chip{background:rgba(227,170,62,.12);border-color:rgba(227,170,62,.5);text-align:left;cursor:pointer}
+.msg .chips.ask .chip:hover{background:rgba(227,170,62,.24)}
 .composer{padding:10px 0 0;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
 .composer .line{display:flex;gap:8px}
 .composer input{flex:1;min-width:0;background:rgba(245,238,226,.06);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font:inherit}
@@ -356,6 +359,55 @@ body.touring #skipTour{display:inline-flex}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
+
+/* thẻ học tại chỗ */
+#learn[hidden],#vocabPop[hidden]{display:none!important}
+#learn{position:fixed;left:84px;top:84px;z-index:7;width:min(380px,calc(100vw - 100px));max-height:calc(100vh - 190px);overflow:auto;padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;border-radius:16px}
+#learn.in{animation:lIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes lIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+#learn header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+#learn .kick,#vocabPop .kick{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--bronze);font-weight:700}
+#learn h3{margin:2px 0 0;font:800 21px/1.15 var(--font-display)}
+#learn .sub{font-size:13px;color:var(--muted)}
+#learn .x,#vocabPop .x{background:none;border:0;color:var(--muted);font-size:22px;line-height:1;padding:0 4px;cursor:pointer}
+#learn nav{display:flex;gap:4px;background:rgba(245,238,226,.06);border-radius:10px;padding:3px}
+#learn nav button{flex:1;border:0;background:none;color:var(--muted);font-weight:600;font-size:13.5px;padding:7px 6px;border-radius:8px;cursor:pointer}
+#learn nav button[aria-selected=true]{background:var(--bronze);color:#1b130b}
+#learn .lbody{display:flex;flex-direction:column;gap:10px}
+#learn .en{margin:0;font-size:15px;line-height:1.55}
+#learn details.vi summary{cursor:pointer;font-size:13px;color:var(--bronze)} #learn details.vi p{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
+#learn .lprog{font-size:12.5px;color:var(--muted)}
+#learn .target{margin:0;font:700 20px/1.4 var(--font-display)}
+#learn .target .ok{color:#9fd88a} #learn .target .miss{color:#ff8f6b;text-decoration:underline wavy rgba(255,143,107,.6)}
+#learn .said{font-size:13px;color:var(--muted);min-height:1.3em}
+#learn .score{border-radius:10px;padding:8px 12px;font-size:14px} #learn .score b{font-size:20px;margin-right:6px}
+#learn .score.good{background:rgba(127,179,111,.18);border:1px solid rgba(127,179,111,.5)} #learn .score.mid{background:rgba(227,170,62,.14);border:1px solid rgba(227,170,62,.5)} #learn .score.low{background:rgba(176,70,43,.16);border:1px solid rgba(176,70,43,.5)}
+#learn .q{font-weight:600} #learn .vi-q{margin:-4px 0 0;font-size:12.5px;color:var(--muted)}
+#learn .btn.live{background:#c0412b;border-color:#c0412b;color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(192,65,43,.0)} 0%{box-shadow:0 0 0 0 rgba(192,65,43,.5)}}
+@media (max-width:720px){ #learn{left:8px;right:8px;top:64px;width:auto;max-height:46vh} }
+/* thẻ từ vựng bật lên */
+#vocabPop{position:fixed;right:16px;bottom:96px;z-index:7;width:min(360px,calc(100vw - 100px));padding:12px 14px;border-radius:16px;opacity:0;transform:translateY(12px);transition:.25s;display:flex;flex-direction:column;gap:8px;border-color:rgba(227,170,62,.55)}
+#vocabPop.on{opacity:1;transform:none}
+#vocabPop header{display:flex;align-items:center;gap:8px} #vocabPop header b{font:800 17px var(--font-display);flex:1}
+#vocabPop ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+#vocabPop li{display:flex;gap:10px;align-items:flex-start} #vocabPop li.known b::after{content:' ✓';color:#9fd88a}
+#vocabPop .say{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(245,238,226,.06);cursor:pointer}
+#vocabPop li b{font-size:15.5px} #vocabPop .ipa{color:var(--muted);font-size:12.5px} #vocabPop .mean{color:var(--bronze);font-size:13.5px}
+#vocabPop li i{display:block;font-size:12.5px;color:var(--muted)}
+body.panel-open #vocabPop,body.touring #vocabPop{display:none}
+@media (max-width:720px){ #vocabPop{left:8px;right:8px;width:auto;bottom:190px} }
+
+#passport .row.words{display:flex;justify-content:space-between;font-size:12.5px} #passport .row.words b{color:var(--bronze)}
+/* chuyển cảnh, tour */
+#fade{position:fixed;inset:0;background:#0d0a08;opacity:0;pointer-events:none;z-index:30;transition:opacity .35s}
+#fade.on{opacity:1}
+#caption .d{font-size:clamp(13px,1.35vw,16px);color:#f5eee2;margin:10px auto 0;max-width:640px;text-shadow:0 1px 10px rgba(0,0,0,.85)}
+#caption .dots{display:flex;gap:6px;justify-content:center;margin-top:12px} #caption .dots i{width:7px;height:7px;border-radius:50%;background:rgba(245,238,226,.35)} #caption .dots i.done{background:rgba(227,170,62,.6)} #caption .dots i.on{background:var(--bronze);width:20px;border-radius:4px}
+#tourCtl{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:13;display:none;gap:8px}
+body.touring #tourCtl{display:flex}
+#caption{bottom:calc(9vh + 56px)}
+body.inside #compass,body.inside #miniWrap{opacity:.35}
 </style>
 </head>
 <body>
@@ -369,6 +421,7 @@ body.touring #skipTour{display:inline-flex}
 
 <aside id="passport" class="glass" aria-label="Hộ chiếu di sản số">
   <div class="row top"><span class="lbl">Hộ chiếu di sản</span><span id="who">—</span></div>
+  <div class="row words"><span class="lbl">📘 Sổ từ vựng</span><b id="wordCount">0 từ</b></div>
   <div class="stamps" id="stamps">
     <div class="stamp" data-s="map" title="Trạm 1: Bản đồ di sản">Bản<br>đồ</div>
     <div class="stamp" data-s="rong" title="Trạm 2: Nhà Rông">Nhà<br>Rông</div>
@@ -395,7 +448,11 @@ body.touring #skipTour{display:inline-flex}
   <button id="tHQ" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z"/></svg><span class="t">Đồ hoạ cao</span></button>
 </div>
 <div id="tourBar" aria-hidden="true"></div>
-<div id="caption" aria-live="polite"><div class="vi"></div><div class="en"></div></div>
+<div id="caption" aria-live="polite"><div class="vi"></div><div class="en"></div><div class="d"></div><div class="dots"></div></div>
+<div id="tourCtl"><button class="btn ghost" id="tourPrev" aria-label="Địa điểm trước">‹ Trước</button><button class="btn ghost" id="tourVoice" aria-pressed="true">🔊 Thuyết minh</button><button class="btn" id="tourNext">Tiếp ›</button></div>
+<aside id="learn" class="glass" hidden aria-label="Thẻ học tại chỗ"></aside>
+<aside id="vocabPop" class="glass" hidden aria-live="polite"></aside>
+<div id="fade" aria-hidden="true"></div>
 <button class="btn" id="skipTour">Bỏ qua giới thiệu</button>
 <div id="toast" role="status"></div>
 <div id="flash" aria-hidden="true"></div>
@@ -468,7 +525,7 @@ body.touring #skipTour{display:inline-flex}
       <input id="maHS" name="maHS" autocomplete="off" placeholder="Ví dụ: 9A1-07" maxlength="16">
       <span class="err" id="wErr"></span>
       <fieldset class="avatar"><legend>Chọn nhân vật của em</legend><label><input type="radio" name="av" value="boy" checked><span class="pic"><img id="avBoy" alt="" hidden></span><span class="nm">Bạn nam</span></label><label><input type="radio" name="av" value="girl"><span class="pic"><img id="avGirl" alt="" hidden></span><span class="nm">Bạn nữ</span></label></fieldset>
-      <label style="display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px"><input type="checkbox" id="wTour" checked> Xem phim giới thiệu 25 giây khi vào làng</label>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px"><input type="checkbox" id="wTour" checked> Xem giới thiệu từng địa điểm khi vào làng (khoảng 1,5 phút, có thể bấm Tiếp)</label>
       <div class="btnrow"><button class="btn solid" type="submit">Bắt đầu</button><button class="btn ghost" type="button" id="wDemo">Xem nhanh (giáo viên)</button></div>
     </form>
     <p class="note">Dùng mã học sinh, không nhập họ tên. Dữ liệu chỉ lưu trên máy này cho đến khi giáo viên xuất file.</p>
@@ -840,7 +897,7 @@ function groundColor(x,z,h,slope,c){
   geo.setAttribute('color', new THREE.BufferAttribute(col,3)); geo.computeVertexNormals();
   const ground = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({vertexColors:true, roughness:1}));
   ground.receiveShadow = true; scene.add(ground); groundMesh=ground;
-  const water = new THREE.Mesh(new THREE.CircleGeometry(POND_R+2,72), new THREE.MeshStandardMaterial({color:0x1f4f6a, roughness:.06, metalness:.85, envMapIntensity:1.2}));
+  const water = new THREE.Mesh(new THREE.CircleGeometry(POND_R+2,72), new THREE.MeshStandardMaterial({color:0x1d5f80, roughness:.2, metalness:.55, envMapIntensity:.7}));
   water.rotation.x=-Math.PI/2; water.position.set(POND.x,-.6,POND.y); scene.add(water); waterMesh=water;
   const sea = new THREE.Mesh(new THREE.PlaneGeometry(900,1000), new THREE.MeshStandardMaterial({color:0x2a7f9a, roughness:.1, metalness:.45, envMapIntensity:1.1}));
   sea.rotation.x=-Math.PI/2; sea.position.set(196+450,-.45,0); scene.add(sea); seaMesh=sea;
@@ -852,7 +909,7 @@ const clickables = []; const groupOf = new WeakMap();   // vật thể bấm đ�
 function reg(obj, kind, id, tip){ obj.traverse(o=>{ if(o.isMesh){ groupOf.set(o,obj); o.userData.kind=kind; o.userData.id=id; o.userData.tip=tip; clickables.push(o); } }); }
 function shadowAll(o){ o.traverse(m=>{ if(m.isMesh){ m.castShadow=true; m.receiveShadow=true; } }); return o; }
 
-const rong = new THREE.Group(); scene.add(rong);
+const rong = new THREE.Group(); scene.add(rong); const RONG_FRONT=[];
 {
   const L=10, W=6.4, FLOOR=2.4, EAVE=4.3, RIDGE=15.5, RL=15;   // RL: nóc dài hơn thân nhà để tạo hình lưỡi rìu
   // cột
@@ -863,9 +920,9 @@ const rong = new THREE.Group(); scene.add(rong);
   const floor = new THREE.Mesh(new THREE.BoxGeometry(L+.6,.28,W+.6), M.darkwood); floor.position.y=FLOOR+.1; rong.add(floor);
   // vách đan
   const wallH = EAVE-FLOOR-.15;
-  const wallF = new THREE.Mesh(new THREE.PlaneGeometry(L,wallH), M.woven); wallF.position.set(0,FLOOR+.2+wallH/2, W/2-.25); rong.add(wallF);
+  const wallF = new THREE.Mesh(new THREE.PlaneGeometry(L,wallH), M.woven); wallF.position.set(0,FLOOR+.2+wallH/2, W/2-.25); rong.add(wallF); RONG_FRONT.push(wallF);
   const wallB = wallF.clone(); wallB.position.z=-W/2+.25; rong.add(wallB);
-  const door = new THREE.Mesh(new THREE.PlaneGeometry(1.3,1.7), new THREE.MeshStandardMaterial({color:0x1b120b})); door.position.set(0,FLOOR+.2+.85,W/2-.23); rong.add(door);
+  const door = new THREE.Mesh(new THREE.PlaneGeometry(1.3,1.7), new THREE.MeshStandardMaterial({color:0x1b120b})); door.position.set(0,FLOOR+.2+.85,W/2-.23); rong.add(door); RONG_FRONT.push(door);
   // mái: hai mặt dốc + hai đầu hồi lưỡi rìu, chia lưới và uốn cong nhẹ
   function roofSide(sign){
     const segU=24, segV=24, g=new THREE.BufferGeometry(); const verts=[], uvs=[], idx=[];
@@ -878,9 +935,9 @@ const rong = new THREE.Group(); scene.add(rong);
     for(let j=0;j<segV;j++) for(let i=0;i<segU;i++){ const a=j*(segU+1)+i, b=a+1, c=a+segU+1, d=c+1; if(sign>0) idx.push(a,b,c,b,d,c); else idx.push(a,c,b,b,c,d); }
     g.setIndex(idx); g.setAttribute('position',new THREE.Float32BufferAttribute(verts,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2)); g.computeVertexNormals(); return g;
   }
-  rong.add(new THREE.Mesh(roofSide(1), M.thatch), new THREE.Mesh(roofSide(-1), M.thatch));
-  { const under=new THREE.MeshStandardMaterial({color:0x7a5527, roughness:1, side:THREE.DoubleSide}); for(const sg of [1,-1]){ const u=new THREE.Mesh(roofSide(sg),under); u.position.y=-.22; u.scale.set(.985,1,.97); rong.add(u);
-    const eave=new THREE.Mesh(new RoundedBoxGeometry(2*(L/2+.9)+.3,.3,.42,2,.12), M.thatch); eave.position.set(0,EAVE+.02,sg*(W/2+1.3)); rong.add(eave); } }
+  { const rf=new THREE.Mesh(roofSide(1), M.thatch); rong.add(rf, new THREE.Mesh(roofSide(-1), M.thatch)); RONG_FRONT.push(rf); }
+  { const under=new THREE.MeshStandardMaterial({color:0x7a5527, roughness:1, side:THREE.DoubleSide}); for(const sg of [1,-1]){ const u=new THREE.Mesh(roofSide(sg),under); u.position.y=-.22; u.scale.set(.985,1,.97); rong.add(u); if(sg>0) RONG_FRONT.push(u);
+    const eave=new THREE.Mesh(new RoundedBoxGeometry(2*(L/2+.9)+.3,.3,.42,2,.12), M.thatch); eave.position.set(0,EAVE+.02,sg*(W/2+1.3)); rong.add(eave); if(sg>0) RONG_FRONT.push(eave); } }
   function gable(sx){
     const segV=24, verts=[], uvs=[], idx=[];
     for(let j=0;j<=segV;j++){ const v=j/segV; const halfLen=(L/2+.9)+(RL/2-(L/2+.9))*Math.pow(v,1.6);
@@ -1783,6 +1840,7 @@ COLLIDERS.push([-58,52,7.6],[-58.9,40.7,.45],[-53.7,41.5,.45],[FALL.x,FALL.y,5.6
 treeSpots.forEach(([x,z])=>COLLIDERS.push([x,z,.55]));
 const BOXES=[[-15,9,(TB.W+.5)/2,(TB.D+.5)/2,.45]];
 function collide(p){
+  if(INSIDE.on){ insideCollide(p); return; }
   for(const [cx,cz,hw,hd,rot] of BOXES){ const c=Math.cos(rot), sn=Math.sin(rot), dx=p.x-cx, dz=p.z-cz; let lx=dx*c-dz*sn, lz=dx*sn+dz*c; const W=hw+.32, D=hd+.32;
     if(Math.abs(lx)<W && Math.abs(lz)<D){ if(W-Math.abs(lx) < D-Math.abs(lz)) lx=Math.sign(lx||1)*W; else lz=Math.sign(lz||1)*D; p.x=cx+lx*c+lz*sn; p.z=cz-lx*sn+lz*c; } }
   for(let pass=0;pass<2;pass++) for(const [cx,cz,r] of COLLIDERS){ const dx=p.x-cx, dz=p.z-cz, d=Math.hypot(dx,dz), R=r+.32; if(d<R && d>1e-4){ p.x=cx+dx/d*R; p.z=cz+dz/d*R; } }
@@ -1884,15 +1942,15 @@ function updatePlayer(dt,t){
   }
   const maxSp = run?8.2:slow?2.4:4.6; if(_in.lengthSq()>1e-4 && !helpSeen.moved){ helpSeen.moved=true; setTimeout(()=>collapseHelp(),2500); }
   _tgt.copy(_in).multiplyScalar(maxSp); vel.lerp(_tgt, 1-Math.exp(-dt*(_in.lengthSq()?7:10)));
-  const prev=r.position.clone(); const gPrev=heightAt(prev.x,prev.z); r.position.addScaledVector(vel,dt); collide(r.position);
-  let gy=heightAt(r.position.x,r.position.z); const stepLen=Math.hypot(r.position.x-prev.x,r.position.z-prev.z);
+  const prev=r.position.clone(); const gPrev=groundAt(prev.x,prev.z); r.position.addScaledVector(vel,dt); collide(r.position);
+  let gy=groundAt(r.position.x,r.position.z); const stepLen=Math.hypot(r.position.x-prev.x,r.position.z-prev.z);
   if(stepLen>1e-4 && (gy-gPrev)/stepLen>1.25){ r.position.x=prev.x; r.position.z=prev.z; gy=gPrev; vel.multiplyScalar(.3); }
   if(!grounded){ vy-=15*dt; yAir+=vy*dt; if(yAir<=0){ yAir=0; vy=0; grounded=true; hero.land(); if(ambient&&ambient.on) footstepSound(isSoil(r.position.x,r.position.z)); } }
   r.position.y=gy+yAir; hero.J.blob.position.y=.02-yAir; hero.J.blob.scale.setScalar(Math.max(.4,1-yAir*.35));
   const real=r.position.clone().sub(prev); real.y=0; const sp=real.length()/Math.max(dt,1e-3);
   if(sp>.15) hero.face(Math.atan2(real.x,real.z),dt,9); else hero.A.yawVel*=.8;
   // tìm trạm gần nhất
-  near=null; let best=2.6; if(explore && !busy) for(const [k,s] of Object.entries(SPOTS)){ const d=Math.hypot(r.position.x-s.p[0], r.position.z-s.p[1]); if(d<best){ best=d; near=k; } }
+  near=null; let best=INSIDE.on?1.45:2.6; if(explore && !busy) for(const [k,s] of Object.entries(SPOTS)){ if(!!s.in!==INSIDE.on) continue; const d=Math.hypot(r.position.x-s.p[0], r.position.z-s.p[1]); if(d<best){ best=d; near=k; } }
   let lookYaw; if(near && SPOT_LOOK[near]){ const L=SPOT_LOOK[near]; lookYaw=Math.atan2(L[0]-r.position.x, L[1]-r.position.z)-r.rotation.y; lookYaw=Math.atan2(Math.sin(lookYaw),Math.cos(lookYaw)); }
   hero.update(dt,t,{speed: grounded?sp:0, onStep, lookYaw, air:!grounded});
   ambient.setProx && ambient.setProx(Math.hypot(r.position.x-FALL.x,r.position.z-FALL.y), r.position.x);
@@ -1907,10 +1965,10 @@ function updatePlayer(dt,t){
     const nx=THREE.MathUtils.lerp(controls.target.x,ft.x,k), ny=THREE.MathUtils.lerp(controls.target.y,ft.y,k), nz=THREE.MathUtils.lerp(controls.target.z,ft.z,k);
     camera.position.x+=nx-controls.target.x; camera.position.y+=ny-controls.target.y; camera.position.z+=nz-controls.target.z; controls.target.set(nx,ny,nz);
     if(camDrag) lastUserCam=performance.now()/1000; const userIdle = performance.now()/1000 - lastUserCam > 1.6;
-    if((dest || autoCam) && sp>.5 && userIdle){ // tự xoay camera ra sau lưng khi đang đi
+    if((dest || autoCam) && sp>.5 && userIdle && !INSIDE.on){ // tự xoay camera ra sau lưng khi đang đi
       const off=camera.position.clone().sub(controls.target); const cur=Math.atan2(off.x,off.z), want=r.rotation.y+Math.PI; let d=want-cur; d=Math.atan2(Math.sin(d),Math.cos(d));
       const na=cur+d*(1-Math.exp(-dt*(dest?1.2:Math.min(2.4,.8+sp*.25)))); const h=Math.hypot(off.x,off.z); camera.position.x=controls.target.x+Math.sin(na)*h; camera.position.z=controls.target.z+Math.cos(na)*h; }
-    const minY=heightAt(camera.position.x,camera.position.z)+.6; if(camera.position.y<minY) camera.position.y=minY;
+    const minY=groundAt(camera.position.x,camera.position.z)+.6; if(camera.position.y<minY) camera.position.y=minY;
   }
   // điểm đến, bụi
   if(marker.material.opacity>0){ marker.scale.setScalar(1+.15*Math.sin(t*6)); }
@@ -2150,7 +2208,7 @@ function strikeGong(freq, vol=.55){
    ========================================================= */
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let downAt=null, hovered=null;
 const tip = document.getElementById('hoverTip');
-function pick(e){ const r=canvas.getBoundingClientRect(); ptr.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1); ray.setFromCamera(ptr,camera); const hit=ray.intersectObjects(clickables,false)[0]; return hit?hit.object:null; }
+function pick(e){ const r=canvas.getBoundingClientRect(); ptr.set(((e.clientX-r.left)/r.width)*2-1, -((e.clientY-r.top)/r.height)*2+1); ray.setFromCamera(ptr,camera); const hit=ray.intersectObjects(clickables,false).find(h=>{ const k=h.object.userData.kind, inner=k==='inside'||k==='igong'; return INSIDE.on ? inner : !inner; }); return hit?hit.object:null; }
 canvas.addEventListener('pointerdown',e=>{ downAt=[e.clientX,e.clientY]; });
 canvas.addEventListener('pointermove',e=>{
   if(e.pointerType!=='mouse') return;
@@ -2161,6 +2219,8 @@ canvas.addEventListener('pointerup',e=>{
   if(!downAt || Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>6) return; downAt=null;
   if(explore && !panel.classList.contains('open') && !document.body.classList.contains('touring')){
     const o=pick(e);
+    if(o && o.userData.kind==='igong'){ const g=INSIDE.gongs[o.userData.id]; hero.strike(); strikeGong(g.userData.freq,.45); g.userData.swing=1; if(student) log('rong','igong',o.userData.id); return; }
+    if(o && o.userData.kind==='inside'){ goTo('i'+o.userData.id); return; }
     if(o){ const {kind,id}=o.userData; const key = kind==='gong'?'gong' : kind==='pin'?'map' : kind==='spot'?(id==='house'?'rong':id) : kind==='station'?id : null;
       if(key && SPOTS[key]){ if(kind==='pin') selSite=id; goTo(key); return; } }
     ray.setFromCamera(ptr,camera); const h=ray.intersectObject(groundMesh,false)[0]; if(h) walkTo(h.point.x,h.point.z); return;
@@ -2193,6 +2253,7 @@ function setOffset(open){
    ========================================================= */
 const panel=document.getElementById('panel'), pBody=document.getElementById('panelBody');
 function openStation(key){
+  if(!INSIDE.on && L && !(key==='map' && L.d.area==='map') && !(key==='rong' && L.d.area==='rong')) closeLearn();
   if(!student){ showWelcome(); return; }
   if(key==='overview'){ closePanel(); return; }
   if(currentStation==='buddy' && key!=='buddy') maybeAskPost();
@@ -2207,7 +2268,7 @@ function openStation(key){
   panel.classList.add('open'); document.body.classList.add('panel-open'); pBody.scrollTop=0;
   if(key==='buddy' && sess.pre===null) setTimeout(()=>askFeel('pre'), 500);
 }
-function hidePanel(){ panel.classList.remove('open'); document.body.classList.remove('panel-open'); currentStation='overview'; setOffset(false); stopSpeak(); stopListening();
+function hidePanel(){ if(!INSIDE.on) closeLearn(); panel.classList.remove('open'); document.body.classList.remove('panel-open'); currentStation='overview'; setOffset(false); stopSpeak(); stopListening();
   document.querySelectorAll('#nav button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.go==='overview')); }
 function closePanel(){ if(currentStation==='buddy') maybeAskPost(); hidePanel(); if(explore){ const f=followPose(); flyToPose(f.cam,f.tgt,1.3); } else flyTo('overview'); }
 document.getElementById('closePanel').addEventListener('click',closePanel);
@@ -2241,7 +2302,7 @@ function renderMap(){
   document.getElementById('seeTable').addEventListener('click',()=>{ focusSite(s.id); log('map','focus',s.id); });
   document.getElementById('stopL').addEventListener('click',stopSpeak);
 }
-function selectSite(id){ selSite=id; if(currentStation==='map') renderMap();
+function selectSite(id){ selSite=id; if(currentStation==='map'){ renderMap(); openLearn(siteLearn(id)); const dd=Object.values(DISC_BY).find(x=>x.site===id); if(dd){ const c=discCam(dd.id); flyToPose(c.cam,c.tgt,2.2); } else focusSite(id); }
   for(const [k,p] of Object.entries(pins)){ const on=k===id; p.userData.name.visible=on; if(window.gsap) gsap.to(p.scale,{x:on?1.45:1,y:on?1.45:1,z:on?1.45:1,duration:.4,ease:'back.out(2)'}); } }
 
 // ----- Trạm 2: Nhà Rông -----
@@ -2249,6 +2310,7 @@ let selSpot='house';
 function renderRong(){
   const s = RONG_SPOTS.find(x=>x.id===selSpot); const done = state.answered[s.id];
   pBody.innerHTML = `
+    <div class="card hero-card"><h3>Khám phá Nhà Rông 3D</h3><p style="margin:0;font-size:13.5px;color:var(--muted)">Đi vào bên trong để đánh cồng chiêng, đánh trống, chơi đàn T’rưng, đeo thử gùi và ngồi bên bếp lửa.</p><div class="btnrow"><button class="btn solid" id="goInside">Vào bên trong Nhà Rông</button><button class="btn" id="rongDrill">Luyện nói &amp; câu hỏi</button></div></div>
     <div class="site-list">${RONG_SPOTS.map(x=>`<button data-spot="${x.id}" aria-pressed="${x.id===selSpot}" class="${state.answered[x.id]?'done':''}"><span class="dot">${state.answered[x.id]?'✓':''}</span>${esc(x.vi)}</button>`).join('')}</div>
     <div class="card">
       <h3>${esc(s.en)} <span style="color:var(--muted);font-weight:500">· ${esc(s.vi)}</span></h3>
@@ -2272,54 +2334,368 @@ function renderRong(){
     if(ok && !state.answered[s.id]){ state.answered[s.id]=true; saveState(); if(Object.keys(state.answered).length>=3) stamp('rong'); setTimeout(renderRong,700); }
   }));
   if(!state.seen.includes(s.id)){ state.seen.push(s.id); saveState(); log('rong','view',s.id); }
+  document.getElementById('goInside').onclick=()=>enterRong(); document.getElementById('rongDrill').onclick=()=>openLearn(RONG_LEARN,'speak');
 }
 function showSpot(id){ selSpot=id; if(currentStation==='rong') renderRong(); }
 
 // ----- Trạm 3: Luyện nói -----
 const norm = s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9' ]/g,' ').replace(/\s+/g,' ').trim();
-const TOPICS = [
-  { id:'thapdoi', keys:['thap doi','twin tower','twin towers','cham tower','cham towers','cham temple','towers','tower'] },
-  { id:'bienho', keys:['bien ho','tnung',"t'nung",'t nung','lake','eyes of pleiku','volcano'] },
-  { id:'quangtrung', keys:['quang trung','tay son','museum','drum','drums','emperor','martial'] },
-  { id:'gogang', keys:['go gang','non ngua','conical hat','hat','hats'] },
-  { id:'minhthanh', keys:['minh thanh','pagoda','temple'] },
-  { id:'stor', keys:['stor','nup','hero','resistance'] },
-  { id:'rong', keys:['nha rong','rong house','communal house','rong'] },
-  { id:'gong', keys:['cong chieng','gong','gongs'] },
-  { id:'gui', keys:['gui','basket'] },
-  { id:'statue', keys:['tuong nha mo','statue','statues','tomb'] },
+// ===== Kho tri thức của Mr. David: di sản văn hoá và ẩm thực Gia Lai (gồm Gia Lai cũ và Bình Định cũ) =====
+// strong: tên riêng (khớp là gần như chắc chắn) · soft: từ chung (chỉ cộng ít điểm)
+const KB = [
+  { id:'province', cat:'general', name:'Gia Lai province', vi:'Tỉnh Gia Lai mới',
+    strong:['gia lai','tinh gia lai','new gia lai','gia lai province'], soft:['province','tinh','merge','sap nhap'],
+    what:"Since 1 July 2025, Gia Lai and Binh Dinh have joined together to make the new Gia Lai province.",
+    where:"It goes from the Central Highlands in the west all the way to the sea in the east. The administrative centre is Quy Nhon.",
+    more:"It is about 21,577 square kilometres, with about 3.6 million people and 135 communes and wards.",
+    sum:'Từ 1/7/2025 Gia Lai và Bình Định hợp nhất thành tỉnh Gia Lai mới, trung tâm hành chính ở Quy Nhơn.', ask:'What is special about the new Gia Lai?' },
+  // ---------- Di tích, danh thắng ----------
+  { id:'thapdoi', cat:'heritage', name:'Thap Doi (Twin Towers)', vi:'Tháp Đôi', site:'thapdoi',
+    strong:['thap doi','twin tower','twin towers'], soft:['cham tower','cham','tower','towers','brick','thap'],
+    what:"Thap Doi means 'Twin Towers'. They are two old Cham towers made of red bricks.",
+    where:"They are in Quy Nhon city, now part of Gia Lai province.",
+    more:"They were built in the late 12th century. Their curved roofs look different from most other Cham towers.",
+    sum:'Tháp Đôi: hai tháp Chăm bằng gạch đỏ ở Quy Nhơn, xây cuối thế kỷ 12.', ask:'Where is Thap Doi?' },
+  { id:'banhit', cat:'heritage', name:'Banh It (Silver) Towers', vi:'Tháp Bánh Ít (Tháp Bạc)',
+    strong:['banh it tower','thap banh it','banh it towers','silver tower','silver towers','thap bac'], soft:['cham','tower','hill'],
+    what:"Banh It is a group of four Cham towers on a small hill. People also call them the Silver Towers.",
+    where:"They are in Tuy Phuoc, about 20 kilometres north of Quy Nhon.",
+    more:"They are more than 800 years old. From the hill, you can see green rice fields all around.",
+    sum:'Tháp Bánh Ít (Tháp Bạc): cụm 4 tháp Chăm trên đồi ở Tuy Phước.', ask:'What is Banh It Tower?' },
+  { id:'duonglong', cat:'heritage', name:'Duong Long (Ivory) Towers', vi:'Tháp Dương Long (Tháp Ngà)',
+    strong:['duong long','thap duong long','ivory tower','ivory towers','thap nga'], soft:['cham','tower','tall'],
+    what:"Duong Long is a group of three tall Cham towers. People call them the Ivory Towers.",
+    where:"They are in Tay Son, in the west of the old Binh Dinh province.",
+    more:"The middle tower is about 40 metres high. It is one of the tallest Cham towers in Vietnam.",
+    sum:'Tháp Dương Long (Tháp Ngà): ba tháp Chăm ở Tây Sơn, tháp giữa cao khoảng 40 m.', ask:'How tall is Duong Long Tower?' },
+  { id:'doban', cat:'heritage', name:'Do Ban Citadel', vi:'Thành Hoàng Đế (Đồ Bàn)',
+    strong:['do ban','thanh do ban','hoang de','thanh hoang de','vijaya','canh tien'], soft:['citadel','capital','champa','thanh'],
+    what:"Do Ban was once the capital of the Champa kingdom, called Vijaya.",
+    where:"It is in An Nhon, north of Quy Nhon.",
+    more:"Later, the Tay Son leader Nguyen Nhac rebuilt it and named it Hoang De Citadel. Canh Tien Tower still stands there.",
+    sum:'Thành Đồ Bàn – kinh đô Vijaya của Champa ở An Nhơn, sau là thành Hoàng Đế thời Tây Sơn.', ask:'What was Do Ban Citadel?' },
+  { id:'thaptap', cat:'heritage', name:'Thap Thap Pagoda', vi:'Chùa Thập Tháp Di Đà',
+    strong:['thap thap','thap thap pagoda','chua thap thap','di da'], soft:['old pagoda','pagoda','chua','ten towers'],
+    what:"Thap Thap is one of the oldest pagodas in Binh Dinh.",
+    where:"It is in An Nhon, near Do Ban Citadel.",
+    more:"It is more than 300 years old. Its name means 'Ten Towers', because it was built where ten old Cham towers once stood.",
+    sum:'Chùa Thập Tháp ở An Nhơn, hơn 300 năm tuổi, xây trên nền mười tháp Chăm cũ.', ask:'Why is it called Thap Thap?' },
+  { id:'quangtrung', cat:'heritage', name:'Quang Trung Museum', vi:'Bảo tàng Quang Trung', site:'quangtrung',
+    strong:['quang trung','bao tang quang trung','nguyen hue','tay son brothers','quang trung museum'], soft:['museum','bao tang','emperor','king','hero','tay son','1789'],
+    what:"Quang Trung Museum tells the story of Emperor Quang Trung, also called Nguyen Hue, and the Tay Son brothers.",
+    where:"It is in Tay Son, the hometown of the three Tay Son brothers.",
+    more:"In 1789 Quang Trung defeated a big foreign army in only a few days. Every year, on the fifth day of Tet, people hold the Dong Da festival there.",
+    sum:'Bảo tàng Quang Trung ở Tây Sơn kể về vua Quang Trung – Nguyễn Huệ và anh em Tây Sơn.', ask:'Who was Quang Trung?' },
+  { id:'drum', cat:'culture', name:'Tay Son war drums', vi:'Trống trận Tây Sơn', disc:'quangtrung',
+    strong:['tay son drum','war drum','war drums','trong tran','trong tran tay son'], soft:['drum','drums','trong','beat'],
+    what:"Tay Son war drums are a set of many drums played together. The sound is fast and powerful.",
+    where:"You can watch performances at Quang Trung Museum in Tay Son.",
+    more:"The Tay Son army used drums to send orders and to make soldiers brave.",
+    sum:'Trống trận Tây Sơn: dàn nhiều trống đánh cùng lúc, âm thanh dồn dập, hào hùng.', ask:'What are Tay Son war drums?' },
+  { id:'vothuat', cat:'culture', name:'Binh Dinh martial arts', vi:'Võ cổ truyền Bình Định',
+    strong:['martial art','martial arts','vo co truyen','vo binh dinh','kung fu','vo thuat'], soft:['fight','vo','school','roi'],
+    what:"Binh Dinh is famous for traditional martial arts, called vo co truyen.",
+    where:"There are many martial arts schools in Tay Son, An Nhon and other places.",
+    more:"An old saying goes: in Binh Dinh, even the girls know martial arts! Students also learn to be brave and polite.",
+    sum:'Võ cổ truyền Bình Định nổi tiếng: "con gái Bình Định cũng biết múa roi đi quyền".', ask:'Is Binh Dinh famous for martial arts?' },
+  { id:'baichoi', cat:'culture', name:'Bai Choi', vi:'Nghệ thuật Bài Chòi',
+    strong:['bai choi','choi bai choi','nghe thuat bai choi'], soft:['folk game','folk song','card game','unesco'],
+    what:"Bai Choi is a folk game with singing and cards. People play it from small bamboo huts.",
+    where:"It is popular in Central Vietnam, including Binh Dinh, especially at Tet.",
+    more:"In 2017, UNESCO recognised the Art of Bai Choi as an intangible cultural heritage of humanity.",
+    sum:'Bài Chòi: trò chơi dân gian vừa hát vừa bốc thẻ, UNESCO ghi danh năm 2017.', ask:'What is Bai Choi?' },
+  { id:'tuong', cat:'culture', name:'Hat Boi (Tuong theatre)', vi:'Hát bội (Tuồng)',
+    strong:['hat boi','tuong','dao tan','hat tuong'], soft:['theatre','theater','opera','face paint','costume'],
+    what:"Hat boi, also called tuong, is a classical theatre with colourful face paint, costumes and drums.",
+    where:"Binh Dinh is known as the home of hat boi.",
+    more:"The great tuong writer Dao Tan was born in Tuy Phuoc, Binh Dinh.",
+    sum:'Hát bội (tuồng): Bình Định là cái nôi, quê hương danh nhân Đào Tấn.', ask:'What is hat boi?' },
+  { id:'gogang', cat:'craft', name:'Go Gang hat village', vi:'Làng nón ngựa Gò Găng', site:'gogang',
+    strong:['go gang','non ngua','horse hat','go gang hat'], soft:['conical hat','hat','hats','non','craft village','lang nghe'],
+    what:"Go Gang village makes non ngua, a special kind of conical hat.",
+    where:"It is in An Nhon, north of Quy Nhon.",
+    more:"In the past, mandarins wore these hats when they rode horses. One hat can take many days to make by hand.",
+    sum:'Làng Gò Găng (An Nhơn) làm nón ngựa – loại nón quan xưa đội khi cưỡi ngựa.', ask:'What is non ngua?' },
+  { id:'kyco', cat:'nature', name:'Ky Co beach', vi:'Kỳ Co',
+    strong:['ky co','ky co beach','bai ky co'], soft:['beach','island','snorkel','clear water','bien'],
+    what:"Ky Co is a beautiful beach with clear blue water and white sand.",
+    where:"It is in Nhon Ly, about 25 kilometres from Quy Nhon.",
+    more:"Many visitors go there by boat. They swim, snorkel and look at the coral.",
+    sum:'Kỳ Co (Nhơn Lý): bãi biển nước trong xanh, cát trắng.', ask:'Where is Ky Co?' },
+  { id:'eogio', cat:'nature', name:'Eo Gio', vi:'Eo Gió',
+    strong:['eo gio','windy bay'], soft:['cliff','sunrise','rock','path','wind'],
+    what:"Eo Gio means 'windy bay'. It has rocky cliffs and a walking path along the sea.",
+    where:"It is in Nhon Ly, near Ky Co beach.",
+    more:"It is a great place to watch the sunrise over the sea.",
+    sum:'Eo Gió (Nhơn Lý): vịnh nhiều gió, vách đá, ngắm bình minh rất đẹp.', ask:'What is Eo Gio?' },
+  { id:'ghenhrang', cat:'nature', name:'Ghenh Rang', vi:'Ghềnh Ráng Tiên Sa',
+    strong:['ghenh rang','tien sa','han mac tu','queen beach','queens beach','bai tam hoang hau'], soft:['poet','rock','stone','coast'],
+    what:"Ghenh Rang is a rocky coast with many big, round stones.",
+    where:"It is in Quy Nhon city, close to the centre.",
+    more:"The tomb of the poet Han Mac Tu is on a hill there. Below it is Queen's Beach, named after Queen Nam Phuong.",
+    sum:'Ghềnh Ráng Tiên Sa ở Quy Nhơn: bãi đá, mộ nhà thơ Hàn Mặc Tử, bãi tắm Hoàng Hậu.', ask:'Who was Han Mac Tu?' },
+  { id:'beach', cat:'nature', name:'Quy Nhon beach', vi:'Biển Quy Nhơn', disc:'bien',
+    strong:['quy nhon beach','bien quy nhon','thung chai','basket boat','basket boats'], soft:['beach','sea','fisherman','boat','wave','quy nhon'],
+    what:"Quy Nhon has long, beautiful beaches and fresh seafood.",
+    where:"The beaches are along the east side of the new Gia Lai province.",
+    more:"Fishermen use thung chai, round basket boats woven from bamboo, to fish near the shore.",
+    sum:'Biển Quy Nhơn dài, đẹp; ngư dân dùng thúng chai đan bằng tre.', ask:'What is a basket boat?' },
+  { id:'bienho', cat:'nature', name:"T'Nung Lake (Bien Ho)", vi:"Biển Hồ T'Nưng", site:'bienho',
+    strong:['bien ho','tnung','t nung',"t'nung",'eyes of pleiku','to nung','t nung lake'], soft:['lake','ho','volcano','crater','pleiku'],
+    what:"T'Nung Lake, or Bien Ho, was once the crater of a volcano.",
+    where:"It is about seven kilometres north of Pleiku city.",
+    more:"People call it 'the eyes of Pleiku' because the water is deep blue and calm. It gives fresh water to the city.",
+    sum:'Biển Hồ T’Nưng: miệng núi lửa cũ, cách Pleiku khoảng 7 km, "đôi mắt Pleiku".', ask:"Why is T'Nung Lake called the eyes of Pleiku?" },
+  { id:'doiche', cat:'nature', name:'Bien Ho tea hills', vi:'Đồi chè Biển Hồ',
+    strong:['doi che','tea hill','tea hills','che bien ho','pine road','duong thong'], soft:['tea','che','pine','photo'],
+    what:"Bien Ho tea hills are green tea fields with a long road of pine trees.",
+    where:"They are near T'Nung Lake, north of Pleiku.",
+    more:"It is one of the favourite places for photos in Gia Lai.",
+    sum:'Đồi chè Biển Hồ: đồi chè xanh, hàng thông dài gần Biển Hồ.', ask:'Where are the tea hills?' },
+  { id:'phucuong', cat:'nature', name:'Phu Cuong Waterfall', vi:'Thác Phú Cường', disc:'phucuong',
+    strong:['phu cuong','thac phu cuong'], soft:['waterfall','thac','falls','chu se'],
+    what:"Phu Cuong is a big waterfall. The water falls over dark volcanic rocks.",
+    where:"It is in the Chu Se area, south of Pleiku.",
+    more:"It is about 45 metres high and is one of the most beautiful waterfalls in the Central Highlands.",
+    sum:'Thác Phú Cường (khu vực Chư Sê) cao khoảng 45 m, đổ qua đá núi lửa.', ask:'How high is Phu Cuong Waterfall?' },
+  { id:'chudangya', cat:'nature', name:'Chu Dang Ya volcano', vi:'Núi lửa Chư Đăng Ya',
+    strong:['chu dang ya','dang ya','wild sunflower','wild sunflowers','da quy','hoa da quy'], soft:['volcano','sunflower','nui lua','flower'],
+    what:"Chu Dang Ya is an old volcano. Today farmers grow vegetables on it.",
+    where:"It is northeast of Pleiku.",
+    more:"In November, wild sunflowers turn the volcano yellow, and there is a wild sunflower festival.",
+    sum:'Núi lửa Chư Đăng Ya gần Pleiku; tháng 11 hoa dã quỳ nở vàng rực.', ask:'When do wild sunflowers bloom?' },
+  { id:'minhthanh', cat:'heritage', name:'Minh Thanh Pagoda', vi:'Chùa Minh Thành', site:'minhthanh',
+    strong:['minh thanh','chua minh thanh','minh thanh pagoda'], soft:['pagoda','chua','temple','pleiku'],
+    what:"Minh Thanh Pagoda is a big, beautiful pagoda with a tall tower and gardens.",
+    where:"It is in Pleiku city.",
+    more:"Its design is inspired by Japanese and Chinese temples. Many people visit it during Lunar New Year.",
+    sum:'Chùa Minh Thành ở Pleiku, kiến trúc gợi phong cách Nhật Bản và Trung Hoa.', ask:'Where is Minh Thanh Pagoda?' },
+  { id:'stor', cat:'heritage', name:'Stor village', vi:'Làng kháng chiến Stơr', site:'stor',
+    strong:['stor','sto','nup','anh hung nup','dat nuoc dung len'], soft:['hero','resistance','kbang','novel'],
+    what:"Stor is a Bahnar village and the hometown of the hero Nup.",
+    where:"It is in the Kbang area, in the north of old Gia Lai.",
+    more:"Nup led the villagers to fight for independence. His story is told in the novel 'Dat nuoc dung len' by Nguyen Ngoc.",
+    sum:'Làng Stơr (Kbang) – quê hương anh hùng Núp.', ask:'Who was Nup?' },
+  { id:'square', cat:'heritage', name:'Dai Doan Ket Square', vi:'Quảng trường Đại Đoàn Kết',
+    strong:['dai doan ket','quang truong','great unity square'], soft:['square','statue','pleiku centre','uncle ho'],
+    what:"Dai Doan Ket Square is the big central square of Pleiku city.",
+    where:"It is in the centre of Pleiku.",
+    more:"There is a large statue of Uncle Ho with the ethnic groups of the Central Highlands.",
+    sum:'Quảng trường Đại Đoàn Kết ở trung tâm Pleiku, có tượng đài Bác Hồ với các dân tộc Tây Nguyên.', ask:'What is in Dai Doan Ket Square?' },
+  // ---------- Văn hoá Tây Nguyên ----------
+  { id:'rong', cat:'culture', name:'the Rong house', vi:'Nhà Rông', rong:'house',
+    strong:['nha rong','rong house','communal house','rong'], soft:['house','roof','stilt','village','nha'],
+    what:"A Rong house is the communal house of a Bahnar or Jrai village. It stands on tall wooden stilts.",
+    where:"You can see Rong houses in villages around Pleiku and Kon Tum, and in the village right here!",
+    more:"Its roof is very tall and looks like an axe blade. Villagers hold meetings and festivals inside, around the fire.",
+    sum:'Nhà Rông: nhà chung của buôn làng, mái cao hình lưỡi rìu, nơi họp làng và tổ chức lễ hội.', ask:'What do villagers do in a Rong house?' },
+  { id:'gong', cat:'culture', name:'gongs', vi:'Cồng chiêng', rong:'gong',
+    strong:['cong chieng','gong','gongs','chieng','cong','space of gong culture'], soft:['bronze','music','unesco','sound'],
+    what:"Gongs are round musical instruments made of bronze. Gongs with a knob are called cong; flat ones are called chieng.",
+    where:"People play them in the villages of the Central Highlands, including Gia Lai.",
+    more:"The Space of Gong Culture in the Central Highlands was recognised by UNESCO in 2005. Gongs are played at every big festival.",
+    sum:'Cồng chiêng làm bằng đồng; Không gian văn hoá Cồng chiêng Tây Nguyên được UNESCO công nhận năm 2005.', ask:'What are gongs made of?' },
+  { id:'gui', cat:'craft', name:'the gui', vi:'Gùi', rong:'gui',
+    strong:['gui','back basket','cai gui'], soft:['basket','rattan','carry','weave'],
+    what:"A gui is a back basket woven from bamboo or rattan.",
+    where:"People in Central Highlands villages use it every day.",
+    more:"Women carry water, firewood, corn and rice home from the fields in a gui. Some gui are decorated with beautiful patterns.",
+    sum:'Gùi: giỏ đan bằng tre, mây, đeo sau lưng để mang nước, củi, lúa.', ask:'What is a gui used for?' },
+  { id:'statue', cat:'culture', name:'tomb statues', vi:'Tượng nhà mồ', rong:'statue',
+    strong:['tuong nha mo','tomb statue','tomb statues','tuong go'], soft:['statue','statues','carve','wood','tuong'],
+    what:"Tomb statues are wooden statues carved with simple tools like an axe and a knife.",
+    where:"They stand around tomb houses in Jrai and Bahnar villages.",
+    more:"They show daily life: people thinking, dancing or holding a baby. They are made for the grave-leaving ceremony.",
+    sum:'Tượng nhà mồ: tượng gỗ đẽo bằng rìu, dao, đặt quanh nhà mồ trong lễ bỏ mả.', ask:'What are tomb statues made of?' },
+  { id:'trung', cat:'culture', name:"the T'rung", vi:"Đàn T'rưng",
+    strong:['trung',"t'rung",'t rung','dan trung','bamboo xylophone'], soft:['xylophone','bamboo music','instrument','dan'],
+    what:"The T'rung is a bamboo xylophone of the Central Highlands.",
+    where:"Bahnar and Jrai musicians in Gia Lai play it.",
+    more:"Players hit bamboo tubes of different lengths with small sticks. The sound is light, like a running stream.",
+    sum:"Đàn T'rưng: đàn ống tre của Tây Nguyên, tiếng trong như suối chảy.", ask:"What is the T'rung?" },
+  { id:'boma', cat:'festival', name:'the grave-leaving ceremony', vi:'Lễ bỏ mả (Pơ thi)',
+    strong:['le bo ma','bo ma','grave leaving','grave-leaving','po thi','pothi'], soft:['ceremony','tomb','funeral','le'],
+    what:"The grave-leaving ceremony is one of the biggest festivals of the Jrai and Bahnar people.",
+    where:"It takes place at the tomb house, at the edge of the village.",
+    more:"People play gongs, dance around the tomb house and share food to say a last goodbye to someone who has passed away.",
+    sum:'Lễ bỏ mả: lễ lớn của người Jrai, Bahnar, tiễn biệt người đã khuất.', ask:'What is the grave-leaving ceremony?' },
+  { id:'luamoi', cat:'festival', name:'the new rice festival', vi:'Lễ mừng lúa mới',
+    strong:['lua moi','mung lua moi','new rice','new rice festival','harvest festival'], soft:['harvest','rice','festival','le hoi'],
+    what:"After the harvest, villagers hold the new rice festival to give thanks for a good crop.",
+    where:"It is held in the village yard and the Rong house.",
+    more:"They cook the new rice, play gongs and dance the xoang together around the fire.",
+    sum:'Lễ mừng lúa mới: tạ ơn sau mùa gặt, nấu cơm mới, đánh chiêng, múa xoang.', ask:'What happens at the new rice festival?' },
+  { id:'xoang', cat:'festival', name:'the xoang dance', vi:'Múa xoang',
+    strong:['xoang','mua xoang','xoang dance'], soft:['dance','dancing','circle dance','mua'],
+    what:"Xoang is a circle dance of the Bahnar and Jrai people.",
+    where:"People dance it in the village yard or near the Rong house.",
+    more:"Dancers hold hands or move their arms softly, following the beat of the gongs.",
+    sum:'Múa xoang: điệu múa vòng tròn theo nhịp cồng chiêng.', ask:'What is the xoang dance?' },
+  { id:'neu', cat:'culture', name:'the ceremonial pole', vi:'Cây nêu',
+    strong:['cay neu','ceremonial pole','neu'], soft:['pole','bamboo pole','decorate'],
+    what:"A ceremonial pole is a tall bamboo pole decorated with colourful patterns.",
+    where:"Villagers put it up in the yard in front of the Rong house.",
+    more:"During festivals, people dance in a circle around the pole.",
+    sum:'Cây nêu: cây tre cao trang trí hoa văn, dựng giữa sân trong lễ hội.', ask:'What is a ceremonial pole?' },
+  { id:'brocade', cat:'craft', name:'brocade weaving', vi:'Dệt thổ cẩm',
+    strong:['tho cam','brocade','det tho cam'], soft:['weave','weaving','cloth','pattern','scarf'],
+    what:"Brocade is hand-woven cloth with colourful patterns.",
+    where:"Jrai and Bahnar women weave it at home on simple looms.",
+    more:"Black, red, white and yellow are common colours. The patterns show mountains, rivers, plants and animals.",
+    sum:'Thổ cẩm: vải dệt tay nhiều hoa văn của phụ nữ Jrai, Bahnar.', ask:'What is brocade?' },
+  // ---------- Ẩm thực ----------
+  { id:'phokho', cat:'food', name:'Gia Lai dry pho', vi:'Phở khô Gia Lai',
+    strong:['pho kho','dry pho','pho hai to','two bowl pho','pho gia lai'], soft:['pho','noodle','noodles','breakfast'],
+    what:"Gia Lai dry pho is also called 'two-bowl pho': the noodles are in one bowl and the hot soup is in another bowl.",
+    where:"It is a famous breakfast in Pleiku.",
+    more:"The noodles are small and chewy. People eat them with minced pork, herbs and a sweet soy sauce dressing.",
+    sum:'Phở khô Gia Lai (phở hai tô): một tô bánh phở trộn, một tô nước dùng.', ask:'What is Gia Lai dry pho?', taste:true },
+  { id:'bunmamcua', cat:'food', name:'bun mam cua', vi:'Bún mắm cua Pleiku',
+    strong:['bun mam cua','mam cua','crab paste noodle'], soft:['crab','bun','noodle soup'],
+    what:"Bun mam cua is a rice noodle soup made with fermented crab paste.",
+    where:"It is a well-known dish in Pleiku.",
+    more:"It has a strong, special smell that local people love. It comes with pork, fish cakes and fresh vegetables.",
+    sum:'Bún mắm cua Pleiku: bún nước nấu với mắm cua, ăn kèm thịt, chả, rau sống.', ask:'What is bun mam cua?', taste:true },
+  { id:'comlam', cat:'food', name:'bamboo rice and grilled chicken', vi:'Cơm lam – gà nướng',
+    strong:['com lam','bamboo rice','ga nuong','grilled chicken','bamboo tube rice'], soft:['chicken','rice','bamboo','grill'],
+    what:"Com lam is sticky rice cooked inside a bamboo tube over a fire.",
+    where:"It is a favourite dish in Central Highlands villages.",
+    more:"People often eat it with grilled free-range chicken and yellow ant salt or salt with chili.",
+    sum:'Cơm lam: gạo nếp nấu trong ống tre, ăn với gà nướng.', ask:'How do people cook com lam?', taste:true },
+  { id:'muoikien', cat:'food', name:'yellow ant salt', vi:'Muối kiến vàng',
+    strong:['muoi kien','muoi kien vang','yellow ant','ant salt','yellow ant salt'], soft:['ant','salt','muoi','spicy'],
+    what:"Yellow ant salt is salt mixed with roasted yellow ants and chili.",
+    where:"It is a special dish of the Jrai and Bahnar people in Gia Lai.",
+    more:"It tastes salty, sour and spicy. People dip grilled chicken or dried beef in it.",
+    sum:'Muối kiến vàng: muối trộn kiến vàng rang và ớt, vị mặn chua cay.', ask:'What does yellow ant salt taste like?', taste:true },
+  { id:'bomotnang', cat:'food', name:'one-sun dried beef', vi:'Bò một nắng Krông Pa',
+    strong:['bo mot nang','one sun beef','one-sun beef','sun dried beef','krong pa'], soft:['beef','dried beef','bo'],
+    what:"One-sun dried beef is beef cut into thin slices and dried in the sun for only one day.",
+    where:"It is famous in Krong Pa, in the east of old Gia Lai.",
+    more:"People grill it quickly and eat it with yellow ant salt.",
+    sum:'Bò một nắng Krông Pa: thịt bò thái mỏng phơi một nắng, chấm muối kiến vàng.', ask:'What is one-sun dried beef?', taste:true },
+  { id:'coffee', cat:'food', name:'Pleiku coffee', vi:'Cà phê Pleiku',
+    strong:['ca phe','coffee','pleiku coffee','ca phe pleiku'], soft:['drink','basalt','farm'],
+    what:"Gia Lai is one of the big coffee-growing areas of Vietnam.",
+    where:"Coffee farms grow on the red basalt soil around Pleiku.",
+    more:"Pleiku coffee is strong and rich. Many families grow coffee and pepper together.",
+    sum:'Cà phê Pleiku trồng trên đất đỏ bazan, vị đậm.', ask:'Why does coffee grow well in Gia Lai?', taste:true },
+  { id:'pepper', cat:'food', name:'Chu Se pepper', vi:'Hồ tiêu Chư Sê',
+    strong:['ho tieu','pepper','chu se pepper','tieu chu se'], soft:['spice','tieu'],
+    what:"Chu Se is one of the biggest black pepper-growing areas in Vietnam.",
+    where:"It is south of Pleiku.",
+    more:"Pepper grows as a vine on tall poles or trees. The red basalt soil helps it grow well.",
+    sum:'Hồ tiêu Chư Sê: vùng trồng tiêu lớn của cả nước.', ask:'Where does Gia Lai pepper come from?', taste:true },
+  { id:'banhxeo', cat:'food', name:'banh xeo with jumping shrimp', vi:'Bánh xèo tôm nhảy',
+    strong:['banh xeo','tom nhay','jumping shrimp','banh xeo tom nhay','crispy pancake'], soft:['pancake','shrimp','tom'],
+    what:"Banh xeo tom nhay are small, crispy pancakes cooked with very fresh shrimp, so fresh they 'jump'.",
+    where:"It is a famous street food in Quy Nhon.",
+    more:"People roll the pancake in rice paper with herbs and dip it in fish sauce.",
+    sum:'Bánh xèo tôm nhảy Quy Nhơn: bánh nhỏ giòn với tôm tươi, cuốn bánh tráng, chấm nước mắm.', ask:'How do you eat banh xeo?', taste:true },
+  { id:'bunchaca', cat:'food', name:'Quy Nhon fish cake noodle soup', vi:'Bún chả cá Quy Nhơn',
+    strong:['bun cha ca','cha ca','fish cake','fish cake noodle','fish cake noodles'], soft:['fish','seafood','noodle soup','bun'],
+    what:"Bun cha ca is rice noodle soup with fish cakes made from fresh sea fish.",
+    where:"It is a favourite breakfast in Quy Nhon.",
+    more:"The soup is clear and a little sweet. People add chili, lime and herbs.",
+    sum:'Bún chả cá Quy Nhơn: bún nước với chả cá biển tươi.', ask:'What is bun cha ca?', taste:true },
+  { id:'banhhoi', cat:'food', name:'banh hoi with pork porridge', vi:'Bánh hỏi cháo lòng',
+    strong:['banh hoi','chao long','banh hoi chao long'], soft:['porridge','breakfast','rice noodle'],
+    what:"Banh hoi is very thin rice noodles woven into small sheets.",
+    where:"It is a famous breakfast in Binh Dinh.",
+    more:"People eat banh hoi with hot pork porridge, called chao long, and fresh herbs.",
+    sum:'Bánh hỏi cháo lòng: bánh hỏi sợi mỏng ăn cùng cháo lòng nóng, món sáng Bình Định.', ask:'What is banh hoi?', taste:true },
+  { id:'nem', cat:'food', name:'Cho Huyen nem', vi:'Nem chợ Huyện',
+    strong:['nem cho huyen','nem chua','cho huyen','nem'], soft:['pork roll','sour','gift'],
+    what:"Nem is a sour pork roll wrapped in leaves.",
+    where:"The most famous nem comes from Cho Huyen in Tuy Phuoc.",
+    more:"It tastes sour and a little spicy. Many visitors buy it as a gift.",
+    sum:'Nem chợ Huyện (Tuy Phước): nem chua gói lá, đặc sản làm quà.', ask:'Where does nem come from?', taste:true },
+  { id:'banhit', cat:'food', name:'banh it la gai', vi:'Bánh ít lá gai',
+    strong:['banh it la gai','la gai','banh it'], soft:['sticky rice cake','cake','black cake'],
+    what:"Banh it la gai is a black sticky rice cake made with ramie leaves.",
+    where:"It is a traditional cake of Binh Dinh.",
+    more:"It is filled with mung beans and coconut. People bring it to weddings and festivals.",
+    sum:'Bánh ít lá gai: bánh nếp đen làm từ lá gai, nhân đậu xanh, dừa.', ask:'What is banh it la gai made of?', taste:true },
+  { id:'banhtrang', cat:'food', name:'Tam Quan coconut rice paper', vi:'Bánh tráng nước dừa Tam Quan',
+    strong:['banh trang nuoc dua','tam quan','coconut rice paper','banh trang'], soft:['rice paper','coconut','snack','crispy'],
+    what:"Tam Quan rice paper is made with coconut milk and sesame, then grilled until it is crispy.",
+    where:"It comes from Tam Quan, in the north of old Binh Dinh.",
+    more:"It smells of coconut and tastes a little sweet. It is a popular snack.",
+    sum:'Bánh tráng nước dừa Tam Quan: giòn, thơm mùi dừa.', ask:'What is Tam Quan rice paper?', taste:true },
 ];
-const FACTS = {
-  thapdoi:["Thap Doi means the Twin Towers. They are two Cham towers in Quy Nhon, built in the late 12th century.","The towers are made of red bricks, and their roofs are curved. They look really special!"],
-  bienho:["T'Nung Lake is near Pleiku. It was once the crater of a volcano.","People call it 'the eyes of Pleiku' because the water is so blue and calm."],
-  quangtrung:["Quang Trung Museum is in Tay Son. It tells the story of Emperor Quang Trung.","At the museum you can watch Tay Son drum and martial arts performances. They are very exciting!"],
-  gogang:["Go Gang village makes non ngua, a special conical hat.","In the past, mandarins wore these hats when they rode horses. One hat takes many days to make."],
-  minhthanh:["Minh Thanh Pagoda is in Pleiku. Its design is inspired by Japanese and Chinese temples.","Many people visit it during Lunar New Year to pray and take photos."],
-  stor:["Stor is a Bahnar village in Kbang. It is the hometown of the hero Nup.","His story is in the novel Dat nuoc dung len by Nguyen Ngoc."],
-  rong:["A Rong house is the communal house of a village in the Central Highlands. Its roof looks like an axe blade.","Villagers hold meetings and festivals there. It is the heart of the village."],
-  gong:["Gongs are made of bronze. The Space of Gong Culture in the Central Highlands is recognised by UNESCO.","People play gongs at festivals. The sound is deep and strong."],
-  gui:["A gui is a back basket woven from bamboo or rattan.","Women carry it on their backs to bring water, firewood and crops home."],
-  statue:["Tomb statues are carved from wood with simple tools.","They show people's daily life and feelings during the grave-leaving ceremony."],
+KB.forEach(e=>{ e._name=norm(e.name); });
+// có 2 mục "banhit": tháp và bánh — đổi id món bánh cho khỏi trùng
+KB.filter(e=>e.id==='banhit')[1].id='banhitlagai';
+const KB_BY=Object.fromEntries(KB.map(e=>[e.id,e]));
+const CAT_KEYS = {
+  food:['food','foods','dish','dishes','eat','eating','specialty','specialities','specialties','cuisine','delicious','taste','mon an','dac san','am thuc','an gi','mon ngon','do an'],
+  heritage:['heritage','heritage site','heritage sites','place','places','visit','tourist','sightseeing','di san','dia diem','tham quan','danh thang','di tich'],
+  festival:['festival','festivals','ceremony','le hoi','tradition','traditions','culture','van hoa'],
+  nature:['nature','beach','beaches','waterfall','lake','mountain','thien nhien'],
 };
-const NAMES = { thapdoi:'Thap Doi', bienho:"T'Nung Lake", quangtrung:'Quang Trung Museum', gogang:'Go Gang village', minhthanh:'Minh Thanh Pagoda', stor:'Stor village', rong:'the Rong house', gong:'gongs', gui:'the gui', statue:'tomb statues' };
-const FOLLOW = {
-  visit: t=>`Have you ever visited ${NAMES[t]}?`,
-  like: ()=>'Which place in Gia Lai do you like most?',
-  why: ()=>'Why do you like it?',
-  tell: ()=>'Can you tell me one thing you know about it?',
+const CAT_VI={ food:'Ẩm thực', heritage:'Di tích – danh thắng', festival:'Lễ hội – văn hoá', nature:'Thiên nhiên', culture:'Văn hoá Tây Nguyên', craft:'Làng nghề' };
+const STOP = new Set('a an the is are was were be to of in on at for and or me you your i my we can could would will do does did please tell about what whats where wheres who how why when which there it its this that some any know want like more mr david thay co la gi o dau the nao co khong cho em biet hoi ve'.split(' '));
+
+function lev(a,b){ if(Math.abs(a.length-b.length)>2) return 9; const m=a.length,n=b.length; const d=[]; for(let i=0;i<=m;i++){ d[i]=[i]; } for(let j=0;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){ d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]) d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1); }
+  return d[m][n]; }
+const near1=(w,k)=> w===k || (k.length>=4 && w.length>=4 && w[0]===k[0] && lev(w,k)<=(k.length>=9?2:1));
+function kbScore(t){
+  const pad=' '+t+' ', toks=t.split(' ').filter(w=>w && !STOP.has(w));
+  const res=[];
+  for(const e of KB){ let s=0, hit=null;
+    for(const k of e.strong){ if(pad.includes(' '+k+' ')){ const w=2.6+k.split(' ').length*.7; if(w>s){ s=w; hit=k; } } }
+    if(!s){ // gõ sai chính tả nhẹ cho tên riêng
+      for(const k of e.strong){ const kt=k.split(' ');
+        if(kt.length===1){ if(k.length>=5 && toks.some(w=>w!==k && near1(w,k))){ s=Math.max(s,2.2); hit=hit||k; } }
+        else { const used=new Set(); let got=0, chars=0; for(const x of kt){ const i=toks.findIndex((w,ii)=>!used.has(ii) && near1(w,x)); if(i>=0){ used.add(i); got++; chars+=x.length; } }
+          if(got===kt.length && chars>=5){ s=Math.max(s,2.4); hit=hit||k; } else if(got>=2 && chars>=6) s=Math.max(s,1.1); }
+      } }
+    for(const k of e.soft){ if(pad.includes(' '+k+' ')) s+=.55; else if(k.length>=5 && !k.includes(' ') && toks.some(w=>near1(w,k))) s+=.4; }
+    if(s>0) res.push({e,s,hit});
+  }
+  return res.sort((a,b)=>b.s-a.s);
+}
+function kbIntent(t){
+  if(/\b(where|o dau|nam o|located|location|how far|cach)\b/.test(t)) return 'where';
+  if(/\b(why|special|famous|interesting|history|when|old|tall|high|dac biet|noi tieng|lich su|bao nhieu|more|else|another fact)\b/.test(t)) return 'more';
+  if(/\b(taste|delicious|eat|eaten|cook|made|make|ingredient|an|vi|lam bang|lam tu)\b/.test(t)) return 'how';
+  if(/\b(what|who|tell|about|explain|la gi|la ai|gioi thieu|describe)\b/.test(t)) return 'what';
+  return null;
+}
+function kbCat(t){ const pad=' '+t+' '; for(const [c,keys] of Object.entries(CAT_KEYS)) if(keys.some(k=>pad.includes(' '+k+' '))) return c; return null; }
+function kbAnswer(e, intent){
+  const seen = bot.facet[e.id]||0; bot.facet[e.id]=seen+1;
+  let parts;
+  if(intent==='where') parts=[e.where];
+  else if(intent==='more') parts=[e.more];
+  else if(intent==='how') parts=[e.cat==='food'? e.more : e.more];
+  else parts = seen===0 ? [e.what, e.where] : seen===1 ? [e.more] : [e.what, e.more];
+  return parts.join(' ');
+}
+const KB_FOLLOW = {
+  food:['Have you ever tried it?','Would you like to try it one day?','What is your favourite food in Gia Lai?'],
+  other:['Have you ever been there?','Would you like to visit it?','What do you think is the most interesting thing about it?'],
 };
-let chat=[], bot={ topic:null, facet:{}, ask:null };
+function kbChipsFor(e){ const rel=KB.filter(x=>x!==e && x.cat===e.cat).sort(()=>Math.random()-.5).slice(0,2);
+  return [ e.cat==='food' ? `What does ${e.name} taste like?` : `Where is ${e.name}?`, `Tell me more about ${e.name}.`, ...rel.map(x=>x.ask) ]; }
+function kbListCat(c){ const pool = c==='heritage' ? KB.filter(e=>['heritage','nature'].includes(e.cat)) : c==='festival' ? KB.filter(e=>['festival','culture','craft'].includes(e.cat)) : KB.filter(e=>e.cat===c);
+  return pool.sort(()=>Math.random()-.5).slice(0,5); }
+
+let chat=[], bot={ topic:null, facet:{}, ask:null, sugg:null };
 const pickOne = a=>a[Math.floor(Math.random()*a.length)];
 function botSay(text, extra={}){ chat.push({who:'bot', text, ...extra}); davidChar.talk(Math.min(6,1.6+text.length/45)); }
 function recast(raw){
   let s=' '+raw.trim().replace(/\s+/g,' ')+' '; const before=s;
   s=s.replace(/ i is /gi,' I am ').replace(/ (he|she|it) are /gi,' $1 is ').replace(/ (we|they|you) is /gi,' $1 are ')
-     .replace(/ (it|this|that) (very|so|really) /gi,' $1 is $2 ').replace(/ (it|this|that) (beautiful|big|old|famous|nice|interesting|great) /gi,' $1 is $2 ')
+     .replace(/ (it|this|that) (very|so|really) /gi,' $1 is $2 ').replace(/ (it|this|that) (beautiful|big|old|famous|nice|interesting|great|delicious|tasty|spicy) /gi,' $1 is $2 ')
      .replace(/ i (like|love|enjoy) (go|visit|eat|see|play|watch|take) /gi,(m,v,w)=>` I ${v} ${w==='take'?'taking':w==='see'?'seeing':w+'ing'} `)
-     .replace(/ can to /gi,' can ').replace(/ very like /gi,' really like ').replace(/ i am (go|visit|like|love) /gi,' I $1 ');
+     .replace(/ can to /gi,' can ').replace(/ very like /gi,' really like ').replace(/ i am (go|visit|like|love|eat) /gi,' I $1 ')
+     .replace(/ where (is|are) (\w+) (is|are) /gi,' where $1 $2 ').replace(/ what (is|are) (\w+) (is|are) /gi,' what $1 $2 ');
   if(s===before) return null;
   s=s.trim(); return s.charAt(0).toUpperCase()+s.slice(1).replace(/ i /g,' I ');
 }
+const VI_RE=/[ăâđêôơưàáạảãằắặẳẵầấậẩẫèéẹẻẽềếệểễìíịỉĩòóọỏõồốộổỗờớợởỡùúụủũừứựửữỳýỵỷỹ]/i;
 function reply(raw, via){
   const t = norm(raw); if(!t) return;
   chat.push({who:'me', text:raw});
@@ -2327,46 +2703,75 @@ function reply(raw, via){
   state.turns++; state.words+=words; if(via==='voice') state.voiceTurns++; saveState();
   log('buddy','turn',via, words);
   const rc = recast(raw); if(rc) chat.push({who:'recast', text:rc});
-  const topic = TOPICS.find(tp=>tp.keys.some(k=>(' '+t+' ').includes(' '+k+' ')));
   const has = re=>re.test(t);
-  let r;
-  if(has(/\b(i don ?t know|dont know|help|sorry|i don ?t understand|what do you mean|again|repeat)\b/)){
-    r = "No problem at all! Mistakes are part of learning. You can ask me: 'Can you tell me about Thap Doi?' or 'What is a gui?'";
-    chat.push({who:'hint', text:'Cô Lan: Em cứ nói chậm, sai cũng không sao. Thử hỏi: "Can you tell me about T’Nung Lake?"'});
-    bot.ask=null;
-  } else if(has(/\b(bye|goodbye|see you|thank you|thanks)\b/)){
+  const vi = VI_RE.test(raw);
+  const m = kbScore(t), top=m[0]; const intent=kbIntent(t), cat=kbCat(t);
+  if(cat && top && top.e.id==='province'){ m.shift(); }
+  const top2=m[0], sec2=m[1];
+  const strong = top2 && top2.s>=2.2 && !(cat && top2.e.id==='province'), clear = strong && (!sec2 || sec2.s<2.2 || top2.s>=sec2.s+.8);
+  const yes = has(/\b(yes|yeah|yep|i have|i did|of course|sure|ok|okay|co|roi|da)\b/), no = has(/\b(no|not yet|never|i haven ?t|nope|chua|khong)\b/);
+  let r, opts=null, hint=null;
+  if(has(/\b(i don ?t know|dont know|help|sorry|i don ?t understand|what do you mean|again|repeat|khong hieu|khong biet)\b/) && !strong){
+    r = "No problem at all! Mistakes are part of learning. Here are some questions you can ask me:";
+    opts = [pickOne(KB.filter(e=>e.cat==='food')).ask, pickOne(KB.filter(e=>e.cat==='heritage')).ask, 'What festivals do Jrai and Bahnar people have?'];
+    hint = 'Em cứ nói chậm, sai cũng không sao. Bấm một câu gợi ý để hỏi Mr. David.'; bot.ask=null;
+  } else if(has(/\b(bye|goodbye|see you|thank you|thanks|cam on)\b/) && !strong){
     r = "You're welcome! You spoke really well today. See you next time, Junior Ambassador!"; bot.ask=null;
-  } else if(topic){
-    const f = bot.facet[topic.id]||0; bot.facet[topic.id]=f+1; bot.topic=topic.id;
-    if(has(/\b(like|love|favourite|favorite|best)\b/)){ r=`Great choice! ${FACTS[topic.id][0]} ${FOLLOW.why()}`; bot.ask='why'; }
-    else if(f>=FACTS[topic.id].length){ r=`You know a lot about ${NAMES[topic.id]} now! ${FOLLOW.tell()}`; bot.ask='tell'; }
-    else { r=FACTS[topic.id][f]+' '+(f===0?FOLLOW.visit(topic.id):FOLLOW.like()); bot.ask = f===0?'visit':'like'; }
-  } else if(bot.ask==='visit' && has(/\b(yes|yeah|yep|i have|i did|of course|sure)\b/)){
-    r = 'Wonderful! What did you like most there?'; bot.ask='why';
-  } else if(bot.ask==='visit' && has(/\b(no|not yet|never|i haven ?t|nope)\b/)){
-    r = `That's okay! Maybe you can visit it with your family one day. ${FOLLOW.like()}`; bot.ask='like';
+  } else if(clear){
+    const e=top2.e; bot.topic=e.id;
+    if(has(/\b(i like|i love|my favourite|my favorite|i enjoy|thich)\b/)){ r=`Great choice! ${e.what} Why do you like it?`; bot.ask='why'; }
+    else { r = kbAnswer(e,intent)+' '+pickOne(e.cat==='food'?KB_FOLLOW.food:KB_FOLLOW.other); bot.ask = e.cat==='food'?'tried':'visit'; }
+    hint = (vi?'Mr. David trả lời bằng tiếng Anh. ':'')+'Tóm tắt: '+e.sum; bot.sugg = kbChipsFor(e);
+    log('buddy','kb',e.id,1);
+  } else if(cat && !strong){
+    bot._cat=cat;
+    const list=kbListCat(cat); const lead = cat==='food' ? 'Gia Lai has lots of delicious food! For example:' : cat==='festival' ? 'Gia Lai has many special traditions, for example:' : cat==='nature' ? 'Gia Lai has amazing nature, for example:' : 'There are many places to visit in Gia Lai, for example:';
+    r = `${lead} ${list.slice(0,4).map(e=>e.name).join(', ')}. Which one would you like to know about?`; opts=list.slice(0,4).map(e=>e.ask);
+    hint='Gợi ý '+(CAT_VI[cat]||'').toLowerCase()+': '+list.slice(0,4).map(e=>e.vi).join(', ')+'.'; bot.ask=null; log('buddy','kb_list',cat);
+  } else if(strong){
+    const cands=m.filter(x=>x.s>=2.2).slice(0,3).map(x=>x.e);
+    r = `Good question! Do you mean ${cands.map(e=>e.name).join(' or ')}? Choose one:`; opts=cands.map(e=>e.ask);
+    hint='Câu hỏi có thể nói về nhiều nơi, em chọn đúng chỗ em muốn hỏi nhé.'; bot.ask=null; log('buddy','kb_ambig',cands.map(e=>e.id).join('|'));
+  } else if(bot.topic && intent && has(/\b(it|there|they|them|this|that|more|else|its|nay|do)\b/) && !cat){
+    const e=KB_BY[bot.topic]; r=kbAnswer(e,intent==='what'?'more':intent); hint='Tóm tắt: '+e.sum; bot.sugg=kbChipsFor(e); bot.ask=null;
+  } else if(cat){
+    const list=kbListCat(cat); const lead = cat==='food' ? 'Gia Lai has lots of delicious food! For example:' : cat==='festival' ? 'Gia Lai has many special traditions, for example:' : cat==='nature' ? 'Gia Lai has amazing nature, for example:' : 'There are many places to visit in Gia Lai, for example:';
+    r = `${lead} ${list.slice(0,4).map(e=>e.name).join(', ')}. Which one would you like to know about?`; opts=list.slice(0,4).map(e=>e.ask);
+    hint='Danh sách '+(CAT_VI[cat]||'').toLowerCase()+': '+list.slice(0,4).map(e=>e.vi).join(', ')+'.'; bot.ask=null; log('buddy','kb_list',cat);
+  } else if((bot.ask==='visit'||bot.ask==='tried') && (yes||no) && words<=6){
+    const e=KB_BY[bot.topic];
+    if(yes){ r = bot.ask==='tried' ? 'Yummy! How did it taste? You can say: "It was delicious and a little spicy."' : 'Wonderful! What did you like most there?'; bot.ask='why'; }
+    else { r = `That's okay! Maybe you can ${bot.ask==='tried'?'try it':'visit it'} with your family one day. ${e?`Do you want to know more about ${e.name}?`:''}`; bot.ask=null; if(e) opts=[`Tell me more about ${e.name}.`, ...kbChipsFor(e).slice(2)]; }
   } else if(bot.ask==='why' && !has(/\bbecause\b/) && words<4){
     r = "Tell me a little more. You can start with 'Because...', for example: 'Because it is beautiful.'"; bot.ask='why';
   } else if(bot.ask==='why' || has(/\bbecause\b/)){
-    r = pickOne(['That is a really good reason. You explained it clearly!','I agree with you. Thank you for sharing!','Nice answer! Your English is getting better.'])+' '+pickOne(['Would you like to hear about another place, like Go Gang village?','Do you want to talk about the Rong house or the gongs?','Shall we talk about Quang Trung Museum next?']); bot.ask=null;
-  } else if(has(/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/)){
-    r = "Hello! It's nice to talk with you. Which heritage site in Gia Lai do you want to talk about?"; bot.ask='like';
+    r = pickOne(['That is a really good reason. You explained it clearly!','I agree with you. Thank you for sharing!','Nice answer! Your English is getting better.'])+' What would you like to talk about next?';
+    opts=[pickOne(KB.filter(e=>e.cat==='food')).ask, pickOne(KB.filter(e=>['heritage','nature'].includes(e.cat))).ask, pickOne(KB.filter(e=>['culture','festival','craft'].includes(e.cat))).ask]; bot.ask=null;
+  } else if(has(/\b(hi|hello|hey|good morning|good afternoon|good evening|xin chao|chao)\b/)){
+    r = "Hello! It's nice to talk with you. You can ask me about places, festivals or food in Gia Lai."; bot.ask=null;
+    opts=['What heritage sites are in Gia Lai?','What food is famous in Gia Lai?','What is a Rong house?'];
   } else if(has(/\b(my name is|i am|i m|im)\b/)){
     r = 'Nice to meet you! Do you live in Quy Nhon or in Pleiku?'; bot.ask='home';
   } else if(bot.ask==='home'){
-    r = 'Cool! There are many heritage sites near you. Do you know Thap Doi or T’Nung Lake?'; bot.ask=null;
+    r = 'Cool! There are many heritage sites near you. Which do you want to hear about?'; opts=['Where is Thap Doi?',"Why is T'Nung Lake called the eyes of Pleiku?",'What is Gia Lai dry pho?']; bot.ask=null;
+  } else if(top2 && top2.s>=.4){
+    const cands=m.slice(0,3).map(x=>x.e);
+    r = "Hmm, I'm not completely sure what you mean. Did you want to ask about one of these?"; opts=cands.map(e=>e.ask); if(top2.s<1.5) opts.push('What food is famous in Gia Lai?','What heritage sites are in Gia Lai?');
+    hint='Mr. David chưa chắc em muốn hỏi gì. Em bấm một gợi ý, hoặc hỏi lại bằng tên địa danh / món ăn.'; bot.ask=null; log('buddy','kb_unsure',cands.map(e=>e.id).join('|'));
   } else {
-    r = "I'm not sure I understood, but that's okay! Try asking me about Thap Doi, T'Nung Lake, the Rong house or the gongs.";
-    bot.ask=null;
+    r = "Sorry, I don't know about that yet. I know a lot about heritage and food in Gia Lai. Try one of these:";
+    opts=[pickOne(KB.filter(e=>e.cat==='food')).ask, pickOne(KB.filter(e=>['heritage','nature'].includes(e.cat))).ask, pickOne(KB.filter(e=>['culture','festival','craft'].includes(e.cat))).ask, 'What food is famous in Gia Lai?'];
+    hint='Mr. David chỉ biết về di sản, lễ hội và món ăn Gia Lai. Em chọn một câu gợi ý nhé.'; bot.ask=null; log('buddy','kb_miss',t.slice(0,60));
   }
-  botSay(r);
+  botSay(r, opts?{opts}:{});
+  if(hint) chat.push({who:'hint', text:hint});
   const mDone = trackMission(t); if(mDone){ botSay(mDone); renderMission(); r = r+' '+mDone; } else renderMission();
   if(state.turns>=4) stamp('buddy');
   renderChat(); if(autoRead) speak(r);
 }
 let autoRead=true, listening=false, interim='';
 function renderBuddy(){
-  if(!chat.length) botSay("Hi! I'm Mr. David, your heritage buddy. You can talk to me in English. Don't worry about mistakes. Which place in Gia Lai would you like to talk about?");
+  if(!chat.length) botSay("Hi! I'm Mr. David, your heritage buddy. You can ask me about places, festivals and food in Gia Lai. Don't worry about mistakes!", {opts:['What food is famous in Gia Lai?','What heritage sites are in Gia Lai?','What is a Rong house?']});
   pBody.innerHTML = `
     <div class="mission" id="mission"></div>
     <div class="stats" id="bStats"></div>
@@ -2390,13 +2795,14 @@ function renderBuddy(){
 }
 function renderChat(){
   const el=document.getElementById('chat'); if(!el) return;
-  el.innerHTML = chat.map(m=> m.who==='bot' ? `<div class="msg bot"><span class="who">MR. DAVID</span>${esc(m.text)}</div>`
+  el.innerHTML = chat.map((m,mi)=> m.who==='bot' ? `<div class="msg bot"><span class="who">MR. DAVID</span>${esc(m.text)}${m.opts?`<div class="chips ask">${m.opts.map(o=>`<button class="chip" data-ask="${esc(o)}">${esc(o)}</button>`).join('')}</div>`:''}</div>`
     : m.who==='me' ? `<div class="msg me"><span class="who">EM</span>${esc(m.text)}</div>`
     : m.who==='recast' ? `<div class="recast">Cách nói tự nhiên hơn: “${esc(m.text)}”</div>`
     : `<div class="hint">${esc(m.text)}</div>`).join('') + (interim?`<div class="msg me" style="opacity:.6"><span class="who">EM (đang nghe…)</span>${esc(interim)}</div>`:'');
-  const sugg = bot.ask==='visit' ? ['Yes, I have.','No, not yet.'] : bot.ask==='why' ? ['Because it is beautiful.','Because I like history.'] : ['Can you tell me about Thap Doi?','What is a gui?',"I like T'Nung Lake.","I don't know."];
+  const sugg = bot.ask==='visit' ? ['Yes, I have.','No, not yet.'] : bot.ask==='tried' ? ['Yes, I have. It was delicious!','No, not yet.'] : bot.ask==='why' ? ['Because it is beautiful.','Because I like history.','Because it is delicious.'] : (bot.sugg || ['What food is famous in Gia Lai?','Can you tell me about Thap Doi?','What is a gui?',"I don't know."]);
   const sg=document.getElementById('sugg'); sg.innerHTML = sugg.map(s=>`<button class="chip" data-s="${esc(s)}">${esc(s)}</button>`).join('');
   sg.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{ document.getElementById('say').value=b.dataset.s; document.getElementById('say').focus(); }));
+  el.querySelectorAll('[data-ask]').forEach(b=>b.addEventListener('click',()=>{ stopSpeak(); reply(b.dataset.ask,'chip'); }));
   document.getElementById('bStats').innerHTML = `<span>Lượt nói: <b>${state.turns}</b></span><span>Số từ: <b>${state.words}</b></span><span>Bằng giọng: <b>${state.voiceTurns}</b></span>`;
   el.scrollTop = el.scrollHeight;
 }
@@ -2404,9 +2810,9 @@ function renderChat(){
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let rec=null, dictText='';
 function setupDictation(){
   if(!cap.dict) return;
-  cap.dict.onPartial(({text})=>{ interim=(dictText+' '+text).trim(); renderChat(); });
-  cap.dict.onFinal(({text})=>{ dictText=(dictText+' '+text).trim(); interim=dictText; renderChat(); });
-  cap.dict.onState(({state:st})=>{ listening = st==='listening'; markMic(); if(st==='idle'){ const v=dictText.trim(); dictText=''; interim=''; if(v) reply(v,'voice'); else renderChat(); } });
+  cap.dict.onPartial(({text})=>{ if(dictSink){ dictSink.partial&&dictSink.partial((dictText+' '+text).trim()); return; } interim=(dictText+' '+text).trim(); renderChat(); });
+  cap.dict.onFinal(({text})=>{ dictText=(dictText+' '+text).trim(); if(dictSink){ dictSink.partial&&dictSink.partial(dictText); return; } interim=dictText; renderChat(); });
+  cap.dict.onState(({state:st})=>{ if(dictSink){ if(st==='idle'){ const sk=dictSink; dictSink=null; const v=dictText.trim(); dictText=''; sk.done(v); } return; } listening = st==='listening'; markMic(); if(st==='idle'){ const v=dictText.trim(); dictText=''; interim=''; if(v) reply(v,'voice'); else renderChat(); } });
 }
 function refreshMic(){ const b=document.getElementById('micBtn'); if(!b) return; const ok = !!cap.dict || !!SR; b.hidden=!ok; const m=document.getElementById('micMsg'); if(m) m.textContent = ok ? 'Bấm micro, nói xong bấm lại để gửi.' : 'Trình duyệt này chưa hỗ trợ micro, em gõ câu trả lời nhé.'; }
 function markMic(){ const b=document.getElementById('micBtn'); if(b) b.classList.toggle('live',listening); }
@@ -2521,7 +2927,7 @@ function updatePreview(t,dt){ if(!previewing) return; hero.root.rotation.y=Math.
   const {cam,tgt}=previewPose(); const k=1-Math.exp(-dt*6); camera.position.lerp(cam,k); controls.target.lerp(tgt,k); camera.lookAt(controls.target);
   if(!updatePreview.n || t>updatePreview.n){ updatePreview.n=t+7+Math.random()*3; if(updatePreview.n>8) hero.wave(); } }
 function startAs(code){
-  student=code; state = store.get('gl_state_'+code, null) || freshState(); saveState();
+  student=code; state = store.get('gl_state_'+code, null) || freshState(); saveState(); updateWordCount();
   chat=[]; bot={topic:null,facet:{},ask:null}; q=null;
   state.disc=state.disc||{}; state.items=state.items||[]; refreshBeacons(); refreshItems(); updateHud(); hero.setOutfit(false); playerGirl.setOutfit(false);
   sess = { id:Date.now().toString(36), pre:null, post:null, turnsAtPre:0 }; mission=null; for(const k in mUsed) delete mUsed[k];
@@ -2539,7 +2945,7 @@ document.getElementById('switchUser').addEventListener('click',()=>{ if(currentS
 
 function summary(){
   const rows={}, sessions={};
-  for(const r of mem.log){ const s=rows[r.student] || (rows[r.student]={student:r.student, first:r.time, last:r.time, stamps:0, heard:0, rongOk:0, turns:0, voice:0, words:0, best:'', badge:'không', missions:0, pre:'', post:'', disc:0, items:0});
+  for(const r of mem.log){ const s=rows[r.student] || (rows[r.student]={student:r.student, first:r.time, last:r.time, stamps:0, heard:0, rongOk:0, turns:0, voice:0, words:0, best:'', badge:'không', missions:0, pre:'', post:'', disc:0, items:0, vocab:0, spk:0, spkSum:0, lq:0, lqOk:0, inside:0});
     s.last=r.time;
     if(r.action==='stamp') s.stamps++;
     if(r.station==='map'&&r.action==='listen') s.heard++;
@@ -2550,6 +2956,10 @@ function summary(){
     if(r.action==='mission_done') s.missions++;
     if(r.action==='discover') s.disc++;
     if(r.action==='item') s.items++;
+    if(r.station==='vocab'&&r.action==='learn') s.vocab+=+r.value||0;
+    if(r.action==='speak'){ s.spk++; s.spkSum+=+r.value||0; }
+    if(r.action==='quiz'){ s.lq++; if(r.value==='1'||r.value===1) s.lqOk++; }
+    if(r.station==='rong'&&r.action==='inside') s.inside++;
     if(r.action==='conf_pre'||r.action==='conf_post'){ const k=r.student+'|'+r.detail; const p=sessions[k]||(sessions[k]={}); p[r.action==='conf_pre'?'pre':'post']=+r.value; if(r.action==='conf_pre') s.pre=+r.value; else s.post=+r.value; }
   }
   const pairs=Object.values(sessions).filter(p=>p.pre&&p.post);
@@ -2583,8 +2993,8 @@ function renderData(){
   document.getElementById('dataTable').innerHTML = rows.length ? `<thead><tr><th>Mã HS</th><th>Dấu</th><th>Địa danh đã nghe</th><th>Câu Nhà Rông đúng</th><th>Lượt nói</th><th>Bằng giọng</th><th>Số từ</th><th>Nhiệm vụ nói</th><th>Tự tin trước → sau</th><th>Quest cao nhất</th><th>Huy hiệu</th><th>Khám phá</th><th>Thổ cẩm</th><th>Phút</th></tr></thead><tbody>${rows.map(s=>`<tr><td>${esc(s.student)}</td><td>${s.stamps}/4</td><td>${s.heard}</td><td>${s.rongOk}</td><td>${s.turns}</td><td>${s.voice}</td><td>${s.words}</td><td>${s.missions}</td><td>${s.pre===''?'—':s.pre} → ${s.post===''?'—':s.post}</td><td>${s.best===''?'—':s.best}</td><td>${s.badge}</td><td>${s.disc}/7</td><td>${s.items}</td><td>${mins(s.first,s.last)}</td></tr>`).join('')}</tbody>`
     : '<tbody><tr><td>Chưa có dữ liệu. Học sinh đi qua các trạm, số liệu sẽ hiện ở đây.</td></tr></tbody>';
 }
-function summaryCsv(){ const {rows}=summary(); const head=['student','stamps','heard','rong_correct','turns','voice_turns','words','missions','conf_pre_last','conf_post_last','quest_best','badge','discoveries','brocade_items','minutes'];
-  return [head.join(',')].concat(rows.map(s=>[s.student,s.stamps,s.heard,s.rongOk,s.turns,s.voice,s.words,s.missions,s.pre,s.post,s.best,s.badge,s.disc,s.items,mins(s.first,s.last)].map(v=>`"${v}"`).join(','))).join('\n'); }
+function summaryCsv(){ const {rows}=summary(); const head=['student','stamps','heard','rong_correct','turns','voice_turns','words','missions','conf_pre_last','conf_post_last','quest_best','badge','discoveries','brocade_items','vocab_learned','speak_attempts','speak_avg_pct','place_quiz_correct','place_quiz_total','rong_inside_actions','minutes'];
+  return [head.join(',')].concat(rows.map(s=>[s.student,s.stamps,s.heard,s.rongOk,s.turns,s.voice,s.words,s.missions,s.pre,s.post,s.best,s.badge,s.disc,s.items,s.vocab,s.spk,s.spk?Math.round(s.spkSum/s.spk):'',s.lqOk,s.lq,s.inside,mins(s.first,s.last)].map(v=>`"${v}"`).join(','))).join('\n'); }
 function csv(){ const head=['time','student','station','action','detail','value']; return [head.join(',')].concat(mem.log.map(r=>head.map(h=>`"${String(r[h]).replace(/"/g,'""')}"`).join(','))).join('\n'); }
 const dataModal=document.getElementById('dataModal'), dMsg=document.getElementById('dataMsg');
 document.getElementById('openData').addEventListener('click',()=>{ renderData(); dMsg.textContent=''; dataModal.hidden=false; });
@@ -2781,7 +3191,7 @@ function frame(){
   if(waterMesh.material.normalMap){ waterMesh.material.normalMap.offset.set(t*.012,t*.008); }
   rings.forEach((r,i)=>{ const s=1+.12*Math.sin(t*2+i); r.scale.set(s,s,s); r.material.opacity=.35+.25*Math.sin(t*2+i); });
   gongs.forEach(g=>{ if(g.userData.swing>0){ g.userData.swing=Math.max(0,g.userData.swing-dt*.7); g.rotation.x=Math.sin(t*14)*.18*g.userData.swing; } });
-  updatePlayer(dt,t); updatePreview(t,dt); updateVillagers(dt,t); updateRegions(t,dt); updateAdventure(t,dt); updateCompass(); drawMinimap();
+  updatePlayer(dt,t); updatePreview(t,dt); updateInterior(t,dt); updateVocab(); updateVillagers(dt,t); updateRegions(t,dt); updateAdventure(t,dt); updateCompass(); drawMinimap();
   { const c=explore?hero.root.position:controls.target; dir.target.position.copy(c); dir.position.copy(curLight).multiplyScalar(80).add(c); dir.target.updateMatrixWorld(); }
   if(shakeT>0){ shakeT-=dt; const k=Math.max(0,shakeT)*1.2; camera.position.x+=(Math.random()-.5)*k; camera.position.y+=(Math.random()-.5)*k; }
   const dp=dust.geometry.attributes.position; for(let i=0;i<dp.count;i++){ let y=dp.getY(i)+dt*.25; if(y>14) y=0; dp.setY(i,y); } dp.needsUpdate=true; dust.rotation.y=t*.01;
@@ -2825,37 +3235,406 @@ const ambient = (()=>{
 })();
 
 // ----- Phim giới thiệu mở đầu -----
-const TOUR = [
-  { cam:[78,52,92], tgt:[0,6,0], d:5, vi:'Gia Lai, nơi đại ngàn Tây Nguyên gặp biển xanh Quy Nhơn', en:'Where the Central Highlands meet the sea' },
-  { cam:[13,9,17], tgt:[0,8,0], d:4.5, vi:'Nhà Rông, trái tim của buôn làng', en:'The Rong house, the heart of the village', sfx:()=>strikeGong(196,.4) },
-  { cam:[-1.5,2.8,13.2], tgt:[-4.6,2.2,8.2], d:4, vi:'Tiếng cồng chiêng được UNESCO ghi danh là di sản của nhân loại', en:'The Space of Gong Culture, recognised by UNESCO', sfx:()=>gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.35); g.userData.swing=1; }, i*450)) },
-  { cam:[5,5.5,-1], tgt:[17,4.5,-11], d:4.5, vi:'Tháp Đôi, dấu ấn Champa bên bờ biển', en:'Thap Doi, a Cham legacy by the sea' },
-  { cam:[11.2,2.8,14.6], tgt:[15,2,9], d:4, vi:'Mr. David đang chờ trò chuyện cùng em', en:'Mr. David is ready to talk with you', sfx:()=>{ davidChar.wave(); } },
-  { cam:STATIONS.overview.cam, tgt:STATIONS.overview.tgt, d:3.5, vi:'Hành trình của em bắt đầu!', en:"Let's begin your journey!" },
+/* =========================================================
+   HỌC THEO ĐỊA ĐIỂM: dữ liệu luyện nói, câu hỏi, từ vựng
+   ========================================================= */
+const SITE_LEARN = {
+  thapdoi:{ speak:["Thap Doi is in Quy Nhon.","The two towers are made of red bricks.","They were built in the late twelfth century."],
+    quiz:[{q:'What are the Thap Doi towers made of?',o:['Red bricks','Wood','Stone'],a:0,vi:'Tháp Đôi xây bằng gì?'},
+          {q:'Where is Thap Doi?',o:['In Pleiku','In Quy Nhon','In Kbang'],a:1,vi:'Tháp Đôi ở đâu?'},
+          {q:'Who built Thap Doi?',o:['The Cham people','The French','The Tay Son army'],a:0,vi:'Ai xây Tháp Đôi?'}] },
+  bienho:{ speak:["T'Nung Lake is near Pleiku.","It was once the crater of a volcano.","People call it the eyes of Pleiku."],
+    quiz:[{q:"What was T'Nung Lake a long time ago?",o:['A river','A volcano crater','A rice field'],a:1,vi:'Ngày xưa Biển Hồ là gì?'},
+          {q:"What do people call T'Nung Lake?",o:['The eyes of Pleiku','The heart of Quy Nhon','The silver lake'],a:0,vi:'Người ta gọi Biển Hồ là gì?'},
+          {q:'How far is the lake from Pleiku city?',o:['About 7 kilometres','About 70 kilometres','About 700 metres'],a:0,vi:'Biển Hồ cách Pleiku bao xa?'}] },
+  quangtrung:{ speak:["Quang Trung Museum is in Tay Son.","It tells the story of Emperor Quang Trung.","Visitors can watch Tay Son war drums."],
+    quiz:[{q:'Where is Quang Trung Museum?',o:['In Tay Son','In Pleiku','In Kbang'],a:0,vi:'Bảo tàng Quang Trung ở đâu?'},
+          {q:'In which year did Quang Trung defeat a foreign army?',o:['1789','1945','2025'],a:0,vi:'Quang Trung đánh tan quân xâm lược năm nào?'},
+          {q:'What can visitors watch at the museum?',o:['Football matches','War drums and martial arts','Car races'],a:1,vi:'Ở bảo tàng du khách được xem gì?'}] },
+  gogang:{ speak:["Go Gang village is in An Nhon.","The villagers make non ngua by hand.","One hat can take many days to make."],
+    quiz:[{q:'What does Go Gang village make?',o:['Drums','Non ngua hats','Baskets'],a:1,vi:'Làng Gò Găng làm gì?'},
+          {q:'Who wore non ngua in the past?',o:['Fishermen','Mandarins riding horses','Students'],a:1,vi:'Ngày xưa ai đội nón ngựa?'},
+          {q:'How long does it take to make one hat?',o:['Many days','Five minutes','One hour'],a:0,vi:'Làm một chiếc nón mất bao lâu?'}] },
+  minhthanh:{ speak:["Minh Thanh Pagoda is in Pleiku.","It has a tall tower and beautiful gardens.","Many people visit it at Lunar New Year."],
+    quiz:[{q:'Where is Minh Thanh Pagoda?',o:['In Quy Nhon','In Pleiku','In An Nhon'],a:1,vi:'Chùa Minh Thành ở đâu?'},
+          {q:'Which styles inspired its design?',o:['Japanese and Chinese','French and Italian','Cham and Khmer'],a:0,vi:'Kiến trúc chùa lấy cảm hứng từ đâu?'},
+          {q:'When do many people visit the pagoda?',o:['At Lunar New Year','Only at night','Never'],a:0,vi:'Người ta thường đến chùa vào dịp nào?'}] },
+  stor:{ speak:["Stor is a Bahnar village in Kbang.","It is the hometown of the hero Nup.","Nup led the villagers to fight for independence."],
+    quiz:[{q:'Stor is the hometown of which hero?',o:['Nup','Quang Trung','Dao Tan'],a:0,vi:'Stơr là quê hương của anh hùng nào?'},
+          {q:'Which group of people lives in Stor?',o:['Bahnar','Cham','Kinh only'],a:0,vi:'Người dân tộc nào sống ở Stơr?'},
+          {q:'Which novel tells Nup’s story?',o:['Dat nuoc dung len','Truyen Kieu','Tat den'],a:0,vi:'Tiểu thuyết nào kể chuyện anh Núp?'}] },
+};
+const RONG_LEARN = { id:'rong', area:'rong', kicker:'Trạm 2 · Nhà Rông', title:'The Rong house', sub:'Nhà Rông · nhà chung của buôn làng',
+  intro:"A Rong house is the communal house of a Bahnar or Jrai village. It stands on tall wooden stilts and its roof looks like an axe blade. Inside, there is a fire, a set of gongs, drums and jars. Villagers meet here, welcome guests and hold festivals.",
+  vi:'Nhà Rông là nhà chung của buôn làng Bahnar, Jrai: dựng trên cột cao, mái hình lưỡi rìu; bên trong có bếp lửa, cồng chiêng, trống, ché. Dân làng họp, đón khách và tổ chức lễ hội ở đây.',
+  vocab:[['communal house','nhà chung'],['stilt','cột nhà sàn'],['roof','mái nhà'],['hearth','bếp lửa'],['gong','cồng chiêng'],['festival','lễ hội']],
+  speak:["The Rong house is the heart of the village.","Its roof looks like an axe blade.","Villagers hold meetings and festivals here.","The gongs are made of bronze.","Women carry a gui on their backs."],
+  quiz:[{q:'What does the roof of a Rong house look like?',o:['An axe blade','A circle','A boat'],a:0,vi:'Mái nhà Rông trông giống gì?'},
+        {q:'What do villagers do in the Rong house?',o:['Hold meetings and festivals','Sell vegetables','Park motorbikes'],a:0,vi:'Dân làng làm gì ở nhà Rông?'},
+        {q:'What are gongs made of?',o:['Bamboo','Bronze','Plastic'],a:1,vi:'Cồng chiêng làm bằng gì?'},
+        {q:'Which organisation recognised the Space of Gong Culture?',o:['UNESCO','FIFA','ASEAN'],a:0,vi:'Tổ chức nào công nhận Không gian văn hoá Cồng chiêng?'},
+        {q:'How do people carry a gui?',o:['On their head','On their back','In their hands'],a:1,vi:'Người ta mang gùi thế nào?'},
+        {q:'What are tomb statues carved from?',o:['Wood','Stone','Metal'],a:0,vi:'Tượng nhà mồ được tạc từ gì?'}] };
+const INSIDE_LEARN = {
+  hearth:{ title:'The hearth', sub:'Bếp lửa giữa nhà Rông', intro:"The hearth is in the middle of the Rong house. The fire keeps people warm on cold nights. Villagers sit around it to talk, tell stories and share food.",
+    vi:'Bếp lửa ở giữa nhà Rông giữ ấm, là nơi dân làng ngồi quây quần kể chuyện, chia sẻ đồ ăn.', vocab:[['hearth','bếp lửa'],['firewood','củi'],['smoke','khói'],['warm','ấm']],
+    speak:["The fire keeps everyone warm.","Villagers tell stories around the fire."],
+    quiz:[{q:'Where is the hearth?',o:['In the middle of the house','On the roof','Under the stairs'],a:0},{q:'What do villagers do around the fire?',o:['Tell stories and talk','Play football','Sleep in the rain'],a:0}] },
+  gong:{ title:'The gong set', sub:'Bộ cồng chiêng', intro:"Each gong plays a different note. Many players play together to make one song. Gongs with a knob are called cong, and flat gongs are called chieng.",
+    vi:'Mỗi chiếc cồng chiêng cho một nốt; nhiều người cùng đánh tạo thành bản nhạc. Cồng có núm, chiêng không núm.', vocab:[['gong','cồng, chiêng'],['bronze','đồng'],['mallet','dùi đánh'],['note','nốt nhạc']],
+    speak:["Gongs are made of bronze.","Many players play the gongs together."],
+    quiz:[{q:'What is a gong with a knob called?',o:['Cong','Chieng','Trung'],a:0},{q:'How do people play a gong song?',o:['Many players play together','One person sings alone','They throw the gongs'],a:0}] },
+  drum:{ title:'The big drum', sub:'Trống da trâu', intro:"The big drum is made from a tree trunk and buffalo skin. Villagers beat it to call people to meetings and to start festivals.",
+    vi:'Trống lớn làm từ thân cây và da trâu; dân làng đánh trống để gọi họp và mở đầu lễ hội.', vocab:[['drum','cái trống'],['buffalo skin','da trâu'],['beat','đánh (trống)'],['signal','tín hiệu']],
+    speak:["The drum is made of buffalo skin.","Villagers beat the drum to call a meeting."],
+    quiz:[{q:'What is the drum skin made of?',o:['Buffalo skin','Paper','Glass'],a:0},{q:'Why do villagers beat the drum?',o:['To call people together','To cook rice','To catch fish'],a:0}] },
+  trung:{ title:"The T'rung", sub:"Đàn T'rưng", intro:"The T'rung is a bamboo xylophone. Short tubes make high notes and long tubes make low notes. The music sounds like a mountain stream.",
+    vi:"Đàn T'rưng là đàn ống tre: ống ngắn tiếng cao, ống dài tiếng trầm, nghe như suối chảy.", vocab:[['xylophone','đàn gõ'],['bamboo tube','ống tre'],['melody','giai điệu'],['stream','dòng suối']],
+    speak:["The T'rung is made of bamboo.","Its music sounds like a stream."],
+    quiz:[{q:"What is the T'rung made of?",o:['Bamboo','Bronze','Plastic'],a:0},{q:'Which tubes make high notes?',o:['Short tubes','Long tubes','Broken tubes'],a:0}] },
+  jar:{ title:'Wine jars', sub:'Ché (ghè) rượu cần', intro:"Jars are very precious in Central Highlands villages. At festivals, adults drink rice wine from a jar through long bamboo straws to show friendship.",
+    vi:'Ché là tài sản quý của buôn làng; trong lễ hội, người lớn uống rượu cần bằng cần tre để thể hiện tình đoàn kết.', vocab:[['jar','cái ché'],['precious','quý giá'],['straw','ống hút (cần)'],['friendship','tình bạn, tình đoàn kết']],
+    speak:["Jars are very precious in the village.","People share a jar to show friendship."],
+    quiz:[{q:'Are jars cheap or precious in the village?',o:['Precious','Cheap','Useless'],a:0},{q:'What does sharing a jar show?',o:['Friendship','Anger','Hunger'],a:0}] },
+  gui:{ title:'The gui', sub:'Gùi', intro:"A gui is a back basket woven from bamboo or rattan. Women carry corn, rice, firewood and water in it. Try wearing one!",
+    vi:'Gùi đan bằng tre, mây; phụ nữ dùng để mang ngô, lúa, củi, nước. Em thử đeo gùi nhé!', vocab:[['back basket','cái gùi'],['weave','đan'],['rattan','mây'],['carry','mang, vác']],
+    speak:["A gui is a back basket.","Women carry corn and firewood in a gui."],
+    quiz:[{q:'What is a gui made of?',o:['Bamboo or rattan','Steel','Glass'],a:0},{q:'Where do people carry a gui?',o:['On their back','On their head','In their pocket'],a:0}] },
+  statue:{ title:'Wooden statue', sub:'Tượng gỗ Tây Nguyên', intro:"Central Highlands artists carve statues from one piece of wood with an axe and a knife. The statues show people in daily life.",
+    vi:'Nghệ nhân Tây Nguyên đẽo tượng từ một khúc gỗ bằng rìu, dao; tượng thể hiện đời sống hằng ngày.', vocab:[['statue','bức tượng'],['carve','đẽo, chạm khắc'],['axe','cái rìu'],['daily life','đời sống hằng ngày']],
+    speak:["The statue is carved from wood.","Artists use an axe and a knife."],
+    quiz:[{q:'Which tool do artists use to carve statues?',o:['An axe','A computer','A spoon'],a:0},{q:'What do the statues show?',o:['Daily life','Cars','Robots'],a:0}] },
+};
+// từ vựng hiện ra khi em đi tới gần (in:true = bên trong Nhà Rông)
+const VOCAB_POI = [
+  { id:'v_rong', p:[0,7.2], r:4.5, title:'Nhà Rông', w:[['communal house','/kəˈmjuːnl haʊs/','nhà chung (nhà Rông)','The Rong house is the communal house of the village.'],['stilt','/stɪlt/','cột (nhà sàn)','The house stands on tall stilts.'],['roof','/ruːf/','mái nhà','Its roof looks like an axe blade.']] },
+  { id:'v_gong', p:[-4.6,9.6], r:3.2, title:'Cồng chiêng', w:[['gong','/ɡɒŋ/','cồng, chiêng','The gong makes a deep sound.'],['bronze','/brɒnz/','đồng','Gongs are made of bronze.'],['rhythm','/ˈrɪðəm/','nhịp điệu','The dancers follow the rhythm.']] },
+  { id:'v_gui', p:[4.6,8.4], r:3, title:'Gùi', w:[['back basket','/bæk ˈbɑːskɪt/','cái gùi','She carries a back basket.'],['weave','/wiːv/','đan','They weave baskets from bamboo.'],['rattan','/rəˈtæn/','mây','This gui is made of rattan.']] },
+  { id:'v_statue', p:[-7.2,-1.2], r:4, title:'Tượng nhà mồ', w:[['statue','/ˈstætʃuː/','bức tượng','The statue is very old.'],['carve','/kɑːv/','đẽo, chạm khắc','Artists carve wood with an axe.'],['wooden','/ˈwʊdn/','bằng gỗ','These are wooden statues.']] },
+  { id:'v_neu', p:[2.2,14.6], r:2.6, title:'Cây nêu', w:[['pole','/pəʊl/','cây cột, cây nêu','A tall pole stands in the yard.'],['decorate','/ˈdekəreɪt/','trang trí','They decorate the pole with patterns.'],['pattern','/ˈpætn/','hoa văn','I like the red pattern.']] },
+  { id:'v_map', p:[-9.5,4.5], r:4, title:'Bản đồ di sản', w:[['map','/mæp/','bản đồ','Let’s look at the map.'],['province','/ˈprɒvɪns/','tỉnh','Gia Lai is a big province.'],['coast','/kəʊst/','bờ biển','Quy Nhon is on the coast.']] },
+  { id:'v_buddy', p:[12.4,12.6], r:3.2, title:'Góc luyện nói', w:[['conversation','/ˌkɒnvəˈseɪʃn/','cuộc trò chuyện','Let’s have a conversation.'],['pronounce','/prəˈnaʊns/','phát âm','How do you pronounce this word?'],['practise','/ˈpræktɪs/','luyện tập','I practise English every day.']] },
+  { id:'v_quest', p:[13.4,-5.6], r:3.5, title:'Explorer Quest', w:[['explorer','/ɪkˈsplɔːrə/','nhà thám hiểm','I am a young explorer.'],['clue','/kluː/','manh mối','Read the clue carefully.'],['ambassador','/æmˈbæsədə/','đại sứ','I want to be a heritage ambassador.']] },
+  { id:'v_fire', p:[-1,17], r:3.4, title:'Sân lễ hội', w:[['campfire','/ˈkæmpfaɪə/','lửa trại','We dance around the campfire.'],['festival','/ˈfestɪvl/','lễ hội','The festival starts at night.'],['dance','/dɑːns/','nhảy múa','Let’s dance the xoang!']] },
+  { id:'v_bienho', p:[-64,-39], r:12, title:"Biển Hồ T'Nưng", w:[['lake','/leɪk/','hồ','The lake is deep and blue.'],['volcano','/vɒlˈkeɪnəʊ/','núi lửa','The lake was once a volcano.'],['crater','/ˈkreɪtə/','miệng núi lửa','Water filled the crater.']] },
+  { id:'v_pagoda', p:[-56,36], r:11, title:'Chùa Minh Thành', w:[['pagoda','/pəˈɡəʊdə/','ngôi chùa','The pagoda has a tall tower.'],['peaceful','/ˈpiːsfl/','yên bình','The garden is peaceful.'],['pray','/preɪ/','cầu nguyện','People pray at the pagoda.']] },
+  { id:'v_fall', p:[-101,72], r:12, title:'Thác Phú Cường', w:[['waterfall','/ˈwɔːtəfɔːl/','thác nước','The waterfall is 45 metres high.'],['rock','/rɒk/','tảng đá','The water falls over dark rocks.'],['stream','/striːm/','dòng suối','A small stream runs into the forest.']] },
+  { id:'v_drum', p:[103,-15], r:11, title:'Trống trận Tây Sơn', w:[['drum','/drʌm/','cái trống','He beats the big drum.'],['emperor','/ˈempərə/','hoàng đế','Quang Trung was a great emperor.'],['brave','/breɪv/','dũng cảm','The soldiers were brave.']] },
+  { id:'v_gogang', p:[146,24], r:11, title:'Làng nón Gò Găng', w:[['conical hat','/ˈkɒnɪkl hæt/','nón lá','She wears a conical hat.'],['craft village','/krɑːft ˈvɪlɪdʒ/','làng nghề','Go Gang is a craft village.'],['handmade','/ˌhændˈmeɪd/','làm bằng tay','These hats are handmade.']] },
+  { id:'v_thapdoi', p:[180,-27], r:12, title:'Tháp Đôi', w:[['tower','/ˈtaʊə/','tháp','The two towers stand side by side.'],['brick','/brɪk/','viên gạch','They are made of red bricks.'],['ancient','/ˈeɪnʃənt/','cổ xưa','These are ancient Cham towers.']] },
+  { id:'v_beach', p:[200,5], r:12, title:'Biển Quy Nhơn', w:[['basket boat','/ˈbɑːskɪt bəʊt/','thúng chai','The fisherman rows a basket boat.'],['fisherman','/ˈfɪʃəmən/','ngư dân','The fisherman catches fish.'],['wave','/weɪv/','sóng','The waves are big today.']] },
+  // bên trong Nhà Rông
+  { id:'vi_hearth', in:true, p:[0,.6], r:1.5, title:'Bếp lửa', w:[['hearth','/hɑːθ/','bếp lửa','We sit around the hearth.'],['firewood','/ˈfaɪəwʊd/','củi','Put more firewood on the fire.'],['smoke','/sməʊk/','khói','Smoke rises to the roof.']] },
+  { id:'vi_gong', in:true, p:[0,-1.6], r:1.3, title:'Bộ cồng chiêng', w:[['gong set','/ɡɒŋ set/','bộ cồng chiêng','The gong set hangs on the wall.'],['mallet','/ˈmælɪt/','dùi đánh','Hit the gong with a mallet.'],['echo','/ˈekəʊ/','tiếng vang','I can hear the echo.']] },
+  { id:'vi_drum', in:true, p:[-3.1,1.0], r:1.3, title:'Trống', w:[['buffalo skin','/ˈbʌfələʊ skɪn/','da trâu','The drum is covered with buffalo skin.'],['drumstick','/ˈdrʌmstɪk/','dùi trống','Hold the drumstick tightly.'],['signal','/ˈsɪɡnəl/','tín hiệu','The drum is a signal to meet.']] },
+  { id:'vi_trung', in:true, p:[3.0,1.0], r:1.3, title:"Đàn T'rưng", w:[['xylophone','/ˈzaɪləfəʊn/','đàn gõ','The T’rung is a bamboo xylophone.'],['bamboo tube','/bæmˈbuː tjuːb/','ống tre','Each bamboo tube has a note.'],['melody','/ˈmelədi/','giai điệu','What a beautiful melody!']] },
+  { id:'vi_jar', in:true, p:[-3.2,-1.3], r:1.2, title:'Ché', w:[['jar','/dʒɑː/','cái ché','The jar is very old.'],['precious','/ˈpreʃəs/','quý giá','Jars are precious.'],['share','/ʃeə/','chia sẻ','People share food at festivals.']] },
+  { id:'vi_gui', in:true, p:[3.2,-1.3], r:1.2, title:'Gùi', w:[['harvest','/ˈhɑːvɪst/','mùa gặt','The harvest is in autumn.'],['corn','/kɔːn/','ngô','The gui is full of corn.'],['carry','/ˈkæri/','mang, vác','I can carry the gui.']] },
+  { id:'vi_statue', in:true, p:[-3.4,.3], r:1.1, title:'Tượng gỗ', w:[['carving','/ˈkɑːvɪŋ/','tác phẩm chạm khắc','This carving is beautiful.'],['axe','/æks/','cái rìu','He carves with an axe.'],['artist','/ˈɑːtɪst/','nghệ nhân','The artist is very skilful.']] },
 ];
-let tourTl=null;
+
+/* ---------- Nghe giọng nói một lần (dùng cho luyện nói) ---------- */
+let dictSink=null;
+function listenOnce(onPartial, onDone, onErr){
+  stopSpeak();
+  if(cap.dict){ dictText=''; dictSink={partial:onPartial, done:onDone};
+    cap.dict.start().catch(err=>{ dictSink=null; onErr && onErr(err&&err.code==='not_granted'?'Micro chưa được cho phép.':'Chưa bật được micro.'); });
+    return ()=>cap.dict.stop().catch(()=>{}); }
+  if(SR){ const r=new SR(); r.lang='en-US'; r.interimResults=true; r.continuous=false; let fin='', cur='';
+    r.onresult=e=>{ let s=''; for(const x of e.results){ s+=x[0].transcript; if(x.isFinal) fin=s; } cur=s; onPartial && onPartial(s); };
+    r.onend=()=>onDone((fin||cur).trim()); r.onerror=ev=>onErr && onErr(ev.error==='not-allowed'?'Micro chưa được cho phép.':'Chưa nghe rõ, em thử lại.');
+    try{ r.start(); }catch(e){ onErr && onErr('Chưa bật được micro.'); } return ()=>{ try{ r.stop(); }catch(e){} }; }
+  onErr && onErr('Trình duyệt này chưa hỗ trợ micro. Em dùng Chrome hoặc Edge nhé.'); return ()=>{};
+}
+const micOK=()=>!!cap.dict || !!SR;
+// so khớp câu đọc với câu mẫu theo từng từ (LCS, chấp nhận sai 1 chữ cái)
+function scoreSpeech(target, said){
+  const T=norm(target).split(' ').filter(Boolean), S=norm(said).split(' ').filter(Boolean);
+  const eq=(a,b)=> a===b || (a.length>=4 && b.length>=4 && lev(a,b)<=1) || a.replace(/s$/,'')===b.replace(/s$/,'');
+  const n=T.length, m=S.length, L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]= eq(T[i],S[j]) ? L[i+1][j+1]+1 : Math.max(L[i+1][j],L[i][j+1]);
+  const ok=new Array(n).fill(false); let i=0,j=0; while(i<n&&j<m){ if(eq(T[i],S[j])){ ok[i]=true; i++; j++; } else if(L[i+1][j]>=L[i][j+1]) i++; else j++; }
+  const words=target.split(/\s+/); // giữ chữ hoa/dấu câu để hiển thị
+  return { pct: n? Math.round(100*ok.filter(Boolean).length/n):0, marks: words.map((w,k)=>({w, ok: ok[k] ?? false})) };
+}
+
+/* ---------- Thẻ học bên trái: Giới thiệu · Luyện nói · Câu hỏi ---------- */
+const learnEl=document.getElementById('learn'); let L=null, stopMic=null;
+function openLearn(d, tab='intro'){ L={ d, tab, si:0, qi:0, qs:0, qdone:false, res:null }; learnEl.hidden=false; learnEl.classList.remove('in'); void learnEl.offsetWidth; learnEl.classList.add('in'); renderLearn(); if(student) log(d.area||'learn','open',d.id); }
+function closeLearn(){ if(stopMic){ stopMic(); stopMic=null; } learnEl.hidden=true; L=null; }
+function learnBest(id,key,val){ state.learn=state.learn||{}; const r=state.learn[id]||(state.learn[id]={}); if(r[key]==null || val>r[key]){ r[key]=val; saveState(); } }
+function renderLearn(){
+  if(!L) return; const d=L.d;
+  const tabs=[['intro','Giới thiệu'],['speak','Luyện nói'],['quiz','Câu hỏi']];
+  let body='';
+  if(L.tab==='intro'){
+    body=`<p class="en">${esc(d.intro)}</p><details class="vi"><summary>Xem nghĩa tiếng Việt</summary><p>${esc(d.vi)}</p></details>
+      <div class="btnrow"><button class="btn solid" data-l="listen">🔊 Nghe</button><button class="btn" data-l="go-speak">Luyện nói ›</button></div>
+      ${d.vocab?`<div class="chips">${d.vocab.map(([en,vi])=>`<button class="chip" data-say="${esc(en)}"><b>${esc(en)}</b> · ${esc(vi)}</button>`).join('')}</div>`:''}`;
+  } else if(L.tab==='speak'){
+    const s=d.speak[L.si], res=L.res;
+    body=`<div class="lprog">Câu ${L.si+1}/${d.speak.length}</div>
+      <p class="target">${res? res.marks.map(x=>`<span class="${x.ok?'ok':'miss'}">${esc(x.w)}</span>`).join(' ') : esc(s)}</p>
+      <div class="said" id="lSaid">${res? 'Em đã đọc: “'+esc(res.said||'…')+'”' : (micOK()? 'Bấm 🎤 rồi đọc to câu trên.' : 'Trình duyệt chưa hỗ trợ micro: em nghe mẫu, đọc to theo rồi tự đánh giá.')}</div>
+      ${res? `<div class="score ${res.pct>=85?'good':res.pct>=60?'mid':'low'}"><b>${res.pct}%</b> ${res.pct>=85?'Xuất sắc! Excellent!':res.pct>=60?'Tốt lắm! Đọc lại phần màu đỏ nhé.':'Em nghe mẫu rồi thử lại nhé.'}</div>`:''}
+      <div class="btnrow"><button class="btn" data-l="model">🔊 Nghe mẫu</button>${micOK()?`<button class="btn solid" data-l="mic" id="lMic">🎤 Đọc theo</button>`:`<button class="btn solid" data-l="self">Em đã đọc xong</button>`}
+      <button class="btn ghost" data-l="prev" ${L.si?'':'disabled'}>‹</button><button class="btn ghost" data-l="next" ${L.si<d.speak.length-1?'':'disabled'}>›</button></div>`;
+  } else {
+    const qz=d.quiz;
+    if(L.qi>=qz.length){ body=`<div class="score ${L.qs===qz.length?'good':L.qs>=qz.length/2?'mid':'low'}"><b>${L.qs}/${qz.length}</b> câu đúng. ${L.qs===qz.length?'Tuyệt vời!':'Em làm lại để đạt điểm tối đa nhé.'}</div><div class="btnrow"><button class="btn solid" data-l="again">Làm lại</button><button class="btn" data-l="go-speak">Luyện nói</button></div>`; }
+    else { const it=qz[L.qi]; body=`<div class="lprog">Câu ${L.qi+1}/${qz.length} · Đúng ${L.qs}</div><p class="en q">${esc(it.q)}</p>${it.vi?`<p class="vi-q">${esc(it.vi)}</p>`:''}
+      <div class="opt">${it.o.map((o,k)=>`<button data-qa="${k}">${esc(o)}</button>`).join('')}</div><span class="feedback" id="lFb"></span>`; }
+  }
+  learnEl.innerHTML=`<header><div><span class="kick">${esc(d.kicker||'Học tại chỗ')}</span><h3>${esc(d.title)}</h3><span class="sub">${esc(d.sub||'')}</span></div><button class="x" data-l="close" aria-label="Đóng">×</button></header>
+    <nav role="tablist">${tabs.map(([k,v])=>`<button role="tab" aria-selected="${L.tab===k}" data-tab="${k}">${v}</button>`).join('')}</nav><div class="lbody">${body}</div>`;
+  learnEl.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ if(stopMic){ stopMic(); stopMic=null; } L.tab=b.dataset.tab; L.res=null; renderLearn(); });
+  learnEl.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  learnEl.querySelectorAll('[data-qa]').forEach(b=>b.onclick=()=>{
+    const it=d.quiz[L.qi], ok=+b.dataset.qa===it.a; learnEl.querySelectorAll('[data-qa]').forEach(x=>x.disabled=true);
+    b.classList.add(ok?'right':'wrong'); if(!ok) learnEl.querySelector(`[data-qa="${it.a}"]`).classList.add('right');
+    document.getElementById('lFb').textContent= ok?'Correct! Chính xác.':'Chưa đúng, đáp án đúng được tô xanh.'; if(ok){ L.qs++; chime([1318,1760]); }
+    if(student) log(d.area||'learn','quiz',d.id+'#'+L.qi, ok?1:0);
+    setTimeout(()=>{ L.qi++; if(L.qi>=d.quiz.length) learnBest(d.id,'quiz',L.qs); renderLearn(); }, 1100);
+  });
+  learnEl.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ const a=b.dataset.l;
+    if(a==='close') closeLearn();
+    else if(a==='listen') speak(d.intro);
+    else if(a==='go-speak'){ L.tab='speak'; L.res=null; renderLearn(); }
+    else if(a==='model') speak(d.speak[L.si]);
+    else if(a==='prev'){ L.si--; L.res=null; renderLearn(); }
+    else if(a==='next'){ L.si++; L.res=null; renderLearn(); }
+    else if(a==='again'){ L.qi=0; L.qs=0; renderLearn(); }
+    else if(a==='self'){ L.res={pct:100, said:'(tự đánh giá)', marks:d.speak[L.si].split(/\s+/).map(w=>({w,ok:true}))}; learnBest(d.id,'speak',60); renderLearn(); }
+    else if(a==='mic'){
+      if(stopMic){ stopMic(); return; }
+      const btn=document.getElementById('lMic'); btn.classList.add('live'); btn.textContent='■ Dừng'; const said=document.getElementById('lSaid'); said.textContent='Đang nghe…';
+      stopMic=listenOnce(p=>{ said.textContent='Đang nghe: “'+p+'”'; }, txt=>{ stopMic=null; dictSink=null; if(!L) return;
+          if(!txt){ L.res=null; renderLearn(); const s2=document.getElementById('lSaid'); if(s2) s2.textContent='Chưa nghe thấy gì, em bấm 🎤 và đọc to hơn nhé.'; return; }
+          const r=scoreSpeech(d.speak[L.si],txt); L.res={...r, said:txt}; learnBest(d.id,'speak',r.pct); if(r.pct>=85) chime([1568,2093]);
+          if(student){ log(d.area||'learn','speak',d.id+'#'+L.si, r.pct); state.turns++; state.voiceTurns++; saveState(); }
+          renderLearn(); },
+        err=>{ stopMic=null; dictSink=null; const s2=document.getElementById('lSaid'); if(s2) s2.textContent=err; const b2=document.getElementById('lMic'); if(b2){ b2.classList.remove('live'); b2.textContent='🎤 Đọc theo'; } });
+    }
+  });
+}
+function siteLearn(id){ const s=SITES.find(x=>x.id===id), x=SITE_LEARN[id]; const kb=KB.find(e=>e.site===id);
+  return { id, area:'map', kicker:`Địa điểm ${SITES.indexOf(s)+1} · ${s.place}`, title:s.en, sub:s.vi, intro:s.text, vi:kb?kb.sum:s.vi, vocab:s.vocab, speak:x.speak, quiz:x.quiz }; }
+function insideLearn(k){ const x=INSIDE_LEARN[k]; return { id:'in_'+k, area:'rong', kicker:'Bên trong Nhà Rông', ...x }; }
+
+/* ---------- Thẻ từ vựng bật lên khi em tới gần ---------- */
+const vocabEl=document.getElementById('vocabPop'); let vocabCur=null; const vocabSeen={};
+function updateVocab(){
+  if(!explore || !student || document.body.classList.contains('touring') || panel.classList.contains('open') || modalOpen()){ if(vocabCur) hideVocab(); return; }
+  const p=hero.root.position, now=performance.now();
+  if(vocabCur){ const v=vocabCur; if(!!v.in!==INSIDE.on || Math.hypot(p.x-v.p[0],p.z-v.p[1])>v.r+(v.in?.6:2.5)) hideVocab(); return; }
+  for(const v of VOCAB_POI){ if(!!v.in!==INSIDE.on) continue; if(Math.hypot(p.x-v.p[0],p.z-v.p[1])<v.r && (!vocabSeen[v.id] || now-vocabSeen[v.id]>120000)){ showVocab(v); break; } }
+}
+function showVocab(v){ vocabCur=v; vocabSeen[v.id]=performance.now(); const known=new Set(state.vocab||[]);
+  vocabEl.innerHTML=`<header><span class="kick">📘 Từ vựng tại chỗ</span><b>${esc(v.title)}</b><button class="x" aria-label="Đóng">×</button></header>
+    <ul>${v.w.map(([en,ipa,vi,ex])=>`<li class="${known.has(en)?'known':''}"><button class="say" data-say="${esc(en)}" aria-label="Nghe ${esc(en)}">🔊</button><div><b>${esc(en)}</b> <span class="ipa">${esc(ipa)}</span> <span class="mean">${esc(vi)}</span><i>${esc(ex)}</i></div></li>`).join('')}</ul>
+    <div class="btnrow"><button class="btn solid" data-k="1">Đã thuộc ✓</button><button class="btn ghost" data-ex="1">Nghe câu ví dụ</button></div>`;
+  vocabEl.hidden=false; requestAnimationFrame(()=>vocabEl.classList.add('on')); chime([988,1318],.06);
+  vocabEl.querySelector('.x').onclick=hideVocab;
+  vocabEl.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>speak(b.dataset.say));
+  vocabEl.querySelector('[data-ex]').onclick=()=>speak(v.w.map(x=>x[3]).join(' '));
+  vocabEl.querySelector('[data-k]').onclick=()=>{ state.vocab=[...new Set([...(state.vocab||[]),...v.w.map(x=>x[0])])]; saveState(); if(student) log('vocab','learn',v.id,v.w.length); updateWordCount(); toast(`Đã thêm ${v.w.length} từ vào sổ từ vựng (${state.vocab.length} từ).`); hideVocab(); };
+  if(student) log('vocab','show',v.id);
+}
+function hideVocab(){ vocabEl.classList.remove('on'); vocabCur=null; setTimeout(()=>{ if(!vocabCur) vocabEl.hidden=true; },250); }
+function updateWordCount(){ const el=document.getElementById('wordCount'); if(el) el.textContent=(state&&state.vocab?state.vocab.length:0)+' từ'; }
+
+/* ---------- Bên trong Nhà Rông ---------- */
+const INSIDE={ on:false, y:2.64, bx:4.45, bz:2.45, light:null, fire:[], gongs:[], gui:null, wearing:false, flare:0 };
+const groundAt=(x,z)=> INSIDE.on ? INSIDE.y : heightAt(x,z);
+const IN_COLL=[[0,-.3,1.05],[-3.7,1.6,.62],[3.55,1.75,.62],[-4.0,-2.0,.75],[4.0,-2.05,.55],[-4.15,.3,.45]];
+function insideCollide(p){ p.x=THREE.MathUtils.clamp(p.x,-INSIDE.bx,INSIDE.bx); p.z=THREE.MathUtils.clamp(p.z,-INSIDE.bz,INSIDE.bz);
+  for(const [cx,cz,r] of IN_COLL){ const dx=p.x-cx, dz=p.z-cz, d=Math.hypot(dx,dz), R=r+.3; if(d<R && d>1e-4){ p.x=cx+dx/d*R; p.z=cz+dz/d*R; } } }
+{ // dựng nội thất
+  const Y=INSIDE.y, G=new THREE.Group(); G.name='rongInside'; rong.add(G);
+  const wood=M.wood, dark=M.darkwood;
+  // vách hai đầu hồi + cột trong nhà + dầm ngang
+  const wallH=4.3-2.4-.15; for(const sx of [-1,1]){ const w=new THREE.Mesh(new THREE.PlaneGeometry(6.4-.5,wallH), M.woven); w.rotation.y=Math.PI/2; w.position.set(sx*(5-.04),2.6+wallH/2-.05,0); G.add(w); }
+  for(const [sx,sz] of [[-4.75,-2.75],[4.75,-2.75],[-4.75,2.75],[4.75,2.75]]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.13,.16,2.0,10), dark); c.position.set(sx,Y+1.0,sz); G.add(c); }
+  { const b=new THREE.Mesh(new THREE.BoxGeometry(9.8,.16,.16), dark); b.position.set(0,4.2,-2.75); G.add(b); }
+  // thảm thổ cẩm dưới bếp và treo vách
+  const rug=new THREE.Mesh(new THREE.PlaneGeometry(3.0,2.3), M.brocade); rug.rotation.x=-Math.PI/2; rug.position.set(0,Y+.012,-.2); G.add(rug);
+  for(const [x,z,ry] of [[-2.2,-2.88,0],[2.2,-2.88,0],[-4.92,-1.2,Math.PI/2],[4.92,1.1,-Math.PI/2]]){ const b=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.6), M.brocade); b.position.set(x,Y+1.55,z); b.rotation.y=ry; G.add(b); }
+  // bếp lửa
+  const hearth=new THREE.Group(); hearth.position.set(0,Y,-.3); G.add(hearth);
+  const frame=new THREE.Mesh(new RoundedBoxGeometry(1.7,.16,1.7,2,.05), dark); frame.position.y=.08; hearth.add(frame);
+  const ash=new THREE.Mesh(new THREE.BoxGeometry(1.45,.06,1.45), new THREE.MeshStandardMaterial({color:0x6d655c,roughness:1})); ash.position.y=.15; hearth.add(ash);
+  const stoneM=new THREE.MeshStandardMaterial({color:0x5a5450,roughness:.9}); for(let k=0;k<3;k++){ const a=k/3*Math.PI*2; const s=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8), stoneM); s.scale.y=.75; s.position.set(Math.cos(a)*.38,.27,Math.sin(a)*.38); hearth.add(s); }
+  for(let k=0;k<4;k++){ const lg=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.95,7), M.wood); lg.rotation.z=Math.PI/2-.35; lg.rotation.y=k*Math.PI/2; lg.position.y=.3; hearth.add(lg); }
+  const flameM=[0xff7a1a,0xffb43a,0xffe08a].map((c,i)=>new THREE.MeshBasicMaterial({color:c, transparent:true, opacity:.9-i*.12, depthWrite:false, blending:THREE.AdditiveBlending}));
+  for(let k=0;k<6;k++){ const f=new THREE.Mesh(new THREE.ConeGeometry(.16-k%3*.03,.7-k%3*.15,8), flameM[k%3]); f.position.set((k%3-1)*.12*(k<3?1:-1),.62,(k<3?.06:-.06)); f.userData.ph=k*1.3; hearth.add(f); INSIDE.fire.push(f); }
+  const glowS=new THREE.Sprite(new THREE.SpriteMaterial({color:0xffa040, transparent:true, opacity:.35, depthWrite:false, blending:THREE.AdditiveBlending})); glowS.scale.setScalar(2.2); glowS.position.y=.7; hearth.add(glowS); INSIDE.glow=glowS;
+  INSIDE.light=new THREE.PointLight(0xff9a4a,0,11,1.4); INSIDE.light.position.set(0,Y+1.2,-.3); G.add(INSIDE.light);
+  INSIDE.fill=new THREE.PointLight(0xffe2b8,0,14,1.2); INSIDE.fill.position.set(0,Y+5,.4); G.add(INSIDE.fill);
+  reg(hearth,'inside','hearth','Bếp lửa: bấm để thêm củi');
+  // bộ cồng chiêng treo vách sau
+  const rack=new THREE.Group(); rack.position.set(0,Y,-2.62); G.add(rack);
+  const bar=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,4.8,8), M.bamboo); bar.rotation.z=Math.PI/2; bar.position.y=2.05; rack.add(bar);
+  [[-1.9,.30,330],[-.95,.36,294],[0,.42,247],[.95,.36,220],[1.9,.30,196]].forEach(([x,r,f],i)=>{ const g=new THREE.Group(); g.position.set(x,2.05-r-.2,0);
+    const disc=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.06,36), M.bronze); disc.rotation.x=Math.PI/2; g.add(disc);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(r,.03,8,36), M.bronze); g.add(rim);
+    if(i%2===0){ const knob=new THREE.Mesh(new THREE.SphereGeometry(r*.22,14,10), M.bronze); knob.scale.z=.6; knob.position.z=.05; g.add(knob); }
+    const cord=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.2,4), dark); cord.position.y=r+.1; g.add(cord);
+    g.userData.freq=f; rack.add(g); INSIDE.gongs.push(g);
+    g.traverse(o=>{ if(o.isMesh){ groupOf.set(o,g); o.userData.kind='igong'; o.userData.id=i; o.userData.tip='Bấm để đánh chiêng'; clickables.push(o); } }); });
+  // trống lớn
+  const drum=new THREE.Group(); drum.position.set(-3.7,Y,1.6); drum.rotation.y=.4; G.add(drum);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,1.0,24,1,true), new THREE.MeshStandardMaterial({color:0x8a5530,roughness:.7,side:THREE.DoubleSide})); body.rotation.z=Math.PI/2; body.position.y=.72; drum.add(body);
+  const skinM=new THREE.MeshStandardMaterial({color:0xe2c79a,roughness:.8}); for(const sx of [-.5,.5]){ const sk=new THREE.Mesh(new THREE.CircleGeometry(.42,24), skinM); sk.rotation.y=sx>0?Math.PI/2:-Math.PI/2; sk.position.set(sx,.72,0); drum.add(sk); const rr=new THREE.Mesh(new THREE.TorusGeometry(.42,.035,6,24), dark); rr.rotation.y=Math.PI/2; rr.position.set(sx,.72,0); drum.add(rr); }
+  for(const sx of [-.32,.32]){ const leg=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.6), dark); leg.position.set(sx,.25,0); drum.add(leg); }
+  reg(drum,'inside','drum','Trống da trâu: bấm để đánh');
+  // đàn T'rưng
+  const trung=new THREE.Group(); trung.position.set(3.55,Y,1.75); trung.rotation.y=-.35; G.add(trung); INSIDE.trungTubes=[];
+  for(const sx of [-.75,.75]){ const p=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,1.3,6), dark); p.position.set(sx,.65,0); trung.add(p); }
+  for(const y of [.55,1.15]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.55,4), dark); c.rotation.z=Math.PI/2; c.position.y=y; trung.add(c); }
+  for(let k=0;k<8;k++){ const len=1.05-k*.08; const tb=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,len,10), M.bamboo); tb.rotation.z=Math.PI/2+.04; tb.position.set(0,.6+k*.075,(k%2?.03:-.03)); tb.scale.x=1; trung.add(tb); INSIDE.trungTubes.push(tb); }
+  reg(trung,"inside",'trung',"Đàn T'rưng: bấm để chơi");
+  // ché
+  const jarM=new THREE.MeshStandardMaterial({color:0x4b3426,roughness:.45,metalness:.05}); const jars=new THREE.Group(); jars.position.set(-4.0,Y,-2.0); G.add(jars);
+  const jp=[]; for(let i=0;i<=14;i++){ const t=i/14; jp.push(new THREE.Vector2(.12+Math.sin(t*Math.PI)*.26+(t>.85?.06:0), t*.85)); }
+  const jg=new THREE.LatheGeometry(jp,22); [[0,0,1],[.55,.25,.8],[-.2,.55,.7]].forEach(([x,z,s])=>{ const j=new THREE.Mesh(jg,jarM); j.position.set(x,0,z); j.scale.setScalar(s); jars.add(j);
+    const band=new THREE.Mesh(new THREE.TorusGeometry(.33*s,.02,6,22), M.bronze); band.rotation.x=Math.PI/2; band.position.set(x,.45*s,z); jars.add(band);
+    const straw=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,1.2,4), M.bamboo); straw.position.set(x+.1,.85*s+.4,z); straw.rotation.z=.5; jars.add(straw); });
+  reg(jars,'inside','jar','Ché rượu cần');
+  // gùi chứa ngô
+  const g2=gui.clone(); g2.scale.setScalar(.62); g2.position.set(4.0,Y,-2.05); G.add(g2); g2.traverse(o=>{ if(o.isMesh){ const i=clickables.indexOf(o); if(i>=0) clickables.splice(i,1); } });
+  const cornM=new THREE.MeshStandardMaterial({color:0xf2c43a,roughness:.6}); for(let k=0;k<5;k++){ const c=new THREE.Mesh(new THREE.CapsuleGeometry(.07,.25,4,8), cornM); c.position.set(4.0+(k-2)*.09,Y+.98,-2.05+(k%2)*.08); c.rotation.z=(k-2)*.3; G.add(c); }
+  reg(g2,'inside','gui','Gùi: bấm để đeo thử'); INSIDE.gui=g2;
+  // tượng gỗ
+  const st=new THREE.Group(); st.position.set(-4.15,Y,.3); st.rotation.y=Math.PI/2; G.add(st); const sm=new THREE.MeshStandardMaterial({color:0x7d5a3c,roughness:.85});
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(.3,.34,.35,8), sm); base.position.y=.17; st.add(base);
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,.7,8), sm); torso.position.y=.7; st.add(torso);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8), sm); head.scale.set(.9,1.15,.9); head.position.y=1.2; st.add(head);
+  for(const sx of [-1,1]){ const arm=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.5,6), sm); arm.position.set(sx*.17,.78,.12); arm.rotation.x=-1.1; arm.rotation.z=sx*.2; st.add(arm); }
+  const hands=new THREE.Mesh(new THREE.SphereGeometry(.09,8,6), sm); hands.position.set(0,.68,.3); st.add(hands);
+  reg(st,'inside','statue','Tượng gỗ');
+  shadowAll(G); G.traverse(o=>{ if(o.isMesh && o.material && o.material.blending===THREE.AdditiveBlending) o.castShadow=false; });
+  INSIDE.group=G;
+}
+// đồ vật bên trong cũng là "trạm" có nút E
+Object.assign(SPOTS,{
+  enter:{ p:[0,7.0], label:'Vào bên trong Nhà Rông', act:()=>enterRong() },
+  ihearth:{ in:true, p:[0,.75], label:'Thêm củi vào bếp lửa', act:()=>insideAct('hearth') },
+  igong:{ in:true, p:[0,-1.55], label:'Đánh bộ cồng chiêng', act:()=>insideAct('gong') },
+  idrum:{ in:true, p:[-3.05,1.0], label:'Đánh trống', act:()=>insideAct('drum') },
+  itrung:{ in:true, p:[2.95,1.05], label:"Chơi đàn T'rưng", act:()=>insideAct('trung') },
+  ijar:{ in:true, p:[-3.2,-1.25], label:'Xem ché rượu cần', act:()=>insideAct('jar') },
+  igui:{ in:true, p:[3.25,-1.3], label:'Đeo thử gùi', act:()=>insideAct('gui') },
+  istatue:{ in:true, p:[-3.5,.3], label:'Xem tượng gỗ', act:()=>insideAct('statue') },
+  iexit:{ in:true, p:[0,2.25], label:'Ra khỏi Nhà Rông', act:()=>exitRong() },
+});
+Object.assign(SPOT_LOOK,{ enter:[0,3], ihearth:[0,-.3], igong:[0,-2.6], idrum:[-3.7,1.6], itrung:[3.55,1.75], ijar:[-4,-2], igui:[4,-2.05], istatue:[-4.15,.3], iexit:[0,3] });
+function trungMelody(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
+  const notes=[392,440,523,587,659,587,523,440,392,523]; const t0=actx.currentTime;
+  notes.forEach((f,i)=>{ const t=t0+i*.22, o=actx.createOscillator(), o2=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o2.type='triangle'; o.frequency.value=f; o2.frequency.value=f*2.76;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.22,t+.005); g.gain.exponentialRampToValueAtTime(.0001,t+.5); const g2=actx.createGain(); g2.gain.value=.25; o.connect(g); o2.connect(g2); g2.connect(g); g.connect(actx.destination); o.start(t); o2.start(t); o.stop(t+.55); o2.stop(t+.55);
+    const tb=INSIDE.trungTubes[[0,1,2,3,4,3,2,1,0,2][i]]; setTimeout(()=>{ if(tb){ tb.position.y+=.025; setTimeout(()=>tb.position.y-=.025,120); } }, i*220); }); }catch(e){} }
+function insideAct(k){
+  const seen=state.learn&&state.learn['in_'+k];
+  if(k==='hearth'){ INSIDE.flare=1.6; sparkle(new THREE.Vector3(0,INSIDE.y+.9,-.3),16,0xffb040); hero.strike(); }
+  else if(k==='gong'){ hero.strike(); INSIDE.gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.4); g.userData.swing=1; }, 260+i*380)); }
+  else if(k==='drum'){ hero.strike(); setTimeout(()=>beatDrum(),220); }
+  else if(k==='trung'){ hero.strike(); trungMelody(); }
+  else if(k==='gui'){ toggleGui(); }
+  else if(k==='jar'){ hero.wave(); }
+  else if(k==='statue'){ hero.wave(); }
+  if(student) log('rong','inside',k);
+  if(!state.answered['in_'+k]){ state.answered['in_'+k]=true; saveState(); }
+  openLearn(insideLearn(k));
+}
+function toggleGui(){ if(!INSIDE.wearGui){ const b=gui.clone(); b.scale.setScalar(.42); b.traverse(o=>{ if(o.isMesh){ const i=clickables.indexOf(o); if(i>=0) clickables.splice(i,1); o.castShadow=true; } }); INSIDE.wearGui=b; }
+  const b=INSIDE.wearGui, chest=hero.J&&hero.J.pack&&hero.J.pack.parent;
+  if(b.parent){ b.parent.remove(b); INSIDE.gui.visible=true; if(hero.J.pack) hero.J.pack.visible=true; toast('Em đã đặt gùi xuống.'); return; }
+  if(chest){ chest.add(b); b.position.set(0,-.38,-.62); b.scale.setScalar(.5); b.rotation.set(.12,0,0); hero.J.pack.visible=false; } else { hero.root.add(b); b.position.set(0,.75,-.32); }
+  INSIDE.gui.visible=false; sparkle(hero.root.position.clone().add(new THREE.Vector3(0,1.3,0)),12); toast('Em đang đeo gùi như người Bahnar, Jrai! Bấm E lần nữa để đặt xuống.'); }
+const fadeEl=document.getElementById('fade');
+function fadeDo(fn){ fadeEl.classList.add('on'); setTimeout(()=>{ fn(); setTimeout(()=>fadeEl.classList.remove('on'),120); },380); }
+function enterRong(){
+  if(panel.classList.contains('open')) hidePanel(); closeLearn(); hideVocab();
+  if(!explore){ explore=true; document.getElementById('tWalk').setAttribute('aria-pressed',true); document.body.classList.add('exploring'); }
+  fadeDo(()=>{ INSIDE.on=true; document.body.classList.add('inside');
+    if(window.gsap){ gsap.killTweensOf(camera.position); gsap.killTweensOf(controls.target); } flying=false;
+    const r=hero.root; r.position.set(0,INSIDE.y,1.5); r.rotation.y=Math.PI; vel.set(0,0,0); dest=null; yAir=0; vy=0; grounded=true;
+    controls.minDistance=2.5; controls.maxDistance=9; controls.target.set(0,INSIDE.y+1.2,1.2); camera.position.set(0,INSIDE.y+3.7,6.6); RONG_FRONT.forEach(o=>o.visible=false);
+    INSIDE.light.intensity=14; INSIDE.fill.intensity=5; INSIDE.flare=1;
+    toast('Em đang ở trong Nhà Rông. Đến gần đồ vật và bấm E (hoặc chạm nút vàng) để tương tác.');
+    if(student) log('rong','enter','inside'); });
+}
+function exitRong(){
+  fadeDo(()=>{ INSIDE.on=false; document.body.classList.remove('inside'); closeLearn(); if(INSIDE.wearGui && INSIDE.wearGui.parent){ INSIDE.wearGui.parent.remove(INSIDE.wearGui); INSIDE.gui.visible=true; }
+    const r=hero.root; r.position.set(0,heightAt(0,7.6),7.6); r.rotation.y=Math.PI; vel.set(0,0,0); dest=null;
+    controls.minDistance=2.8; controls.maxDistance=34; RONG_FRONT.forEach(o=>o.visible=true); INSIDE.light.intensity=0; INSIDE.fill.intensity=0;
+    const f=followPose(); camera.position.set(...f.cam); controls.target.set(...f.tgt); });
+}
+function updateInterior(t,dt){
+  if(!INSIDE.on) return;
+  INSIDE.flare=Math.max(0,INSIDE.flare-dt*.6); const fl=1+INSIDE.flare*.6;
+  INSIDE.fire.forEach(f=>{ const s=.85+.25*Math.sin(t*9+f.userData.ph)+.12*Math.sin(t*23+f.userData.ph*2); f.scale.set(fl,s*fl,fl); });
+  INSIDE.light.intensity=(12+3*Math.sin(t*11)+2*Math.sin(t*17))*(1+INSIDE.flare*.5); INSIDE.glow.material.opacity=.3+.08*Math.sin(t*13)+INSIDE.flare*.15;
+  INSIDE.gongs.forEach(g=>{ if(g.userData.swing>0){ g.userData.swing=Math.max(0,g.userData.swing-dt*.9); g.rotation.x=Math.sin(t*14)*.18*g.userData.swing; } });
+  // giữ camera trong lòng nhà
+  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-4.7,4.7); camera.position.z=THREE.MathUtils.clamp(camera.position.z,Math.max(-2.7,hero.root.position.z+1.6),9.5); camera.position.y=THREE.MathUtils.clamp(camera.position.y,INSIDE.y+1.3,INSIDE.y+7);
+}
+
+const discCam=id=>{ const d=DISC_BY[id]; return { cam:[d.cam[0],d.cam[1],d.cam[2]], tgt:[d.look[0],heightAt(d.look[0],d.look[1])+4,d.look[1]] }; };
+const TOUR = [
+  { cam:[78,52,92], tgt:[0,6,0], vi:'Chào mừng đến Làng di sản số Gia Lai', en:'Welcome to the Digital Heritage Village of Gia Lai', d:'Từ 1/7/2025, Gia Lai và Bình Định hợp thành tỉnh Gia Lai mới: từ đại ngàn Tây Nguyên đến biển xanh Quy Nhơn.' },
+  { cam:[-7.4,9.5,19], tgt:[-15,1.3,8.8], vi:'Trạm 1 · Bản đồ di sản', en:'Station 1: the Heritage Map', d:'Sa bàn 3D tỉnh Gia Lai mới. Bấm từng địa điểm để nghe giới thiệu, luyện nói và trả lời câu hỏi.' },
+  { cam:[13,9,17], tgt:[0,8,0], vi:'Trạm 2 · Nhà Rông', en:'Station 2: the Rong house, the heart of the village', d:'Em có thể đi vào bên trong để đánh cồng chiêng, đánh trống, chơi đàn T’rưng và đeo thử gùi.', sfx:()=>strikeGong(196,.4) },
+  { cam:[-1.5,2.8,13.2], tgt:[-4.6,2.2,8.2], vi:'Không gian văn hoá Cồng chiêng', en:'The Space of Gong Culture, recognised by UNESCO', d:'Cồng chiêng làm bằng đồng, vang lên trong mọi lễ hội của buôn làng.', sfx:()=>gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.35); g.userData.swing=1; }, i*450)) },
+  { cam:[11.2,2.8,14.6], tgt:[15,2,9], vi:'Trạm 3 · Luyện nói với Mr. David', en:'Station 3: Speaking practice with Mr. David', d:'Hỏi Mr. David về di sản, lễ hội và món ngon Gia Lai bằng tiếng Anh.', sfx:()=>{ davidChar.wave(); } },
+  { cam:[5,5.5,-1], tgt:[17,4.5,-11], vi:'Trạm 4 · Explorer Quest', en:'Station 4: Explorer Quest', d:'Vượt 3 chặng thử thách để nhận huy hiệu Junior Gia Lai Ambassador.' },
+  { ...discCam('bienho'), vi:"Biển Hồ T'Nưng", en:"T'Nung Lake, the eyes of Pleiku", d:'Hồ nước trên miệng núi lửa cũ, cách Pleiku khoảng 7 km.' },
+  { ...discCam('minhthanh'), vi:'Chùa Minh Thành', en:'Minh Thanh Pagoda in Pleiku', d:'Ngôi chùa với tháp cao và khu vườn yên bình giữa phố núi.' },
+  { ...discCam('phucuong'), vi:'Thác Phú Cường', en:'Phu Cuong Waterfall', d:'Thác cao khoảng 45 m, nước đổ qua vách đá núi lửa.' },
+  { ...discCam('quangtrung'), vi:'Trống trận Tây Sơn', en:'The Tay Son war drums', d:'Quê hương vua Quang Trung và anh em nhà Tây Sơn.', sfx:()=>beatDrum() },
+  { ...discCam('gogang'), vi:'Làng nón ngựa Gò Găng', en:'Go Gang hat village', d:'Làng nghề làm nón ngựa – chiếc nón của các quan xưa.' },
+  { ...discCam('thapdoi'), vi:'Tháp Đôi Quy Nhơn', en:'Thap Doi, the Twin Towers', d:'Hai tháp Chăm bằng gạch đỏ, xây cuối thế kỷ 12.' },
+  { ...discCam('bien'), vi:'Biển Quy Nhơn', en:'The beaches of Quy Nhon', d:'Thúng chai, ngư dân và những con sóng xanh.' },
+  { cam:STATIONS.overview.cam, tgt:STATIONS.overview.tgt, vi:'Hành trình của em bắt đầu!', en:"Let's begin your journey!", d:'Đi tới các vòng sáng để mở trạm. Gần mỗi địa điểm sẽ có thẻ từ vựng cho em học.' },
+];
+const TOUR_FLY=3.2, TOUR_HOLD=3.8;
+let tourTl=null, tourI=0;
 const capEl=document.getElementById('caption');
-function showCaption(k){ capEl.classList.remove('on'); setTimeout(()=>{ if(!document.body.classList.contains('touring')) return; capEl.querySelector('.vi').textContent=k.vi; capEl.querySelector('.en').textContent=k.en; capEl.classList.add('on'); }, 250); }
+function showCaption(k,i){ capEl.classList.remove('on'); setTimeout(()=>{ if(!document.body.classList.contains('touring')) return; capEl.querySelector('.vi').textContent=k.vi; capEl.querySelector('.en').textContent=k.en; capEl.querySelector('.d').textContent=k.d||'';
+  capEl.querySelector('.dots').innerHTML=TOUR.map((_,j)=>`<i class="${j===i?'on':j<i?'done':''}"></i>`).join(''); capEl.classList.add('on'); }, 250); }
+function tourStep(i){
+  if(i>=TOUR.length){ endTour(); return; } if(i<0) i=0; tourI=i; const k=TOUR[i];
+  if(tourTl) tourTl.kill(); tourTl=gsap.timeline({onComplete:()=>tourStep(tourI+1)});
+  // bay cung: nâng camera khi chặng bay xa
+  const far=Math.hypot(camera.position.x-k.cam[0], camera.position.z-k.cam[2])>60;
+  if(far){ tourTl.to(camera.position,{y:Math.max(camera.position.y,k.cam[1])+30,duration:TOUR_FLY*.5,ease:'sine.out'},0).to(camera.position,{y:k.cam[1],duration:TOUR_FLY*.5,ease:'sine.in'},TOUR_FLY*.5); tourTl.to(camera.position,{x:k.cam[0],z:k.cam[2],duration:TOUR_FLY,ease:'sine.inOut'},0); }
+  else tourTl.to(camera.position,{x:k.cam[0],y:k.cam[1],z:k.cam[2],duration:TOUR_FLY,ease:'sine.inOut'},0);
+  tourTl.to(controls.target,{x:k.tgt[0],y:k.tgt[1],z:k.tgt[2],duration:TOUR_FLY,ease:'sine.inOut'},0);
+  // giữ hình: camera trôi nhẹ quanh điểm nhìn
+  const dx=(k.cam[0]-k.tgt[0])*.06, dz=(k.cam[2]-k.tgt[2])*.06;
+  tourTl.to(camera.position,{x:k.cam[0]-dz,z:k.cam[2]+dx,duration:TOUR_HOLD,ease:'none'},TOUR_FLY);
+  tourTl.call(()=>showCaption(k,i),null,.2); if(k.sfx) tourTl.call(k.sfx,null,TOUR_FLY*.7);
+  if(tourVoice) tourTl.call(()=>speak(k.en),null,TOUR_FLY*.55);
+}
+let tourVoice=true;
 function playTour(){
   if(!window.gsap || reduce) return;
-  hidePanel(); gsap.killTweensOf(camera.position); gsap.killTweensOf(controls.target); flying=false; document.body.classList.add('touring'); controls.enabled=false; outlinePass.selectedObjects=[];
-  const fp=followPose(); TOUR[TOUR.length-1].cam = explore? fp.cam : STATIONS.overview.cam; TOUR[TOUR.length-1].tgt = explore? fp.tgt : STATIONS.overview.tgt;
-  camera.position.set(130,80,150); controls.target.set(0,4,0);
-  tourTl = gsap.timeline({onComplete:endTour});
-  TOUR.forEach((k,i)=>{
-    tourTl.to(camera.position,{x:k.cam[0],y:k.cam[1],z:k.cam[2],duration:k.d,ease:'sine.inOut'}, i?'>':0);
-    tourTl.to(controls.target,{x:k.tgt[0],y:k.tgt[1],z:k.tgt[2],duration:k.d,ease:'sine.inOut'},'<');
-    tourTl.call(()=>showCaption(k),null,'<+0.2'); if(k.sfx) tourTl.call(k.sfx,null,'<+0.9');
-  });
+  hidePanel(); closeLearn(); gsap.killTweensOf(camera.position); gsap.killTweensOf(controls.target); flying=false; document.body.classList.add('touring'); controls.enabled=false; outlinePass.selectedObjects=[];
+  const fp=followPose(); const last=TOUR[TOUR.length-1]; last.cam = explore? fp.cam : STATIONS.overview.cam; last.tgt = explore? fp.tgt : STATIONS.overview.tgt;
+  camera.position.set(130,80,150); controls.target.set(0,4,0); tourStep(0);
   if(student) log('app','tour_start');
 }
 function endTour(skipped){
-  if(tourTl){ tourTl.kill(); tourTl=null; } document.body.classList.remove('touring'); capEl.classList.remove('on'); controls.enabled=true;
+  if(tourTl){ tourTl.kill(); tourTl=null; } stopSpeak(); document.body.classList.remove('touring'); capEl.classList.remove('on'); controls.enabled=true;
   flying=false; if(skipped===true){ if(explore){ const f=followPose(); flyToPose(f.cam,f.tgt,1.2); } else flyTo('overview'); }
-  if(state){ state.tourSeen=true; saveState(); }
+  if(state){ state.tourSeen=true; saveState(); } if(student) log('app','tour_end', skipped===true?'skip':'done', tourI);
 }
 document.getElementById('skipTour').addEventListener('click',()=>endTour(true));
+document.getElementById('tourNext').addEventListener('click',()=>{ stopSpeak(); tourStep(tourI+1); });
+document.getElementById('tourPrev').addEventListener('click',()=>{ stopSpeak(); tourStep(tourI-1); });
+document.getElementById('tourVoice').addEventListener('click',e=>{ tourVoice=!tourVoice; e.currentTarget.setAttribute('aria-pressed',tourVoice); e.currentTarget.textContent=tourVoice?'🔊 Thuyết minh':'🔈 Tắt tiếng'; if(!tourVoice) stopSpeak(); });
 document.getElementById('tTour').addEventListener('click',playTour);
+
 
 // ----- Thông báo nhỏ -----
 const HINT=()=> matchMedia('(pointer:coarse)').matches ? 'Kéo cần điều khiển để đi · Chạm xuống đất để đi tới · Chạm vào trạm để mở' : 'W A S D hoặc bấm xuống đất để đi · Shift: chạy · Space: nhảy · Q: vẫy tay · E: tương tác · M: bản đồ';
@@ -2924,7 +3703,7 @@ function trackMission(t){
 }
 
 collectMats(); applyEnv(); applyQuality(); buildMapImage(); upgradeCharacters();
-window.__dbg={ hero:()=>hero, controls, camera, travel, openStation, setNight, KK, setExplore };
+window.__dbg={ hero:()=>hero, controls, camera, travel, openStation, setNight, KK, setExplore, closePanel, enterRong, exitRong };
 canvas.style.cursor='grab';
 requestAnimationFrame(frame);
 setTimeout(()=>{ document.getElementById('loader').classList.add('done'); showWelcome(); }, 300);
