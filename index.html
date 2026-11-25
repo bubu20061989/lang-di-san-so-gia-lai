@@ -2082,7 +2082,8 @@ function sculptGeometry(type, tint){ const key=type+tint; if(STATUE_CACHE[key]) 
     for(let t=0;t<P.count;t+=3){ a.fromBufferAttribute(P,t); b.fromBufferAttribute(P,t+1); c.fromBufferAttribute(P,t+2); n.subVectors(b,a).cross(c.clone().sub(a)); if(n.dot(new THREE.Vector3().fromBufferAttribute(N,t))<0){ for(const A of [P,N,C]){ for(let k=0;k<3;k++){ const v=A.getComponent(t+1,k); A.setComponent(t+1,k,A.getComponent(t+2,k)); A.setComponent(t+2,k,v); } } } } } ng.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(ng.attributes.position.count*2),2)); STATUE_CACHE[key]=ng; return ng.clone(); }
 MAT.statueBronze=new THREE.MeshStandardMaterial({vertexColors:true, metalness:.82, roughness:.33, envMapIntensity:1.25});
 MAT.statueMarble=new THREE.MeshStandardMaterial({vertexColors:true, metalness:0, roughness:.55, envMapIntensity:.55});
-function robedFigure(K,mat,x,y,z,ry,H,opt={}){ const s=H/3.2, R=(px,py,pz)=>{ const v=new THREE.Vector3(px*s,py*s,pz*s).applyAxisAngle(new THREE.Vector3(0,1,0),ry); return [x+v.x,y+v.y,z+v.z]; };
+const SHOW_SCULPTS=false; // tạm gỡ toàn bộ tượng dựng bằng máy: chưa đủ trang nghiêm, chờ mô hình chuẩn
+function robedFigure(K,mat,x,y,z,ry,H,opt={}){ if(!SHOW_SCULPTS) return; const s=H/3.2, R=(px,py,pz)=>{ const v=new THREE.Vector3(px*s,py*s,pz*s).applyAxisAngle(new THREE.Vector3(0,1,0),ry); return [x+v.x,y+v.y,z+v.z]; };
   const type=opt.sword?'king':opt.veil?'guanyin':'buddha', bronze=mat==='bronze';
   K.add(bronze?'statueBronze':'statueMarble', sculptGeometry(type, bronze?0xa47c48:0xd8d2c6), x,y,z,ry,0,0,0,s,s,s);
   if(opt.halo) K.add('gold',new THREE.TorusGeometry(.36,.02,6,40),...R(0,2.72,-.24),ry,0,0,0,s,s,s);
