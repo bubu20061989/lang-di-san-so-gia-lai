@@ -3806,7 +3806,8 @@ function gemini_(key,prompt){
 const LOGO_IMG=document.querySelector('.wlogo .schoollogo'); document.querySelectorAll('img[data-logo]').forEach(i=>{ i.src=LOGO_IMG.src; });
 const QS=new URLSearchParams(location.search);
 if(QS.get('sheet') && /^https:\/\/script\.google(usercontent)?\.com\//.test(QS.get('sheet'))) store.set('gl_sheet_url', QS.get('sheet'));
-const SYNC={ url:store.get('gl_sheet_url',''), dev:store.get('gl_dev','')||(()=>{ const d='D'+Math.random().toString(36).slice(2,8).toUpperCase(); store.set('gl_dev',d); return d; })(), sess:'', box:store.get('gl_outbox',[]), busy:false, cfg:null, last:'' };
+const SHEET_DEFAULT='https://script.google.com/macros/s/AKfycbyDY3LqNoz3wYIoVRNlHFDuqMvHft4jZJB9irAlFMaf-EMFMETg7086rE_78CIbi73a/exec';
+const SYNC={ url:store.get('gl_sheet_url','')||SHEET_DEFAULT, dev:store.get('gl_dev','')||(()=>{ const d='D'+Math.random().toString(36).slice(2,8).toUpperCase(); store.set('gl_dev',d); return d; })(), sess:'', box:store.get('gl_outbox',[]), busy:false, cfg:null, last:'' };
 function syncPush(row){ if(!SYNC.url) return; SYNC.box.push({...row, device:SYNC.dev, session:SYNC.sess}); if(SYNC.box.length>3000) SYNC.box.splice(0,SYNC.box.length-3000); store.set('gl_outbox',SYNC.box); }
 async function syncFlush(){ if(!SYNC.url || SYNC.busy || !SYNC.box.length || !navigator.onLine) return; SYNC.busy=true; const part=SYNC.box.slice(0,200);
   try{ const r=await fetch(SYNC.url,{method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'events', rows:part})}); const j=await r.json();
