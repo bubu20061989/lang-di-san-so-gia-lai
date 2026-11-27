@@ -41,7 +41,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px so
 
 /* Hộ chiếu */
 #passport{position:fixed;top:14px;right:16px;padding:10px 12px;z-index:5;display:flex;flex-direction:column;gap:8px;min-width:220px}
-#passport .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#passport .row{display:flex;align-items:center;justify-content:space-between;gap:6px 10px;flex-wrap:wrap}
 #passport .lbl{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 #who{font-weight:600;font-size:13px;font-variant-numeric:tabular-nums}
 .stamps{display:flex;gap:8px}
@@ -3730,6 +3730,10 @@ function startAs(code){
   if(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO')) playTour(); else toast('Chào '+code+'! Đi tới các vòng sáng để mở trạm, tìm 7 điểm khám phá trên la bàn.');
 }
 document.getElementById('inExit').addEventListener('click',()=>exitRong());
+// bản đồ nhỏ luôn nằm ngay dưới hộ chiếu, không bị che dù hộ chiếu cao thêm
+{ const pp=document.getElementById('passport'), mw=document.getElementById('miniWrap');
+  const place=()=>{ if(!pp||!mw) return; if(innerWidth<=720){ mw.style.top=''; return; } const r=pp.getBoundingClientRect(); mw.style.top=(r.height? Math.round(r.bottom+10) : 128)+'px'; };
+  if(window.ResizeObserver) new ResizeObserver(place).observe(pp); addEventListener('resize',place); setTimeout(place,500); }
 document.getElementById('maHS').addEventListener('input',()=>{ document.getElementById('wErr').textContent=''; });
 document.getElementById('wForm').addEventListener('submit',e=>{ e.preventDefault(); const v=document.getElementById('maHS').value.normalize('NFKC').replace(/[\u2010-\u2015\u2212]/g,'-').replace(/\s+/g,'').toUpperCase(); document.getElementById('maHS').value=v;
   if(!/^[0-9A-Z][0-9A-Z\-_.]{1,15}$/.test(v)){ document.getElementById('wErr').textContent='Mã chỉ gồm chữ, số và dấu gạch, ví dụ 9A1-07.'; return; } startAs(v); });
