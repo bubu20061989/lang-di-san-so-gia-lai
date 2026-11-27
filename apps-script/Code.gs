@@ -4,8 +4,10 @@
  * 2) Chạy hàm setup() một lần (cấp quyền) → tạo các trang tính Events, FLCAS, FLCAS_CauHoi.
  * 3) Cài đặt dự án → Thuộc tính tập lệnh (Script properties):
  *      TEACHER_KEY   = mật khẩu giáo viên để xem Dashboard (bắt buộc)
- *      GEMINI_API_KEY = khoá API Gemini miễn phí (tuỳ chọn, để Mr. David trả lời bằng AI trên trang GitHub)
- *      GEMINI_MODEL  = tên mô hình (tuỳ chọn, mặc định gemini-2.5-flash)
+ *      Để Mr. David trả lời bằng AI trên trang GitHub, thêm MỘT trong hai khoá (tuỳ chọn):
+ *      DEEPSEEK_API_KEY = khoá API DeepSeek (trả phí theo lượt, rất rẻ)   · DEEPSEEK_MODEL (mặc định deepseek-flash)
+ *      GEMINI_API_KEY   = khoá API Gemini (có bậc miễn phí)              · GEMINI_MODEL  (mặc định gemini-2.5-flash)
+ *      Có cả hai khoá thì dùng DeepSeek trước, lỗi mới chuyển sang Gemini (hoặc đặt AI_PROVIDER = gemini để ưu tiên Gemini).
  * 4) Triển khai → Tùy chọn triển khai mới → Ứng dụng web → Thực thi với: Tôi; Người có quyền truy cập: Bất kỳ ai → Triển khai.
  * 5) Sao chép URL ứng dụng web (…/exec) và dán vào ô "Địa chỉ Apps Script" trong Dashboard của trang.
  */
@@ -23,7 +25,7 @@ function doGet(e){
   const a=(e.parameter.action||'config');
   if(a==='config'){
     const rows=sheet_('FLCAS_CauHoi').getDataRange().getValues().slice(1).filter(r=>String(r[0]).trim() && !/^\(/.test(String(r[0])));
-    return json_({ok:true, ai:!!prop_('GEMINI_API_KEY'), flcas: rows.length? rows.map(r=>({t:String(r[0]).trim(), r:/r/i.test(String(r[1]))})) : null});
+    return json_({ok:true, ai:!!(prop_('GEMINI_API_KEY')||prop_('DEEPSEEK_API_KEY')), flcas: rows.length? rows.map(r=>({t:String(r[0]).trim(), r:/r/i.test(String(r[1]))})) : null});
   }
   if(a==='events'){
     if(!prop_('TEACHER_KEY') || e.parameter.k!==prop_('TEACHER_KEY')) return json_({ok:false, error:'Sai mật khẩu giáo viên'});
@@ -50,12 +52,25 @@ function saveEvents_(rows){
   } finally { lock.releaseLock(); }
 }
 function chat_(prompt){
-  const key=prop_('GEMINI_API_KEY'); if(!key) return {ok:false, error:'no key'};
+  const ds=prop_('DEEPSEEK_API_KEY'), gm=prop_('GEMINI_API_KEY'); if(!ds && !gm) return {ok:false, error:'no key'};
   const cache=CacheService.getScriptCache(), slot='rate_'+Math.floor(Date.now()/60000), used=+(cache.get(slot)||0);
   if(used>=40) return {ok:false, error:'rate'}; cache.put(slot,String(used+1),120);
+  prompt=prompt.slice(0,12000);
+  const order=(prop_('AI_PROVIDER').toLowerCase()==='gemini') ? [gm&&'gemini', ds&&'deepseek'] : [ds&&'deepseek', gm&&'gemini'];
+  let last='';
+  for(const p of order.filter(Boolean)){ try{ const t= p==='deepseek'? deepseek_(ds,prompt) : gemini_(gm,prompt); if(t) return {ok:true, text:t, provider:p}; }catch(err){ last=String(err); } }
+  return {ok:false, error:last||'ai'};
+}
+function deepseek_(key,prompt){
+  const res=UrlFetchApp.fetch('https://api.deepseek.com/chat/completions',{method:'post',contentType:'application/json',muteHttpExceptions:true,headers:{Authorization:'Bearer '+key},
+    payload:JSON.stringify({model:prop_('DEEPSEEK_MODEL')||'deepseek-flash', messages:[{role:'user',content:prompt}], response_format:{type:'json_object'}, thinking:{type:'disabled'}, temperature:.7, max_tokens:500})});
+  if(res.getResponseCode()!==200) throw new Error('deepseek '+res.getResponseCode()+' '+res.getContentText().slice(0,120));
+  const j=JSON.parse(res.getContentText()); return String((((j.choices||[])[0]||{}).message||{}).content||'').trim();
+}
+function gemini_(key,prompt){
   const model=prop_('GEMINI_MODEL')||'gemini-2.5-flash';
   const res=UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,{method:'post',contentType:'application/json',muteHttpExceptions:true,
-    payload:JSON.stringify({contents:[{role:'user',parts:[{text:prompt.slice(0,12000)}]}], generationConfig:{temperature:.7,maxOutputTokens:500,responseMimeType:'application/json'}})});
-  if(res.getResponseCode()!==200) return {ok:false, error:'gemini '+res.getResponseCode()};
-  const j=JSON.parse(res.getContentText()); const t=(((j.candidates||[])[0]||{}).content||{}).parts; return {ok:true, text:t?t.map(p=>p.text||'').join(''):''};
+    payload:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}], generationConfig:{temperature:.7,maxOutputTokens:500,responseMimeType:'application/json'}})});
+  if(res.getResponseCode()!==200) throw new Error('gemini '+res.getResponseCode());
+  const j=JSON.parse(res.getContentText()); const t=(((j.candidates||[])[0]||{}).content||{}).parts; return t?t.map(x=>x.text||'').join(''):'';
 }

@@ -3732,8 +3732,10 @@ const APPS_SCRIPT_CODE=`/**
  * 2) Chạy hàm setup() một lần (cấp quyền) → tạo các trang tính Events, FLCAS, FLCAS_CauHoi.
  * 3) Cài đặt dự án → Thuộc tính tập lệnh (Script properties):
  *      TEACHER_KEY   = mật khẩu giáo viên để xem Dashboard (bắt buộc)
- *      GEMINI_API_KEY = khoá API Gemini miễn phí (tuỳ chọn, để Mr. David trả lời bằng AI trên trang GitHub)
- *      GEMINI_MODEL  = tên mô hình (tuỳ chọn, mặc định gemini-2.5-flash)
+ *      Để Mr. David trả lời bằng AI trên trang GitHub, thêm MỘT trong hai khoá (tuỳ chọn):
+ *      DEEPSEEK_API_KEY = khoá API DeepSeek (trả phí theo lượt, rất rẻ)   · DEEPSEEK_MODEL (mặc định deepseek-flash)
+ *      GEMINI_API_KEY   = khoá API Gemini (có bậc miễn phí)              · GEMINI_MODEL  (mặc định gemini-2.5-flash)
+ *      Có cả hai khoá thì dùng DeepSeek trước, lỗi mới chuyển sang Gemini (hoặc đặt AI_PROVIDER = gemini để ưu tiên Gemini).
  * 4) Triển khai → Tùy chọn triển khai mới → Ứng dụng web → Thực thi với: Tôi; Người có quyền truy cập: Bất kỳ ai → Triển khai.
  * 5) Sao chép URL ứng dụng web (…/exec) và dán vào ô "Địa chỉ Apps Script" trong Dashboard của trang.
  */
@@ -3751,7 +3753,7 @@ function doGet(e){
   const a=(e.parameter.action||'config');
   if(a==='config'){
     const rows=sheet_('FLCAS_CauHoi').getDataRange().getValues().slice(1).filter(r=>String(r[0]).trim() && !/^\\(/.test(String(r[0])));
-    return json_({ok:true, ai:!!prop_('GEMINI_API_KEY'), flcas: rows.length? rows.map(r=>({t:String(r[0]).trim(), r:/r/i.test(String(r[1]))})) : null});
+    return json_({ok:true, ai:!!(prop_('GEMINI_API_KEY')||prop_('DEEPSEEK_API_KEY')), flcas: rows.length? rows.map(r=>({t:String(r[0]).trim(), r:/r/i.test(String(r[1]))})) : null});
   }
   if(a==='events'){
     if(!prop_('TEACHER_KEY') || e.parameter.k!==prop_('TEACHER_KEY')) return json_({ok:false, error:'Sai mật khẩu giáo viên'});
@@ -3778,14 +3780,27 @@ function saveEvents_(rows){
   } finally { lock.releaseLock(); }
 }
 function chat_(prompt){
-  const key=prop_('GEMINI_API_KEY'); if(!key) return {ok:false, error:'no key'};
+  const ds=prop_('DEEPSEEK_API_KEY'), gm=prop_('GEMINI_API_KEY'); if(!ds && !gm) return {ok:false, error:'no key'};
   const cache=CacheService.getScriptCache(), slot='rate_'+Math.floor(Date.now()/60000), used=+(cache.get(slot)||0);
   if(used>=40) return {ok:false, error:'rate'}; cache.put(slot,String(used+1),120);
+  prompt=prompt.slice(0,12000);
+  const order=(prop_('AI_PROVIDER').toLowerCase()==='gemini') ? [gm&&'gemini', ds&&'deepseek'] : [ds&&'deepseek', gm&&'gemini'];
+  let last='';
+  for(const p of order.filter(Boolean)){ try{ const t= p==='deepseek'? deepseek_(ds,prompt) : gemini_(gm,prompt); if(t) return {ok:true, text:t, provider:p}; }catch(err){ last=String(err); } }
+  return {ok:false, error:last||'ai'};
+}
+function deepseek_(key,prompt){
+  const res=UrlFetchApp.fetch('https://api.deepseek.com/chat/completions',{method:'post',contentType:'application/json',muteHttpExceptions:true,headers:{Authorization:'Bearer '+key},
+    payload:JSON.stringify({model:prop_('DEEPSEEK_MODEL')||'deepseek-flash', messages:[{role:'user',content:prompt}], response_format:{type:'json_object'}, thinking:{type:'disabled'}, temperature:.7, max_tokens:500})});
+  if(res.getResponseCode()!==200) throw new Error('deepseek '+res.getResponseCode()+' '+res.getContentText().slice(0,120));
+  const j=JSON.parse(res.getContentText()); return String((((j.choices||[])[0]||{}).message||{}).content||'').trim();
+}
+function gemini_(key,prompt){
   const model=prop_('GEMINI_MODEL')||'gemini-2.5-flash';
   const res=UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+key,{method:'post',contentType:'application/json',muteHttpExceptions:true,
-    payload:JSON.stringify({contents:[{role:'user',parts:[{text:prompt.slice(0,12000)}]}], generationConfig:{temperature:.7,maxOutputTokens:500,responseMimeType:'application/json'}})});
-  if(res.getResponseCode()!==200) return {ok:false, error:'gemini '+res.getResponseCode()};
-  const j=JSON.parse(res.getContentText()); const t=(((j.candidates||[])[0]||{}).content||{}).parts; return {ok:true, text:t?t.map(p=>p.text||'').join(''):''};
+    payload:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}], generationConfig:{temperature:.7,maxOutputTokens:500,responseMimeType:'application/json'}})});
+  if(res.getResponseCode()!==200) throw new Error('gemini '+res.getResponseCode());
+  const j=JSON.parse(res.getContentText()); const t=(((j.candidates||[])[0]||{}).content||{}).parts; return t?t.map(x=>x.text||'').join(''):'';
 }
 `;
 const LOGO_IMG=document.querySelector('.wlogo .schoollogo'); document.querySelectorAll('img[data-logo]').forEach(i=>{ i.src=LOGO_IMG.src; });
@@ -3951,7 +3966,7 @@ function renderResearch(rows){
     ['t ghép cặp', T?`t(${T.df}) = ${fmt(T.t)}`:'—'],['p', T?(T.p<.001?'< 0,001':fmt(T.p,3)):'—'],['Cohen d', T?fmt(T.dz):'—']];
   document.getElementById('rsTiles').innerHTML=tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
   document.getElementById('rsChart').innerHTML= pairs.length? slopeChart(pairs)+`<p class="note">${pairs.length} học sinh có đủ cặp FLCAS. Điểm 1–5, càng thấp càng ít lo âu; đường xanh là giảm lo âu.${T&&T.n>=2?` Kiểm định t ghép cặp: ${T.p<.05?'khác biệt có ý nghĩa thống kê (p < 0,05)':'chưa đủ bằng chứng khác biệt (p ≥ 0,05)'}.`:''}</p>` : '<p class="note">Chưa có học sinh nào làm đủ FLCAS trước và sau. Học sinh làm phiếu trước khi vào làng và sau khi đóng đủ 4 dấu.</p>';
-  const st=document.getElementById('rsSync'); st.textContent = SYNC.url ? `Đã kết nối Google Sheets. Chờ gửi: ${SYNC.box.length} dòng${SYNC.last?' · Gửi gần nhất '+SYNC.last:''}. AI trên trang GitHub: ${SYNC.cfg&&SYNC.cfg.ai?'bật (Gemini)':'tắt'}. AI trong bản Claude: ${cap.sample?'có':'không'}.` : 'Chưa kết nối Google Sheets: dữ liệu chỉ lưu trên máy này.';
+  const st=document.getElementById('rsSync'); st.textContent = SYNC.url ? `Đã kết nối Google Sheets. Chờ gửi: ${SYNC.box.length} dòng${SYNC.last?' · Gửi gần nhất '+SYNC.last:''}. AI trên trang GitHub: ${SYNC.cfg&&SYNC.cfg.ai?'bật':'tắt'}. AI trong bản Claude: ${cap.sample?'có':'không'}.` : 'Chưa kết nối Google Sheets: dữ liệu chỉ lưu trên máy này.';
   document.getElementById('rsSrc').textContent = DATA_SRC? `Đang xem: dữ liệu Google Sheets (${DATA_SRC.length} dòng, mọi máy)` : 'Đang xem: dữ liệu trên máy này';
 }
 
@@ -4021,7 +4036,7 @@ document.getElementById('copyCsv').addEventListener('click',async()=>{ try{ awai
   $('rsUrl').value=SYNC.url; $('rsKey').value=store.get('gl_teacher_key','');
   $('rsSave').addEventListener('click',async()=>{ const u=$('rsUrl').value.trim(); if(u && !/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u)){ $('rsSync').textContent='Địa chỉ phải có dạng https://script.google.com/macros/s/…/exec'; return; }
     SYNC.url=u; store.set('gl_sheet_url',u); store.set('gl_teacher_key',$('rsKey').value.trim()); if(!u){ renderData(); return; }
-    $('rsSync').textContent='Đang kiểm tra kết nối…'; const c=await syncConfig(); $('rsSync').textContent = c&&c.ok ? 'Kết nối được. '+(c.ai?'AI Gemini đã bật. ':'Chưa có GEMINI_API_KEY, Mr. David dùng kịch bản có sẵn trên trang GitHub. ')+(c.flcas?`Đang dùng ${c.flcas.length} câu FLCAS từ bảng tính.`:'Đang dùng bộ câu FLCAS rút gọn có sẵn.') : 'Không kết nối được. Kiểm tra lại địa chỉ và quyền "Bất kỳ ai" khi triển khai.'; });
+    $('rsSync').textContent='Đang kiểm tra kết nối…'; const c=await syncConfig(); $('rsSync').textContent = c&&c.ok ? 'Kết nối được. '+(c.ai?'AI (DeepSeek/Gemini) đã bật. ':'Chưa có khoá AI, Mr. David dùng kịch bản có sẵn trên trang GitHub. ')+(c.flcas?`Đang dùng ${c.flcas.length} câu FLCAS từ bảng tính.`:'Đang dùng bộ câu FLCAS rút gọn có sẵn.') : 'Không kết nối được. Kiểm tra lại địa chỉ và quyền "Bất kỳ ai" khi triển khai.'; });
   $('rsSend').addEventListener('click',async()=>{ const before=SYNC.box.length; await syncFlush(); renderData(); $('rsSync').textContent+= before? ` (đã thử gửi ${before} dòng)`:' (không có dòng nào chờ gửi)'; });
   $('rsCode').addEventListener('click',async()=>{ try{ await saveFile('Code.gs', APPS_SCRIPT_CODE,'text/plain'); }catch(e){} });
   $('rsLocal').addEventListener('click',()=>{ DATA_SRC=null; renderData(); });
