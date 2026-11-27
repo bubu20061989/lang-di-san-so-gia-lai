@@ -430,6 +430,13 @@ body.inside #compass,body.inside #miniWrap{opacity:.35}
   body.pr-qr #qrGrid, body.pr-qr #qrGrid *{visibility:visible!important} body.pr-qr #qrGrid{position:absolute;left:0;top:0;width:100%;max-height:none;overflow:visible;grid-template-columns:repeat(4,1fr)}
   body.pr-qr .qrcard{break-inside:avoid;border:1px solid #999} }
 .wlogo{display:flex;align-items:center;gap:12px}.schoollogo{width:64px;height:auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35));flex:none}.schoollogo.sm{width:34px;vertical-align:middle;margin-right:8px}
+#inHud{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:14px;flex-wrap:wrap;justify-content:center;max-width:min(860px,94vw)}
+#inHud .prog{font-size:13px}#inHud .prog b{color:#ffd27a;font-size:15px}#inHud .list{display:flex;gap:4px;flex-wrap:wrap}#inHud .list i{font-style:normal;font-size:11px;padding:2px 7px;border-radius:99px;border:1px solid rgba(255,255,255,.18);opacity:.6}#inHud .list i.on{background:#d9a441;color:#1c1512;opacity:1;border-color:#d9a441}
+#ggMsg{position:fixed;top:78px;left:50%;transform:translateX(-50%);z-index:40;padding:8px 16px;border-radius:12px;font-weight:700;color:#ffd27a}
+#elderSub{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);z-index:40;max-width:min(760px,92vw);padding:12px 18px;border-radius:14px;text-align:center;display:flex;flex-direction:column;gap:4px}#elderSub b{font-size:18px}#elderSub span{font-size:14px;opacity:.8}
+body.inside #tags,body.inside .tag{display:none!important}
+#inHud[hidden],#ggMsg[hidden],#elderSub[hidden]{display:none!important}
+#help.mini .credit{display:none}
 </style>
 </head>
 <body>
@@ -601,11 +608,16 @@ body.inside #compass,body.inside #miniWrap{opacity:.35}
   <div class="box glass" style="width:min(980px,100%)"><div class="brocade" aria-hidden="true"></div>
     <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><h2 id="prTitle">In hộ chiếu &amp; chứng chỉ</h2><button class="btn ghost" id="prClose">Đóng</button></div>
     <div class="btnrow"><button class="btn" data-pk="passport">Hộ chiếu di sản số</button><button class="btn" data-pk="cert">Chứng chỉ Junior Gia Lai Ambassador</button>
-      <label class="rsf" style="flex:1;min-width:220px">Họ và tên in trên giấy<input id="prName" maxlength="40" placeholder="Ví dụ: Nguyễn Văn An"></label></div>
+      <label class="rsf" style="flex:1;min-width:200px">Họ và tên in trên giấy<input id="prName" maxlength="40" placeholder="Ví dụ: Nguyễn Văn An"></label>
+      <label class="rsf" style="width:110px">Lớp<input id="prClass" maxlength="8" placeholder="9A1"></label>
+      <label class="rsf" style="flex:1;min-width:200px">Giáo viên hướng dẫn<input id="prTeacher" maxlength="40" placeholder="Họ tên giáo viên"></label></div>
     <img id="prImg" alt="Bản xem trước để in" class="primg">
     <div class="btnrow"><button class="btn solid" id="prDo">In</button><button class="btn" id="prDl">Tải ảnh PNG</button><span class="feedback" id="prMsg"></span></div>
   </div>
 </div>
+<div id="inHud" class="glass" hidden><button class="btn solid" id="inExit">⟵ Ra ngoài (Esc)</button><div class="prog">Khám phá Nhà Rông <b>0/9</b></div><div class="list"></div></div>
+<div id="ggMsg" class="glass" role="status" hidden></div>
+<div id="elderSub" class="glass" role="status" hidden></div>
 <div id="kkLoad" class="glass" role="status"><span>Đang tải nhân vật 3D</span><i></i></div>
 <div id="loader"><div class="inner"><div class="brocade" aria-hidden="true" style="width:220px"></div><div class="lt">Làng di sản số<br><span>Gia Lai</span></div><div class="lbar"><i></i></div><div id="loadMsg">Đang dựng buôn làng…</div></div></div>
 
@@ -2994,7 +3006,7 @@ canvas.addEventListener('pointerup',e=>{
   if(!downAt || Math.hypot(e.clientX-downAt[0],e.clientY-downAt[1])>6) return; downAt=null;
   if(explore && !panel.classList.contains('open') && !document.body.classList.contains('touring')){
     const o=pick(e);
-    if(o && o.userData.kind==='igong'){ const g=INSIDE.gongs[o.userData.id]; hero.strike(); strikeGong(g.userData.freq,.45); g.userData.swing=1; if(student) log('rong','igong',o.userData.id); return; }
+    if(o && o.userData.kind==='igong'){ gongHit(o.userData.id); return; }
     if(o && o.userData.kind==='inside'){ goTo('i'+o.userData.id); return; }
     if(o){ const {kind,id}=o.userData; const key = kind==='gong'?'gong' : kind==='pin'?'map' : kind==='spot'?(id==='house'?'rong':id) : kind==='station'?id : null;
       if(key && SPOTS[key]){ if(kind==='pin') selSite=id; goTo(key); return; } }
@@ -3717,6 +3729,7 @@ function startAs(code){
   { const f=followPose(); if(!(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO'))) flyToPose(f.cam,f.tgt,1.6); }
   if(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO')) playTour(); else toast('Chào '+code+'! Đi tới các vòng sáng để mở trạm, tìm 7 điểm khám phá trên la bàn.');
 }
+document.getElementById('inExit').addEventListener('click',()=>exitRong());
 document.getElementById('maHS').addEventListener('input',()=>{ document.getElementById('wErr').textContent=''; });
 document.getElementById('wForm').addEventListener('submit',e=>{ e.preventDefault(); const v=document.getElementById('maHS').value.normalize('NFKC').replace(/[\u2010-\u2015\u2212]/g,'-').replace(/\s+/g,'').toUpperCase(); document.getElementById('maHS').value=v;
   if(!/^[0-9A-Z][0-9A-Z\-_.]{1,15}$/.test(v)){ document.getElementById('wErr').textContent='Mã chỉ gồm chữ, số và dấu gạch, ví dụ 9A1-07.'; return; } startAs(v); });
@@ -3917,7 +3930,61 @@ const STN=[['map','Bản đồ di sản'],['rong','Nhà Rông'],['buddy','Luyệ
 function brocadeBand(g,x,y,w,h){ const cols=['#b0462b','#f1e3c4','#1c1512','#d9a441']; g.save(); g.fillStyle='#1c1512'; g.fillRect(x,y,w,h); const s=h/2;
   for(let i=0;x+i*s<x+w;i++){ g.fillStyle=cols[i%4===3?3:i%2?0:1]; g.beginPath(); g.moveTo(x+i*s,y+h/2); g.lineTo(x+i*s+s/2,y+h*.12); g.lineTo(x+i*s+s,y+h/2); g.lineTo(x+i*s+s/2,y+h*.88); g.closePath(); g.fill(); } g.restore(); }
 function wrapText(g,t,x,y,maxW,lh){ const w=t.split(' '); let line=''; for(const s of w){ const test=line?line+' '+s:s; if(g.measureText(test).width>maxW && line){ g.fillText(line,x,y); line=s; y+=lh; } else line=test; } g.fillText(line,x,y); return y; }
+// Giấy chứng nhận theo bố cục chuẩn Việt Nam: quốc hiệu – tiêu ngữ, đơn vị, tiêu đề, họ tên, nội dung, địa danh – ngày tháng, chức danh ký
+function goldGrad(g,x0,y0,x1,y1){ const gr=g.createLinearGradient(x0,y0,x1,y1); gr.addColorStop(0,'#8a5a14'); gr.addColorStop(.25,'#f3d27a'); gr.addColorStop(.5,'#b9852b'); gr.addColorStop(.75,'#f6dc8c'); gr.addColorStop(1,'#8a5a14'); return gr; }
+function rosette(g,x,y,r,F){ g.save(); g.translate(x,y);
+  for(const [a,c] of [[-.45,'#9e1f1f'],[.45,'#b52a24']]){ g.save(); g.rotate(a); g.fillStyle=c; g.beginPath(); g.moveTo(-r*.28,r*.4); g.lineTo(r*.28,r*.4); g.lineTo(r*.28,r*1.55); g.lineTo(0,r*1.3); g.lineTo(-r*.28,r*1.55); g.closePath(); g.fill(); g.restore(); }
+  g.fillStyle=goldGrad(g,-r,-r,r,r); g.beginPath(); for(let i=0;i<48;i++){ const a=i/48*Math.PI*2, rr=i%2?r*.9:r; g.lineTo(Math.cos(a)*rr,Math.sin(a)*rr); } g.closePath(); g.fill();
+  g.fillStyle='#9e1f1f'; g.beginPath(); g.arc(0,0,r*.72,0,6.283); g.fill(); g.strokeStyle='#f3d27a'; g.lineWidth=r*.05; g.beginPath(); g.arc(0,0,r*.64,0,6.283); g.stroke();
+  g.fillStyle='#f6dc8c'; g.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*.17:r*.38; g.lineTo(Math.cos(a)*rr,Math.sin(a)*rr-r*.08); } g.closePath(); g.fill();
+  g.font=`800 ${r*.2}px ${F}`; g.textAlign='center'; g.fillText('4/4 TRẠM',0,r*.47); g.restore(); }
+function ribbon(g,cx,y,w,h,text,F){ g.save(); const fold=h*.55;
+  g.fillStyle='#7d1717'; for(const s of [-1,1]){ g.beginPath(); g.moveTo(cx+s*(w/2-fold*.2),y+h*.25); g.lineTo(cx+s*(w/2+fold),y+h*.25); g.lineTo(cx+s*(w/2+fold*.55),y+h*.75); g.lineTo(cx+s*(w/2+fold),y+h*1.25); g.lineTo(cx+s*(w/2-fold*.2),y+h*1.25); g.closePath(); g.fill(); }
+  const gr=g.createLinearGradient(0,y,0,y+h); gr.addColorStop(0,'#c63a2f'); gr.addColorStop(1,'#951d1d'); g.fillStyle=gr; g.fillRect(cx-w/2,y,w,h);
+  g.strokeStyle='#f3d27a'; g.lineWidth=3; g.strokeRect(cx-w/2+8,y+8,w-16,h-16);
+  g.fillStyle='#fff6dc'; g.font=`800 ${h*.42}px ${F}`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,cx,y+h/2+2); g.restore(); }
+async function drawCertificate(name, cls, teacher){
+  const W=2339, H=1654, c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d'); const F='"Be Vietnam Pro",system-ui,sans-serif', SERIF='"Noto Serif","Times New Roman",Georgia,serif';
+  const st=state||{}, stamps=st.stamps||{}, d=new Date(), who=(name||'').trim()||student||'';
+  // nền giấy kem + hoạ tiết thổ cẩm chìm + logo chìm
+  const bg=g.createRadialGradient(W/2,H/2,200,W/2,H/2,W*.7); bg.addColorStop(0,'#fffaf0'); bg.addColorStop(1,'#f1e3c4'); g.fillStyle=bg; g.fillRect(0,0,W,H);
+  g.save(); g.globalAlpha=.05; g.fillStyle='#7a2e1c'; for(let y=0;y<H;y+=46) for(let x=(y/46%2)*23;x<W;x+=46){ g.beginPath(); g.moveTo(x,y-10); g.lineTo(x+10,y); g.lineTo(x,y+10); g.lineTo(x-10,y); g.closePath(); g.fill(); } g.restore();
+  try{ if(LOGO_IMG.naturalWidth){ g.save(); g.globalAlpha=.06; const lw=820, lh=lw*LOGO_IMG.naturalHeight/LOGO_IMG.naturalWidth; g.drawImage(LOGO_IMG,W/2-lw/2,H/2-lh/2+60,lw,lh); g.restore(); } }catch(e){}
+  // khung: viền đỏ đậm, dải thổ cẩm, chỉ vàng đôi, góc hoa văn
+  g.fillStyle='#7d1717'; g.fillRect(0,0,W,40); g.fillRect(0,H-40,W,40); g.fillRect(0,0,40,H); g.fillRect(W-40,0,40,H);
+  brocadeBand(g,40,40,W-80,44); brocadeBand(g,40,H-84,W-80,44);
+  g.strokeStyle=goldGrad(g,0,0,W,H); g.lineWidth=8; g.strokeRect(70,104,W-140,H-208); g.lineWidth=2.5; g.strokeRect(88,122,W-176,H-244);
+  for(const [x,y] of [[88,122],[W-88,122],[88,H-122],[W-88,H-122]]){ g.save(); g.translate(x,y); g.rotate(Math.PI/4); g.fillStyle='#7d1717'; g.fillRect(-30,-30,60,60); g.strokeStyle='#f3d27a'; g.lineWidth=4; g.strokeRect(-20,-20,40,40); g.fillStyle='#f3d27a'; g.fillRect(-7,-7,14,14); g.restore(); }
+  // đầu trang: đơn vị (trái) – quốc hiệu, tiêu ngữ (phải) – logo giữa
+  g.fillStyle='#1c1512'; g.textAlign='center'; g.textBaseline='alphabetic';
+  g.font=`700 30px ${F}`; g.fillText('TRƯỜNG THCS QUY NHƠN BẮC',470,200); g.font=`600 24px ${F}`; g.fillText('DỰ ÁN KHKT “LÀNG DI SẢN SỐ GIA LAI”',470,238); g.fillRect(400,252,140,2);
+  g.font=`700 30px ${F}`; g.fillText('CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM',W-560,200); g.font=`700 28px ${F}`; g.fillText('Độc lập – Tự do – Hạnh phúc',W-560,240); const tw=g.measureText('Độc lập – Tự do – Hạnh phúc').width; g.fillRect(W-560-tw/2,252,tw,2);
+  try{ if(LOGO_IMG.naturalWidth){ const lw=190, lh=lw*LOGO_IMG.naturalHeight/LOGO_IMG.naturalWidth; g.drawImage(LOGO_IMG,W/2-lw/2,150,lw,lh); } }catch(e){}
+  g.font=`500 24px ${F}`; g.textAlign='left'; g.fillStyle='#5a4632'; g.fillText('Số: '+(student||'—')+'/GCN-LDS',150,300);
+  // tiêu đề
+  g.textAlign='center'; g.font=`900 132px ${SERIF}`; g.lineWidth=10; g.strokeStyle='#f6dc8c'; g.strokeText('GIẤY CHỨNG NHẬN',W/2,470); g.fillStyle='#9e1f1f'; g.fillText('GIẤY CHỨNG NHẬN',W/2,470);
+  g.font=`600 34px ${F}`; g.fillStyle='#8a5a14'; g.fillText('C E R T I F I C A T E   O F   A C H I E V E M E N T',W/2,525);
+  g.font=`italic 400 36px ${SERIF}`; g.fillStyle='#3a2a1e'; g.fillText('Chứng nhận học sinh / This is to certify that',W/2,605);
+  // họ tên
+  let fs=104; g.font=`italic 700 ${fs}px ${SERIF}`; while(g.measureText(who).width>1500 && fs>60){ fs-=6; g.font=`italic 700 ${fs}px ${SERIF}`; } g.fillStyle='#1c1512'; g.fillText(who,W/2,725);
+  g.strokeStyle=goldGrad(g,W/2-620,0,W/2+620,0); g.lineWidth=4; g.beginPath(); g.moveTo(W/2-620,755); g.lineTo(W/2+620,755); g.stroke(); g.fillStyle='#b9852b'; g.save(); g.translate(W/2,755); g.rotate(Math.PI/4); g.fillRect(-10,-10,20,20); g.restore();
+  g.font=`500 32px ${F}`; g.fillStyle='#3a2a1e'; g.fillText(`Mã học sinh: ${student||'—'}${cls?'   ·   Lớp: '+cls:''}`,W/2,810);
+  // nội dung
+  g.font=`400 36px ${F}`; wrapText(g,'Đã hoàn thành xuất sắc hành trình trải nghiệm di sản và luyện nói tiếng Anh qua 4 trạm: Bản đồ di sản, Nhà Rông, Luyện nói với Mr. David và Explorer Quest. Được công nhận danh hiệu:',W/2,880,1600,52);
+  ribbon(g,W/2,975,1040,110,'JUNIOR GIA LAI AMBASSADOR',F);
+  g.font=`italic 600 34px ${SERIF}`; g.fillStyle='#7d1717'; g.fillText('Đại sứ nhí Di sản Gia Lai',W/2,1135);
+  // dấu các trạm
+  STN.forEach(([k,l],i)=>{ const x=W/2-330+i*220, y=1215; g.beginPath(); g.arc(x,y,40,0,6.283); g.fillStyle=stamps[k]?'#9e1f1f':'#e7dcc6'; g.fill(); g.strokeStyle=stamps[k]?'#f3d27a':'#cdbfa3'; g.lineWidth=4; g.stroke();
+    g.fillStyle=stamps[k]?'#fff6dc':'#9a8c72'; g.font=`800 34px ${F}`; g.fillText(stamps[k]?'✓':String(i+1),x,y+12); g.font=`600 21px ${F}`; g.fillStyle='#3a2a1e'; g.fillText(l,x,y+72); });
+  // huy chương + QR (trái), ngày tháng & chữ ký (phải)
+  rosette(g,330,1300,120,F);
+  try{ const q=await qrCanvas(PUBLIC_URL,5); g.drawImage(q,520,1250,170,170); g.font=`500 18px ${F}`; g.fillStyle='#5a4632'; g.fillText('Quét để trải nghiệm',605,1440); }catch(e){}
+  g.font=`italic 400 32px ${SERIF}`; g.fillStyle='#3a2a1e'; g.fillText(`Quy Nhơn, ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`,W-470,1300);
+  g.font=`700 32px ${F}`; g.fillStyle='#1c1512'; g.fillText('GIÁO VIÊN HƯỚNG DẪN',W-470,1350); g.font=`italic 400 24px ${F}`; g.fillStyle='#5a4632'; g.fillText('(Ký, ghi rõ họ tên)',W-470,1386);
+  if(teacher){ g.font=`700 34px ${F}`; g.fillStyle='#1c1512'; g.fillText(teacher,W-470,1500); }
+  return c; }
 async function drawDoc(kind, name){
+  if(kind==='cert') return drawCertificate(name, document.getElementById('prClass').value.trim(), document.getElementById('prTeacher').value.trim());
   const W=2000, H=1414, c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d'); const F='"Be Vietnam Pro",system-ui,sans-serif';
   g.fillStyle='#fbf5e8'; g.fillRect(0,0,W,H); brocadeBand(g,0,0,W,70); brocadeBand(g,0,H-70,W,70); g.strokeStyle='#b0462b'; g.lineWidth=6; g.strokeRect(60,110,W-120,H-220); g.strokeStyle='#d9a441'; g.lineWidth=2; g.strokeRect(76,126,W-152,H-252);
   const st=state||{}, stamps=st.stamps||{}, date=new Date().toLocaleDateString('vi-VN'); const who=(name||'').trim()||student||'';
@@ -4049,7 +4116,7 @@ document.getElementById('copyCsv').addEventListener('click',async()=>{ try{ awai
   $('rsFl').addEventListener('click',()=>openFLCAS('pre',()=>{}));
   $('prClose').addEventListener('click',()=>{ $('printModal').hidden=true; });
   document.querySelectorAll('#printModal [data-pk]').forEach(b=>b.addEventListener('click',()=>openPrint(b.dataset.pk)));
-  let nameT=0; $('prName').addEventListener('input',()=>{ clearTimeout(nameT); nameT=setTimeout(()=>openPrint(printKind),350); });
+  let nameT=0; $('prTeacher').value=store.get('gl_teacher_name',''); ['prName','prClass','prTeacher'].forEach(id=>$(id).addEventListener('input',()=>{ if(id==='prTeacher') store.set('gl_teacher_name',$(id).value.trim()); clearTimeout(nameT); nameT=setTimeout(()=>openPrint(printKind),350); }));
   const doPrint=cls=>{ document.body.classList.add(cls); const off=()=>{ document.body.classList.remove(cls); removeEventListener('afterprint',off); }; addEventListener('afterprint',off); setTimeout(()=>{ try{ window.print(); }catch(e){} setTimeout(off,1500); },120); };
   $('prDo').addEventListener('click',()=>{ log('passport','print',printKind); doPrint('pr-doc'); });
   $('qrPrint').addEventListener('click',()=>doPrint('pr-qr'));
@@ -4242,6 +4309,7 @@ async function upgradeCharacters(){
   villagers.forEach((v,i)=>adoptKK(v.c, vk[i]||'walker'));
   dancerChars.forEach(c=>adoptKK(c,'dancer',d=>{ d.A.dance=true; }));
   setTimeout(loadQTStatue,6000);
+  try{ const el=makeKK('bana_man'); el.root.position.set(1.9,INSIDE.y,-.5); el.root.rotation.y=-Math.PI/2; el.A.sit=true; INSIDE.group.add(el.root); INSIDE.elder=el; reg(el.root,'inside','elder','Già làng: bấm để nghe kể chuyện'); }catch(e){ console.warn('elder',e); }
 }
 // Ảnh chân dung cho thẻ chọn nhân vật
 function renderPortraits(){
@@ -4372,6 +4440,14 @@ const RONG_LEARN = { id:'rong', area:'rong', kicker:'Trạm 2 · Nhà Rông', ti
         {q:'How do people carry a gui?',o:['On their head','On their back','In their hands'],a:1,vi:'Người ta mang gùi thế nào?'},
         {q:'What are tomb statues carved from?',o:['Wood','Stone','Metal'],a:0,vi:'Tượng nhà mồ được tạc từ gì?'}] };
 const INSIDE_LEARN = {
+  elder:{ title:'The village elder', sub:'Già làng kể chuyện', intro:"The village elder is a wise old man. People listen to him and ask for his advice. He tells old stories by the fire so young people remember their culture.",
+    vi:'Già làng là người cao tuổi, hiểu biết, được dân làng kính trọng; ông kể chuyện xưa bên bếp lửa để con cháu nhớ văn hoá của mình.', vocab:[['elder','người già, già làng'],['wise','thông thái'],['story','câu chuyện'],['advice','lời khuyên']],
+    speak:["The elder tells old stories.","We should listen to our elders."],
+    quiz:[{q:'What does the elder do by the fire?',o:['He tells old stories','He plays football','He sells food'],a:0},{q:'What is the Rong house?',o:['The heart of the village','A school bus','A market'],a:0}] },
+  loom:{ title:'Brocade weaving', sub:'Dệt thổ cẩm', intro:"Bahnar and Jrai women weave brocade by hand on a back-strap loom. The patterns show the sun, mountains, rivers and animals. Red, black and white are the main colours.",
+    vi:'Phụ nữ Bahnar, Jrai dệt thổ cẩm bằng khung dệt thủ công. Hoa văn thể hiện mặt trời, núi, sông, muông thú; màu chính là đỏ, đen, trắng.', vocab:[['weave','dệt'],['loom','khung dệt'],['pattern','hoa văn'],['brocade','thổ cẩm']],
+    speak:["She weaves brocade on a loom.","The pattern shows the mountains."],
+    quiz:[{q:'Who usually weaves brocade?',o:['Bahnar and Jrai women','Fishermen','Soldiers'],a:0},{q:'What are the main colours?',o:['Red, black and white','Blue and pink','Green and purple'],a:0}] },
   hearth:{ title:'The hearth', sub:'Bếp lửa giữa nhà Rông', intro:"The hearth is in the middle of the Rong house. The fire keeps people warm on cold nights. Villagers sit around it to talk, tell stories and share food.",
     vi:'Bếp lửa ở giữa nhà Rông giữ ấm, là nơi dân làng ngồi quây quần kể chuyện, chia sẻ đồ ăn.', vocab:[['hearth','bếp lửa'],['firewood','củi'],['smoke','khói'],['warm','ấm']],
     speak:["The fire keeps everyone warm.","Villagers tell stories around the fire."],
@@ -4420,13 +4496,13 @@ const VOCAB_POI = [
   { id:'v_thapdoi', p:[180,-27], r:12, title:'Tháp Đôi', w:[['tower','/ˈtaʊə/','tháp','The two towers stand side by side.'],['brick','/brɪk/','viên gạch','They are made of red bricks.'],['ancient','/ˈeɪnʃənt/','cổ xưa','These are ancient Cham towers.']] },
   { id:'v_beach', p:[200,5], r:12, title:'Biển Quy Nhơn', w:[['basket boat','/ˈbɑːskɪt bəʊt/','thúng chai','The fisherman rows a basket boat.'],['fisherman','/ˈfɪʃəmən/','ngư dân','The fisherman catches fish.'],['wave','/weɪv/','sóng','The waves are big today.']] },
   // bên trong Nhà Rông
-  { id:'vi_hearth', in:true, p:[0,.6], r:1.5, title:'Bếp lửa', w:[['hearth','/hɑːθ/','bếp lửa','We sit around the hearth.'],['firewood','/ˈfaɪəwʊd/','củi','Put more firewood on the fire.'],['smoke','/sməʊk/','khói','Smoke rises to the roof.']] },
-  { id:'vi_gong', in:true, p:[0,-1.6], r:1.3, title:'Bộ cồng chiêng', w:[['gong set','/ɡɒŋ set/','bộ cồng chiêng','The gong set hangs on the wall.'],['mallet','/ˈmælɪt/','dùi đánh','Hit the gong with a mallet.'],['echo','/ˈekəʊ/','tiếng vang','I can hear the echo.']] },
-  { id:'vi_drum', in:true, p:[-3.1,1.0], r:1.3, title:'Trống', w:[['buffalo skin','/ˈbʌfələʊ skɪn/','da trâu','The drum is covered with buffalo skin.'],['drumstick','/ˈdrʌmstɪk/','dùi trống','Hold the drumstick tightly.'],['signal','/ˈsɪɡnəl/','tín hiệu','The drum is a signal to meet.']] },
-  { id:'vi_trung', in:true, p:[3.0,1.0], r:1.3, title:"Đàn T'rưng", w:[['xylophone','/ˈzaɪləfəʊn/','đàn gõ','The T’rung is a bamboo xylophone.'],['bamboo tube','/bæmˈbuː tjuːb/','ống tre','Each bamboo tube has a note.'],['melody','/ˈmelədi/','giai điệu','What a beautiful melody!']] },
-  { id:'vi_jar', in:true, p:[-3.2,-1.3], r:1.2, title:'Ché', w:[['jar','/dʒɑː/','cái ché','The jar is very old.'],['precious','/ˈpreʃəs/','quý giá','Jars are precious.'],['share','/ʃeə/','chia sẻ','People share food at festivals.']] },
-  { id:'vi_gui', in:true, p:[3.2,-1.3], r:1.2, title:'Gùi', w:[['harvest','/ˈhɑːvɪst/','mùa gặt','The harvest is in autumn.'],['corn','/kɔːn/','ngô','The gui is full of corn.'],['carry','/ˈkæri/','mang, vác','I can carry the gui.']] },
-  { id:'vi_statue', in:true, p:[-3.4,.3], r:1.1, title:'Tượng gỗ', w:[['carving','/ˈkɑːvɪŋ/','tác phẩm chạm khắc','This carving is beautiful.'],['axe','/æks/','cái rìu','He carves with an axe.'],['artist','/ˈɑːtɪst/','nghệ nhân','The artist is very skilful.']] },
+  { id:'vi_hearth', in:true, p:[0,1.2], r:1.6, title:'Bếp lửa', w:[['hearth','/hɑːθ/','bếp lửa','We sit around the hearth.'],['firewood','/ˈfaɪəwʊd/','củi','Put more firewood on the fire.'],['smoke','/sməʊk/','khói','Smoke rises to the roof.']] },
+  { id:'vi_gong', in:true, p:[0,-3.9], r:1.6, title:'Bộ cồng chiêng', w:[['gong set','/ɡɒŋ set/','bộ cồng chiêng','The gong set hangs on the wall.'],['mallet','/ˈmælɪt/','dùi đánh','Hit the gong with a mallet.'],['echo','/ˈekəʊ/','tiếng vang','I can hear the echo.']] },
+  { id:'vi_drum', in:true, p:[-6.4,1.4], r:1.4, title:'Trống', w:[['buffalo skin','/ˈbʌfələʊ skɪn/','da trâu','The drum is covered with buffalo skin.'],['drumstick','/ˈdrʌmstɪk/','dùi trống','Hold the drumstick tightly.'],['signal','/ˈsɪɡnəl/','tín hiệu','The drum is a signal to meet.']] },
+  { id:'vi_trung', in:true, p:[6.1,1.6], r:1.4, title:"Đàn T'rưng", w:[['xylophone','/ˈzaɪləfəʊn/','đàn gõ','The T’rung is a bamboo xylophone.'],['bamboo tube','/bæmˈbuː tjuːb/','ống tre','Each bamboo tube has a note.'],['melody','/ˈmelədi/','giai điệu','What a beautiful melody!']] },
+  { id:'vi_jar', in:true, p:[-7.1,-2.6], r:1.4, title:'Ché', w:[['jar','/dʒɑː/','cái ché','The jar is very old.'],['precious','/ˈpreʃəs/','quý giá','Jars are precious.'],['share','/ʃeə/','chia sẻ','People share food at festivals.']] },
+  { id:'vi_gui', in:true, p:[8.9,-.5], r:1.3, title:'Gùi', w:[['harvest','/ˈhɑːvɪst/','mùa gặt','The harvest is in autumn.'],['corn','/kɔːn/','ngô','The gui is full of corn.'],['carry','/ˈkæri/','mang, vác','I can carry the gui.']] },
+  { id:'vi_statue', in:true, p:[-9.2,.5], r:1.3, title:'Tượng gỗ', w:[['carving','/ˈkɑːvɪŋ/','tác phẩm chạm khắc','This carving is beautiful.'],['axe','/æks/','cái rìu','He carves with an axe.'],['artist','/ˈɑːtɪst/','nghệ nhân','The artist is very skilful.']] },
 ];
 
 /* ---------- Nghe giọng nói một lần (dùng cho luyện nói) ---------- */
@@ -4540,90 +4616,135 @@ function hideVocab(){ vocabEl.classList.remove('on'); vocabCur=null; setTimeout(
 function updateWordCount(){ const el=document.getElementById('wordCount'); if(el) el.textContent=(state&&state.vocab?state.vocab.length:0)+' từ'; }
 
 /* ---------- Bên trong Nhà Rông ---------- */
-const INSIDE={ on:false, y:2.64, bx:4.45, bz:2.45, light:null, fire:[], gongs:[], gui:null, wearing:false, flare:0 };
+const INSIDE={ on:false, y:-80, bx:10.4, bz:5.4, done:new Set(), light:null, fire:[], gongs:[], gui:null, wearing:false, flare:0 };
 const groundAt=(x,z)=> INSIDE.on ? INSIDE.y : heightAt(x,z);
-const IN_COLL=[[0,-.3,1.05],[-3.7,1.6,.62],[3.55,1.75,.62],[-4.0,-2.0,.75],[4.0,-2.05,.55],[-4.15,.3,.45]];
+const IN_COLL=[[0,-.5,1.35],[-7.5,2.2,.95],[7.2,2.4,.95],[-8.6,-3.6,1.25],[10,-.8,.6],[-10.2,.5,.5],[8.6,-3.3,1.0],[1.9,-.5,.45],[-6,-3.4,.3],[-2,-3.4,.3],[2,-3.4,.3],[6,-3.4,.3],[-6,3.4,.3],[-2,3.4,.3],[2,3.4,.3],[6,3.4,.3]];
 function insideCollide(p){ p.x=THREE.MathUtils.clamp(p.x,-INSIDE.bx,INSIDE.bx); p.z=THREE.MathUtils.clamp(p.z,-INSIDE.bz,INSIDE.bz);
   for(const [cx,cz,r] of IN_COLL){ const dx=p.x-cx, dz=p.z-cz, d=Math.hypot(dx,dz), R=r+.3; if(d<R && d>1e-4){ p.x=cx+dx/d*R; p.z=cz+dz/d*R; } } }
-{ // dựng nội thất
-  const Y=INSIDE.y, G=new THREE.Group(); G.name='rongInside'; rong.add(G);
-  const wood=M.wood, dark=M.darkwood;
-  // vách hai đầu hồi + cột trong nhà + dầm ngang
-  const wallH=4.3-2.4-.15; for(const sx of [-1,1]){ const w=new THREE.Mesh(new THREE.PlaneGeometry(6.4-.5,wallH), M.woven); w.rotation.y=Math.PI/2; w.position.set(sx*(5-.04),2.6+wallH/2-.05,0); G.add(w); }
-  for(const [sx,sz] of [[-4.75,-2.75],[4.75,-2.75],[-4.75,2.75],[4.75,2.75]]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.13,.16,2.0,10), dark); c.position.set(sx,Y+1.0,sz); G.add(c); }
-  { const b=new THREE.Mesh(new THREE.BoxGeometry(9.8,.16,.16), dark); b.position.set(0,4.2,-2.75); G.add(b); }
-  // thảm thổ cẩm dưới bếp và treo vách
-  const rug=new THREE.Mesh(new THREE.PlaneGeometry(3.0,2.3), M.brocade); rug.rotation.x=-Math.PI/2; rug.position.set(0,Y+.012,-.2); G.add(rug);
-  for(const [x,z,ry] of [[-2.2,-2.88,0],[2.2,-2.88,0],[-4.92,-1.2,Math.PI/2],[4.92,1.1,-Math.PI/2]]){ const b=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.6), M.brocade); b.position.set(x,Y+1.55,z); b.rotation.y=ry; G.add(b); }
-  // bếp lửa
-  const hearth=new THREE.Group(); hearth.position.set(0,Y,-.3); G.add(hearth);
-  const frame=new THREE.Mesh(new RoundedBoxGeometry(1.7,.16,1.7,2,.05), dark); frame.position.y=.08; hearth.add(frame);
-  const ash=new THREE.Mesh(new THREE.BoxGeometry(1.45,.06,1.45), new THREE.MeshStandardMaterial({color:0x6d655c,roughness:1})); ash.position.y=.15; hearth.add(ash);
-  const stoneM=new THREE.MeshStandardMaterial({color:0x5a5450,roughness:.9}); for(let k=0;k<3;k++){ const a=k/3*Math.PI*2; const s=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8), stoneM); s.scale.y=.75; s.position.set(Math.cos(a)*.38,.27,Math.sin(a)*.38); hearth.add(s); }
-  for(let k=0;k<4;k++){ const lg=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.95,7), M.wood); lg.rotation.z=Math.PI/2-.35; lg.rotation.y=k*Math.PI/2; lg.position.y=.3; hearth.add(lg); }
+{ // dựng nội thất: gian nhà Rông rộng 22 × 12 m, mái cao vút, đặt riêng (dưới lòng đất) để không bị gò bó bởi vỏ ngoài
+  const Y=INSIDE.y, G=new THREE.Group(); G.name='rongInside'; scene.add(G); G.visible=false;
+  const wood=M.wood, dark=M.darkwood, HX=11, HZ=6, EV=3.4, RG=12;
+  const roofAt=z=>Y+EV+(HZ-Math.abs(z))/HZ*(RG-EV); INSIDE.roofAt=roofAt;
+  const DS=m=>{ const c=m.clone(); c.side=THREE.DoubleSide; return c; };
+  // sàn tre: ván ghép sẫm màu
+  const plank=new THREE.MeshStandardMaterial({color:0x6b4527,roughness:.85});
+  for(let i=0;i<24;i++){ const b=new THREE.Mesh(new THREE.BoxGeometry(2*HX,.12,.48), i%2?plank:dark); b.position.set(0,Y-.06,-HZ+.25+i*.5); b.receiveShadow=true; G.add(b); }
+  // vách đan dọc hai bên + hồi
+  const woven=DS(M.woven); for(const sz of [-1,1]){ const w=new THREE.Mesh(new THREE.PlaneGeometry(2*HX,EV), woven); w.position.set(0,Y+EV/2,sz*HZ); G.add(w); }
+  const gable=new THREE.Shape(); gable.moveTo(-HZ,0); gable.lineTo(HZ,0); gable.lineTo(HZ,EV); gable.lineTo(0,RG); gable.lineTo(-HZ,EV); gable.closePath();
+  for(const sx of [-1,1]){ const gm=new THREE.Mesh(new THREE.ShapeGeometry(gable), woven); gm.rotation.y=Math.PI/2; gm.position.set(sx*HX,Y,0); G.add(gm); }
+  // mặt dưới mái tranh + vì kèo, xà gồ, xà ngang
+  const under=new THREE.MeshStandardMaterial({color:0x7a5527, roughness:1, side:THREE.DoubleSide, map:M.thatch.map||null});
+  const slope=Math.hypot(HZ,RG-EV), ang=Math.atan2(RG-EV,HZ);
+  for(const sz of [-1,1]){ const r=new THREE.Mesh(new THREE.PlaneGeometry(2*HX,slope), under); r.position.set(0,Y+(EV+RG)/2,sz*HZ/2); r.rotation.x= sz>0 ? -(Math.PI/2-ang) : (Math.PI/2-ang); r.rotation.x+= sz>0?0:0; G.add(r);
+    for(let x=-HX+.5;x<=HX-.4;x+=1.1){ const rf=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,slope,6), M.bamboo); rf.position.set(x,Y+(EV+RG)/2-.08,sz*HZ/2); rf.rotation.x= sz>0? ang-Math.PI/2+Math.PI : -(ang-Math.PI/2)+Math.PI; rf.rotation.x=(sz>0?-1:1)*(Math.PI/2-ang); G.add(rf); }
+    for(let k=1;k<5;k++){ const f=k/5, pu=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,2*HX,7), dark); pu.rotation.z=Math.PI/2; pu.position.set(0,Y+EV+(RG-EV)*f-.12,sz*HZ*(1-f)); G.add(pu); } }
+  for(let x=-HX+2.75;x<HX;x+=2.75){ const tb=new THREE.Mesh(new THREE.BoxGeometry(.22,.22,2*HZ), dark); tb.position.set(x,Y+EV+.2,0); G.add(tb);
+    for(const zz of [-2.2,2.2]){ const bunch=new THREE.Group(); bunch.position.set(x,Y+EV+.05,zz); G.add(bunch); for(let c=0;c<5;c++){ const cb=new THREE.Mesh(new THREE.CapsuleGeometry(.06,.22,3,6), new THREE.MeshStandardMaterial({color:c%2?0xf0bf38:0xd99a2b,roughness:.7})); cb.position.set((c-2)*.07,-.32-Math.abs(c-2)*.04,0); bunch.add(cb); } } }
+  { const rid=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,2*HX,8), dark); rid.rotation.z=Math.PI/2; rid.position.set(0,Y+RG-.25,0); G.add(rid); }
+  // cột chạm khắc quấn thổ cẩm
+  const POST=[]; for(const x of [-6,-2,2,6]) for(const z of [-3.4,3.4]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.24,.28,roofAt(z)-Y,12), dark); c.position.set(x,(roofAt(z)+Y)/2,z); G.add(c); POST.push([x,z,.35]);
+    for(const h of [.9,2.2]){ const b=new THREE.Mesh(new THREE.CylinderGeometry(.285,.285,.32,12,1,true), M.brocade); b.position.set(x,Y+h,z); G.add(b); } }
+  // cửa ra: ô sáng nhìn ra sân làng + vệt nắng
+  const outT=new THREE.CanvasTexture(cnv(256,g=>{ const gr=g.createLinearGradient(0,0,0,256); gr.addColorStop(0,'#bfe3ff'); gr.addColorStop(.55,'#f4f0d8'); gr.addColorStop(.62,'#7fae5a'); gr.addColorStop(1,'#a0582f'); g.fillStyle=gr; g.fillRect(0,0,256,256); })); outT.colorSpace=THREE.SRGBColorSpace;
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(2.0,2.6), new THREE.MeshBasicMaterial({map:outT})); door.position.set(0,Y+1.3,HZ-.02); door.rotation.y=Math.PI; G.add(door);
+  for(const sx of [-1,1]){ const jamb=new THREE.Mesh(new THREE.BoxGeometry(.18,2.8,.25), dark); jamb.position.set(sx*1.08,Y+1.4,HZ-.1); G.add(jamb); } { const lin=new THREE.Mesh(new THREE.BoxGeometry(2.4,.2,.25), dark); lin.position.set(0,Y+2.8,HZ-.1); G.add(lin); }
+  const beam=new THREE.Mesh(new THREE.PlaneGeometry(2.2,7), new THREE.MeshBasicMaterial({color:0xffe6b0, transparent:true, opacity:.10, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.DoubleSide})); beam.position.set(0,Y+.02,HZ-3.2); beam.rotation.x=-Math.PI/2; G.add(beam);
+  INSIDE.exitGlow=new THREE.Mesh(new THREE.RingGeometry(.7,.85,40), new THREE.MeshBasicMaterial({color:0xffd27a, transparent:true, opacity:.7, depthWrite:false})); INSIDE.exitGlow.rotation.x=-Math.PI/2; INSIDE.exitGlow.position.set(0,Y+.03,HZ-1.1); G.add(INSIDE.exitGlow);
+  // thảm & thổ cẩm treo
+  const rug=new THREE.Mesh(new THREE.PlaneGeometry(4.6,3.6), M.brocade); rug.rotation.x=-Math.PI/2; rug.position.set(0,Y+.012,-.5); G.add(rug);
+  for(const [x,z,ry,w,h] of [[-6.6,-HZ+.06,0,1.6,2.2],[6.6,-HZ+.06,0,1.6,2.2],[-HX+.06,-2.4,Math.PI/2,1.4,2.0],[HX-.06,2.4,-Math.PI/2,1.4,2.0],[-3.6,HZ-.06,Math.PI,1.2,1.8],[3.6,HZ-.06,Math.PI,1.2,1.8]]){ const b=new THREE.Mesh(new THREE.PlaneGeometry(w,h), M.brocade); b.position.set(x,Y+1.75,z); b.rotation.y=ry; G.add(b); }
+  // sọ trâu trên vách sau (vật thiêng sau lễ hội)
+  { const sk=new THREE.Group(); sk.position.set(0,Y+4.7,-HZ+.25); G.add(sk); const bone=new THREE.MeshStandardMaterial({color:0xe9dfc8,roughness:.7});
+    const h=new THREE.Mesh(new THREE.SphereGeometry(.28,14,10), bone); h.scale.set(1,1.25,.6); sk.add(h);
+    for(const sx of [-1,1]){ const horn=new THREE.Mesh(new THREE.TorusGeometry(.42,.06,8,18,Math.PI*.75), new THREE.MeshStandardMaterial({color:0x2a211c,roughness:.5})); horn.position.set(sx*.32,.18,0); horn.rotation.z= sx>0? -.3 : Math.PI+.3; sk.add(horn); } }
+  // bếp lửa giữa nhà
+  const hearth=new THREE.Group(); hearth.position.set(0,Y,-.5); G.add(hearth);
+  const frame=new THREE.Mesh(new RoundedBoxGeometry(2.2,.18,2.2,2,.05), dark); frame.position.y=.09; hearth.add(frame);
+  const ash=new THREE.Mesh(new THREE.BoxGeometry(1.9,.06,1.9), new THREE.MeshStandardMaterial({color:0x6d655c,roughness:1})); ash.position.y=.17; hearth.add(ash);
+  const stoneM=new THREE.MeshStandardMaterial({color:0x5a5450,roughness:.9}); for(let k=0;k<3;k++){ const a=k/3*Math.PI*2; const s=new THREE.Mesh(new THREE.SphereGeometry(.2,10,8), stoneM); s.scale.y=.75; s.position.set(Math.cos(a)*.48,.26,Math.sin(a)*.48); hearth.add(s); }
+  for(let k=0;k<4;k++){ const lg=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,1.2,7), M.wood); lg.rotation.z=Math.PI/2-.35; lg.rotation.y=k*Math.PI/2; lg.position.y=.32; hearth.add(lg); }
   const flameM=[0xff7a1a,0xffb43a,0xffe08a].map((c,i)=>new THREE.MeshBasicMaterial({color:c, transparent:true, opacity:.9-i*.12, depthWrite:false, blending:THREE.AdditiveBlending}));
-  for(let k=0;k<6;k++){ const f=new THREE.Mesh(new THREE.ConeGeometry(.16-k%3*.03,.7-k%3*.15,8), flameM[k%3]); f.position.set((k%3-1)*.12*(k<3?1:-1),.62,(k<3?.06:-.06)); f.userData.ph=k*1.3; hearth.add(f); INSIDE.fire.push(f); }
-  const glowS=new THREE.Sprite(new THREE.SpriteMaterial({color:0xffa040, transparent:true, opacity:.35, depthWrite:false, blending:THREE.AdditiveBlending})); glowS.scale.setScalar(2.2); glowS.position.y=.7; hearth.add(glowS); INSIDE.glow=glowS;
-  INSIDE.light=new THREE.PointLight(0xff9a4a,0,11,1.4); INSIDE.light.position.set(0,Y+1.2,-.3); G.add(INSIDE.light);
-  INSIDE.fill=new THREE.PointLight(0xffe2b8,0,14,1.2); INSIDE.fill.position.set(0,Y+5,.4); G.add(INSIDE.fill);
+  for(let k=0;k<6;k++){ const f=new THREE.Mesh(new THREE.ConeGeometry(.2-k%3*.04,.85-k%3*.18,8), flameM[k%3]); f.position.set((k%3-1)*.14*(k<3?1:-1),.72,(k<3?.07:-.07)); f.userData.ph=k*1.3; hearth.add(f); INSIDE.fire.push(f); }
+  const glowS=new THREE.Sprite(new THREE.SpriteMaterial({color:0xffa040, transparent:true, opacity:.35, depthWrite:false, blending:THREE.AdditiveBlending})); glowS.scale.setScalar(2.8); glowS.position.y=.8; hearth.add(glowS); INSIDE.glow=glowS;
+  { const smokeM=new THREE.SpriteMaterial({map:typeof mistTex!=='undefined'?mistTex:null, color:0xcfc6bb, transparent:true, opacity:.18, depthWrite:false}); INSIDE.smoke=[]; for(let k=0;k<7;k++){ const s=new THREE.Sprite(smokeM.clone()); s.position.set(0,1.4+k*.9,0); s.userData.ph=k/7; hearth.add(s); INSIDE.smoke.push(s); } }
+  INSIDE.light=new THREE.PointLight(0xff9a4a,0,22,1.3); INSIDE.light.position.set(0,Y+1.4,-.5); G.add(INSIDE.light);
+  INSIDE.fill=new THREE.PointLight(0xffe2b8,0,30,1.1); INSIDE.fill.position.set(0,Y+8,.5); G.add(INSIDE.fill);
+  INSIDE.doorLight=new THREE.PointLight(0xfff1d0,0,12,1.4); INSIDE.doorLight.position.set(0,Y+2,HZ-1); G.add(INSIDE.doorLight);
   reg(hearth,'inside','hearth','Bếp lửa: bấm để thêm củi');
-  // bộ cồng chiêng treo vách sau
-  const rack=new THREE.Group(); rack.position.set(0,Y,-2.62); G.add(rack);
-  const bar=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,4.8,8), M.bamboo); bar.rotation.z=Math.PI/2; bar.position.y=2.05; rack.add(bar);
-  [[-1.9,.30,330],[-.95,.36,294],[0,.42,247],[.95,.36,220],[1.9,.30,196]].forEach(([x,r,f],i)=>{ const g=new THREE.Group(); g.position.set(x,2.05-r-.2,0);
-    const disc=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.06,36), M.bronze); disc.rotation.x=Math.PI/2; g.add(disc);
-    const rim=new THREE.Mesh(new THREE.TorusGeometry(r,.03,8,36), M.bronze); g.add(rim);
-    if(i%2===0){ const knob=new THREE.Mesh(new THREE.SphereGeometry(r*.22,14,10), M.bronze); knob.scale.z=.6; knob.position.z=.05; g.add(knob); }
-    const cord=new THREE.Mesh(new THREE.CylinderGeometry(.01,.01,.2,4), dark); cord.position.y=r+.1; g.add(cord);
+  // bộ 7 cồng chiêng treo vách sau
+  const rack=new THREE.Group(); rack.position.set(0,Y,-HZ+.45); G.add(rack);
+  const bar=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,9.4,8), M.bamboo); bar.rotation.z=Math.PI/2; bar.position.y=2.45; rack.add(bar);
+  for(const sx of [-4.7,4.7]){ const p=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,2.6,8), dark); p.position.set(sx,1.3,0); rack.add(p); }
+  [[-3.9,.30,392],[-2.6,.34,349],[-1.3,.38,311],[0,.46,262],[1.3,.38,233],[2.6,.34,208],[3.9,.30,196]].forEach(([x,r,f],i)=>{ const g=new THREE.Group(); g.position.set(x,2.45-r-.25,0);
+    const gm=M.bronze.clone(); gm.emissive=new THREE.Color(0xffb84a); gm.emissiveIntensity=0; g.userData.mat=gm;
+    const disc=new THREE.Mesh(new THREE.CylinderGeometry(r,r,.06,36), gm); disc.rotation.x=Math.PI/2; g.add(disc);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(r,.03,8,36), gm); g.add(rim);
+    if(i%2===1||i===3){ const knob=new THREE.Mesh(new THREE.SphereGeometry(r*.22,14,10), gm); knob.scale.z=.6; knob.position.z=.05; g.add(knob); }
+    const cord=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.25,4), dark); cord.position.y=r+.12; g.add(cord);
+    const num=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cnv(64,c=>{ c.fillStyle='rgba(20,14,10,.75)'; c.beginPath(); c.arc(32,32,28,0,6.3); c.fill(); c.fillStyle='#ffd27a'; c.font='bold 38px sans-serif'; c.textAlign='center'; c.textBaseline='middle'; c.fillText(String(i+1),32,34); })), depthWrite:false})); num.scale.setScalar(.28); num.position.set(0,-r-.22,.05); g.add(num);
     g.userData.freq=f; rack.add(g); INSIDE.gongs.push(g);
-    g.traverse(o=>{ if(o.isMesh){ groupOf.set(o,g); o.userData.kind='igong'; o.userData.id=i; o.userData.tip='Bấm để đánh chiêng'; clickables.push(o); } }); });
-  // trống lớn
-  const drum=new THREE.Group(); drum.position.set(-3.7,Y,1.6); drum.rotation.y=.4; G.add(drum);
-  const body=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,1.0,24,1,true), new THREE.MeshStandardMaterial({color:0x8a5530,roughness:.7,side:THREE.DoubleSide})); body.rotation.z=Math.PI/2; body.position.y=.72; drum.add(body);
-  const skinM=new THREE.MeshStandardMaterial({color:0xe2c79a,roughness:.8}); for(const sx of [-.5,.5]){ const sk=new THREE.Mesh(new THREE.CircleGeometry(.42,24), skinM); sk.rotation.y=sx>0?Math.PI/2:-Math.PI/2; sk.position.set(sx,.72,0); drum.add(sk); const rr=new THREE.Mesh(new THREE.TorusGeometry(.42,.035,6,24), dark); rr.rotation.y=Math.PI/2; rr.position.set(sx,.72,0); drum.add(rr); }
-  for(const sx of [-.32,.32]){ const leg=new THREE.Mesh(new THREE.BoxGeometry(.08,.5,.6), dark); leg.position.set(sx,.25,0); drum.add(leg); }
+    g.traverse(o=>{ if(o.isMesh){ groupOf.set(o,g); o.userData.kind='igong'; o.userData.id=i; o.userData.tip='Chiêng số '+(i+1)+': bấm để đánh'; clickables.push(o); } }); });
+  // trống da trâu lớn
+  const drum=new THREE.Group(); drum.position.set(-7.5,Y,2.2); drum.rotation.y=.5; G.add(drum);
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,1.4,28,1,true), new THREE.MeshStandardMaterial({color:0x8a5530,roughness:.7,side:THREE.DoubleSide})); body.rotation.z=Math.PI/2; body.position.y=1.0; drum.add(body);
+  const skinM=new THREE.MeshStandardMaterial({color:0xe2c79a,roughness:.8}); for(const sx of [-.7,.7]){ const sk=new THREE.Mesh(new THREE.CircleGeometry(.6,28), skinM); sk.rotation.y=sx>0?Math.PI/2:-Math.PI/2; sk.position.set(sx,1.0,0); drum.add(sk); const rr=new THREE.Mesh(new THREE.TorusGeometry(.6,.04,8,28), dark); rr.rotation.y=Math.PI/2; rr.position.set(sx,1.0,0); drum.add(rr); }
+  for(const sx of [-.45,.45]){ const leg=new THREE.Mesh(new THREE.BoxGeometry(.1,.7,.9), dark); leg.position.set(sx,.35,0); drum.add(leg); }
   reg(drum,'inside','drum','Trống da trâu: bấm để đánh');
   // đàn T'rưng
-  const trung=new THREE.Group(); trung.position.set(3.55,Y,1.75); trung.rotation.y=-.35; G.add(trung); INSIDE.trungTubes=[];
-  for(const sx of [-.75,.75]){ const p=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,1.3,6), dark); p.position.set(sx,.65,0); trung.add(p); }
-  for(const y of [.55,1.15]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.55,4), dark); c.rotation.z=Math.PI/2; c.position.y=y; trung.add(c); }
-  for(let k=0;k<8;k++){ const len=1.05-k*.08; const tb=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,len,10), M.bamboo); tb.rotation.z=Math.PI/2+.04; tb.position.set(0,.6+k*.075,(k%2?.03:-.03)); tb.scale.x=1; trung.add(tb); INSIDE.trungTubes.push(tb); }
+  const trung=new THREE.Group(); trung.position.set(7.2,Y,2.4); trung.rotation.y=-.45; G.add(trung); INSIDE.trungTubes=[];
+  for(const sx of [-.85,.85]){ const p=new THREE.Mesh(new THREE.CylinderGeometry(.045,.055,1.5,6), dark); p.position.set(sx,.75,0); trung.add(p); }
+  for(const y of [.6,1.3]){ const c=new THREE.Mesh(new THREE.CylinderGeometry(.015,.015,1.75,4), dark); c.rotation.z=Math.PI/2; c.position.y=y; trung.add(c); }
+  for(let k=0;k<8;k++){ const len=1.2-k*.09; const tb=new THREE.Mesh(new THREE.CylinderGeometry(.05,.055,len,10), M.bamboo); tb.rotation.z=Math.PI/2+.04; tb.position.set(0,.66+k*.085,(k%2?.03:-.03)); trung.add(tb); INSIDE.trungTubes.push(tb); }
   reg(trung,"inside",'trung',"Đàn T'rưng: bấm để chơi");
-  // ché
-  const jarM=new THREE.MeshStandardMaterial({color:0x4b3426,roughness:.45,metalness:.05}); const jars=new THREE.Group(); jars.position.set(-4.0,Y,-2.0); G.add(jars);
+  // ché quý xếp góc trái
+  const jarM=new THREE.MeshStandardMaterial({color:0x4b3426,roughness:.45,metalness:.05}); const jars=new THREE.Group(); jars.position.set(-8.6,Y,-3.6); G.add(jars);
   const jp=[]; for(let i=0;i<=14;i++){ const t=i/14; jp.push(new THREE.Vector2(.12+Math.sin(t*Math.PI)*.26+(t>.85?.06:0), t*.85)); }
-  const jg=new THREE.LatheGeometry(jp,22); [[0,0,1],[.55,.25,.8],[-.2,.55,.7]].forEach(([x,z,s])=>{ const j=new THREE.Mesh(jg,jarM); j.position.set(x,0,z); j.scale.setScalar(s); jars.add(j);
-    const band=new THREE.Mesh(new THREE.TorusGeometry(.33*s,.02,6,22), M.bronze); band.rotation.x=Math.PI/2; band.position.set(x,.45*s,z); jars.add(band);
-    const straw=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,1.2,4), M.bamboo); straw.position.set(x+.1,.85*s+.4,z); straw.rotation.z=.5; jars.add(straw); });
-  reg(jars,'inside','jar','Ché rượu cần');
+  const jg=new THREE.LatheGeometry(jp,22); [[0,0,1.15],[.75,.3,.9],[-.45,.65,.8],[.4,-.55,.75],[-.85,-.2,.95]].forEach(([x,z,s])=>{ const j=new THREE.Mesh(jg,jarM); j.position.set(x,0,z); j.scale.setScalar(s); jars.add(j);
+    const band=new THREE.Mesh(new THREE.TorusGeometry(.33*s,.02,6,22), M.bronze); band.rotation.x=Math.PI/2; band.position.set(x,.45*s,z); jars.add(band); });
+  reg(jars,'inside','jar','Ché cổ: vật quý của buôn làng');
   // gùi chứa ngô
-  const g2=gui.clone(); g2.scale.setScalar(.62); g2.position.set(4.0,Y,-2.05); G.add(g2); g2.traverse(o=>{ if(o.isMesh){ const i=clickables.indexOf(o); if(i>=0) clickables.splice(i,1); } });
-  const cornM=new THREE.MeshStandardMaterial({color:0xf2c43a,roughness:.6}); for(let k=0;k<5;k++){ const c=new THREE.Mesh(new THREE.CapsuleGeometry(.07,.25,4,8), cornM); c.position.set(4.0+(k-2)*.09,Y+.98,-2.05+(k%2)*.08); c.rotation.z=(k-2)*.3; G.add(c); }
+  const g2=gui.clone(); g2.scale.setScalar(.7); g2.position.set(10,Y,-.8); G.add(g2); g2.traverse(o=>{ if(o.isMesh){ const i=clickables.indexOf(o); if(i>=0) clickables.splice(i,1); } });
+  const cornM=new THREE.MeshStandardMaterial({color:0xf2c43a,roughness:.6}); for(let k=0;k<5;k++){ const c=new THREE.Mesh(new THREE.CapsuleGeometry(.07,.25,4,8), cornM); c.position.set(10+(k-2)*.09,Y+1.1,-.8+(k%2)*.08); c.rotation.z=(k-2)*.2; G.add(c); }
   reg(g2,'inside','gui','Gùi: bấm để đeo thử'); INSIDE.gui=g2;
-  // tượng gỗ
-  const st=new THREE.Group(); st.position.set(-4.15,Y,.3); st.rotation.y=Math.PI/2; G.add(st); const sm=new THREE.MeshStandardMaterial({color:0x7d5a3c,roughness:.85});
-  const base=new THREE.Mesh(new THREE.CylinderGeometry(.3,.34,.35,8), sm); base.position.y=.17; st.add(base);
-  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,.7,8), sm); torso.position.y=.7; st.add(torso);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8), sm); head.scale.set(.9,1.15,.9); head.position.y=1.2; st.add(head);
-  for(const sx of [-1,1]){ const arm=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.5,6), sm); arm.position.set(sx*.17,.78,.12); arm.rotation.x=-1.1; arm.rotation.z=sx*.2; st.add(arm); }
-  const hands=new THREE.Mesh(new THREE.SphereGeometry(.09,8,6), sm); hands.position.set(0,.68,.3); st.add(hands);
+  // tượng gỗ nhà mồ
+  const st=new THREE.Group(); st.position.set(-10.2,Y,.5); st.rotation.y=Math.PI/2; G.add(st); const sm=new THREE.MeshStandardMaterial({color:0x7d5a3c,roughness:.85});
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(.34,.4,.45,8), sm); base.position.y=.22; st.add(base);
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.19,.24,.9,8), sm); torso.position.y=.9; st.add(torso);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.21,10,8), sm); head.scale.set(.9,1.15,.9); head.position.y=1.55; st.add(head);
+  for(const sx of [-1,1]){ const arm=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,.6,6), sm); arm.position.set(sx*.2,1.0,.14); arm.rotation.x=-1.1; arm.rotation.z=sx*.2; st.add(arm); }
   reg(st,'inside','statue','Tượng gỗ');
-  shadowAll(G); G.traverse(o=>{ if(o.isMesh && o.material && o.material.blending===THREE.AdditiveBlending) o.castShadow=false; });
-  INSIDE.group=G;
+  // khung dệt thổ cẩm
+  const loom=new THREE.Group(); loom.position.set(8.6,Y,-3.3); loom.rotation.y=-.6; G.add(loom);
+  for(const sx of [-.7,.7]){ const p=new THREE.Mesh(new THREE.BoxGeometry(.08,1.2,.08), dark); p.position.set(sx,.6,0); loom.add(p); }
+  for(const y of [.25,1.15]){ const r=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1.6,8), M.wood); r.rotation.z=Math.PI/2; r.position.set(0,y,0); loom.add(r); }
+  INSIDE.clothT=new THREE.CanvasTexture(cnv(128,g=>{ g.fillStyle='#1c1512'; g.fillRect(0,0,128,128); })); INSIDE.clothT.colorSpace=THREE.SRGBColorSpace;
+  const cloth=new THREE.Mesh(new THREE.PlaneGeometry(1.3,.85), new THREE.MeshStandardMaterial({map:INSIDE.clothT, roughness:.9, side:THREE.DoubleSide})); cloth.position.set(0,.7,.02); loom.add(cloth);
+  const stool=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.3,10), dark); stool.position.set(0,.15,.7); loom.add(stool);
+  reg(loom,'inside','loom','Khung dệt thổ cẩm: bấm để dệt');
+  INSIDE.cloth=cloth; weaveCloth(0);
+  shadowAll(G); G.traverse(o=>{ if(o.isMesh && o.material && (o.material.blending===THREE.AdditiveBlending || o.material.isMeshBasicMaterial)) o.castShadow=false; });
+  INSIDE.group=G; INSIDE.HX=HX; INSIDE.HZ=HZ; INSIDE.posts=POST;
 }
+function weaveCloth(n){ const pals=[['#c0392b','#f1e3c4','#d9a441'],['#b0462b','#2f6e6a','#f1e3c4'],['#d9a441','#c0392b','#ffffff'],['#7a4b8c','#d9a441','#f1e3c4']], p=pals[n%pals.length];
+  const c=INSIDE.clothT.image, g=c.getContext('2d'); g.fillStyle='#1c1512'; g.fillRect(0,0,128,128);
+  for(let row=0;row<6;row++){ const y=8+row*20, col=p[row%3]; g.fillStyle=col; if(row%2===0){ g.fillRect(0,y,128,4); } else { for(let x=0;x<128;x+=16){ g.beginPath(); g.moveTo(x,y+6); g.lineTo(x+8,y); g.lineTo(x+16,y+6); g.lineTo(x+8,y+12); g.closePath(); g.fill(); } } }
+  INSIDE.clothT.needsUpdate=true; }
 // đồ vật bên trong cũng là "trạm" có nút E
 Object.assign(SPOTS,{
   enter:{ p:[0,7.0], label:'Vào bên trong Nhà Rông', act:()=>enterRong() },
-  ihearth:{ in:true, p:[0,.75], label:'Thêm củi vào bếp lửa', act:()=>insideAct('hearth') },
-  igong:{ in:true, p:[0,-1.55], label:'Đánh bộ cồng chiêng', act:()=>insideAct('gong') },
-  idrum:{ in:true, p:[-3.05,1.0], label:'Đánh trống', act:()=>insideAct('drum') },
-  itrung:{ in:true, p:[2.95,1.05], label:"Chơi đàn T'rưng", act:()=>insideAct('trung') },
-  ijar:{ in:true, p:[-3.2,-1.25], label:'Xem ché rượu cần', act:()=>insideAct('jar') },
-  igui:{ in:true, p:[3.25,-1.3], label:'Đeo thử gùi', act:()=>insideAct('gui') },
-  istatue:{ in:true, p:[-3.5,.3], label:'Xem tượng gỗ', act:()=>insideAct('statue') },
-  iexit:{ in:true, p:[0,2.25], label:'Ra khỏi Nhà Rông', act:()=>exitRong() },
+  ihearth:{ in:true, p:[0,1.2], label:'Thêm củi vào bếp lửa', act:()=>insideAct('hearth') },
+  igong:{ in:true, p:[0,-3.9], label:'Chơi cồng chiêng theo nhịp', act:()=>insideAct('gong') },
+  idrum:{ in:true, p:[-6.4,1.4], label:'Đánh trống', act:()=>insideAct('drum') },
+  itrung:{ in:true, p:[6.1,1.6], label:"Chơi đàn T'rưng", act:()=>insideAct('trung') },
+  ijar:{ in:true, p:[-7.1,-2.6], label:'Xem ché cổ', act:()=>insideAct('jar') },
+  igui:{ in:true, p:[8.9,-.5], label:'Đeo thử gùi', act:()=>insideAct('gui') },
+  istatue:{ in:true, p:[-9.2,.5], label:'Xem tượng gỗ', act:()=>insideAct('statue') },
+  iloom:{ in:true, p:[7.5,-2.3], label:'Dệt thổ cẩm', act:()=>insideAct('loom') },
+  ielder:{ in:true, p:[2.9,.3], label:'Nghe già làng kể chuyện', act:()=>insideAct('elder') },
+  iexit:{ in:true, p:[0,4.9], label:'Ra khỏi Nhà Rông', act:()=>exitRong() },
 });
-Object.assign(SPOT_LOOK,{ enter:[0,3], ihearth:[0,-.3], igong:[0,-2.6], idrum:[-3.7,1.6], itrung:[3.55,1.75], ijar:[-4,-2], igui:[4,-2.05], istatue:[-4.15,.3], iexit:[0,3] });
+Object.assign(SPOT_LOOK,{ enter:[0,3], ihearth:[0,-.5], igong:[0,-5.5], idrum:[-7.5,2.2], itrung:[7.2,2.4], ijar:[-8.6,-3.6], igui:[10,-.8], istatue:[-10.2,.5], iloom:[8.6,-3.3], ielder:[1.9,-.5], iexit:[0,6] });
 function trungMelody(){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
   const notes=[392,440,523,587,659,587,523,440,392,523]; const t0=actx.currentTime;
   notes.forEach((f,i)=>{ const t=t0+i*.22, o=actx.createOscillator(), o2=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o2.type='triangle'; o.frequency.value=f; o2.frequency.value=f*2.76;
@@ -4632,7 +4753,9 @@ function trungMelody(){ try{ actx=actx||new (window.AudioContext||window.webkitA
 function insideAct(k){
   const seen=state.learn&&state.learn['in_'+k];
   if(k==='hearth'){ INSIDE.flare=1.6; sparkle(new THREE.Vector3(0,INSIDE.y+.9,-.3),16,0xffb040); hero.strike(); }
-  else if(k==='gong'){ hero.strike(); INSIDE.gongs.forEach((g,i)=>setTimeout(()=>{ strikeGong(g.userData.freq,.4); g.userData.swing=1; }, 260+i*380)); }
+  else if(k==='gong'){ startGongGame(); markInside(k); return; }
+  else if(k==='loom'){ INSIDE.weave=(INSIDE.weave||0)+1; weaveCloth(INSIDE.weave); hero.strike(); sparkle(new THREE.Vector3(8.6,INSIDE.y+1,-3.3),12); toast('Em vừa dệt xong một đoạn hoa văn mới! Bấm lần nữa để dệt kiểu khác.'); }
+  else if(k==='elder'){ elderStory(); markInside(k); return; }
   else if(k==='drum'){ hero.strike(); setTimeout(()=>beatDrum(),220); }
   else if(k==='trung'){ hero.strike(); trungMelody(); }
   else if(k==='gui'){ toggleGui(); }
@@ -4640,8 +4763,39 @@ function insideAct(k){
   else if(k==='statue'){ hero.wave(); }
   if(student) log('rong','inside',k);
   if(!state.answered['in_'+k]){ state.answered['in_'+k]=true; saveState(); }
-  openLearn(insideLearn(k));
+  markInside(k); openLearn(insideLearn(k));
 }
+
+// ---- tiến trình khám phá trong nhà + nút ra ----
+const IN_KEYS=['hearth','gong','drum','trung','jar','gui','statue','loom','elder'];
+function markInside(k){ INSIDE.done.add(k); renderInHud(); if(INSIDE.done.size===IN_KEYS.length && !INSIDE.allDone){ INSIDE.allDone=true; sparkle(hero.root.position.clone().add(new THREE.Vector3(0,1.4,0)),24); toast('Tuyệt vời! Em đã khám phá đủ 9 điều trong Nhà Rông.'); if(student) log('rong','inside_all',''); } }
+function renderInHud(){ const el=document.getElementById('inHud'); if(!el) return; el.querySelector('b').textContent=INSIDE.done.size+'/'+IN_KEYS.length; el.querySelector('.list').innerHTML=IN_KEYS.map(k=>`<i class="${INSIDE.done.has(k)?'on':''}" title="${IN_NAME[k]}">${IN_NAME[k]}</i>`).join(''); }
+const IN_NAME={hearth:'Bếp lửa',gong:'Cồng chiêng',drum:'Trống',trung:"T'rưng",jar:'Ché',gui:'Gùi',statue:'Tượng gỗ',loom:'Khung dệt',elder:'Già làng'};
+// ---- trò chơi đánh chiêng theo nhịp: nhìn chiêng sáng, đánh lại đúng thứ tự (phím 1–7 hoặc bấm vào chiêng) ----
+const GG={ on:false, seq:[], pos:0, level:0, showing:false };
+function gongFlash(i,dur=420){ const g=INSIDE.gongs[i]; if(!g) return; g.userData.mat.emissiveIntensity=1.2; g.userData.swing=1; strikeGong(g.userData.freq,.45); setTimeout(()=>{ g.userData.mat.emissiveIntensity=0; },dur); }
+function startGongGame(){ GG.on=true; GG.level=3; GG.seq=[]; for(let i=0;i<3;i++) GG.seq.push(Math.floor(Math.random()*7)); playGongSeq(); toast('Trò chơi nhịp chiêng: nhìn chiêng sáng lên rồi đánh lại đúng thứ tự (phím 1–7 hoặc bấm vào chiêng).'); }
+function playGongSeq(){ GG.showing=true; GG.pos=0; GG.seq.forEach((g,k)=>setTimeout(()=>gongFlash(g),700+k*620)); setTimeout(()=>{ GG.showing=false; showGG('Đến lượt em! Đánh '+GG.seq.length+' chiêng.'); },700+GG.seq.length*620); }
+function showGG(t){ const el=document.getElementById('ggMsg'); if(!el) return; el.textContent=t; el.hidden=!t; }
+function gongHit(i){ hero.strike(); gongFlash(i,260); if(student) log('rong','igong',i);
+  if(!GG.on || GG.showing) return;
+  if(GG.seq[GG.pos]===i){ GG.pos++; if(GG.pos===GG.seq.length){ const lv=GG.seq.length; sparkle(new THREE.Vector3(0,INSIDE.y+2,-5),14); if(lv>=6){ GG.on=false; showGG(''); toast('Great rhythm! Em đã chơi đúng chuỗi 6 chiêng – như một nghệ nhân nhí!'); speak('Great rhythm! You are a little gong master.'); if(student) log('rong','gong_game','win',lv); openLearn(insideLearn('gong')); return; }
+      showGG('Đúng rồi! Chuỗi dài hơn nhé…'); speak(pickOne(['Great!','Well done!','Nice rhythm!'])); GG.seq.push(Math.floor(Math.random()*7)); setTimeout(playGongSeq,900); } }
+  else { showGG('Gần đúng rồi! Nghe lại nhé…'); speak("Good try! Let's listen again."); if(student) log('rong','gong_game','retry',GG.seq.length); setTimeout(playGongSeq,1000); } }
+addEventListener('keydown',e=>{ if(!INSIDE.on) return; if(e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.key==='Escape' && !panel.classList.contains('open') && document.getElementById('learn').hidden){ exitRong(); return; }
+  const n=+e.key; if(n>=1 && n<=7){ gongHit(n-1); } });
+// ---- già làng kể chuyện (tiếng Anh dễ, có phụ đề tiếng Việt) ----
+const ELDER_STORY=[
+  ['Welcome, child. This is our Rong house, the heart of the village.','Chào cháu. Đây là nhà Rông, trái tim của buôn làng.'],
+  ['When I was young, we built this roof together. It is tall, like an axe blade, to reach the sky.','Hồi ta còn trẻ, cả làng cùng nhau lợp mái này. Mái cao như lưỡi rìu, vươn lên trời.'],
+  ['At night, we sit by the fire. We share food and tell old stories.','Ban đêm, mọi người ngồi quanh bếp lửa, chia nhau đồ ăn và kể chuyện xưa.'],
+  ['When the gongs play, the whole village dances. Can you play the gongs too?','Khi tiếng cồng chiêng vang lên, cả làng cùng múa. Cháu có đánh được cồng chiêng không?'] ];
+async function elderStory(){ if(INSIDE.telling) return; INSIDE.telling=true; const el=document.getElementById('elderSub');
+  for(const [en,vi] of ELDER_STORY){ if(!INSIDE.on) break; el.innerHTML=''; const a=document.createElement('b'); a.textContent=en; const b=document.createElement('span'); b.textContent=vi; el.append(a,b); el.hidden=false; if(INSIDE.elder) INSIDE.elder.talk(4);
+    await Promise.race([speak(en), new Promise(r=>setTimeout(r,6500))]); await new Promise(r=>setTimeout(r,500)); }
+  el.hidden=true; INSIDE.telling=false; if(student) log('rong','inside','elder'); if(INSIDE.on) openLearn(insideLearn('elder')); }
+
 function toggleGui(){ if(!INSIDE.wearGui){ const b=gui.clone(); b.scale.setScalar(.42); b.traverse(o=>{ if(o.isMesh){ const i=clickables.indexOf(o); if(i>=0) clickables.splice(i,1); o.castShadow=true; } }); INSIDE.wearGui=b; }
   const b=INSIDE.wearGui, chest=hero.J&&hero.J.pack&&hero.J.pack.parent;
   if(b.parent){ b.parent.remove(b); INSIDE.gui.visible=true; if(hero.J.pack) hero.J.pack.visible=true; toast('Em đã đặt gùi xuống.'); return; }
@@ -4655,15 +4809,16 @@ function enterRong(){
   fadeDo(()=>{ INSIDE.on=true; document.body.classList.add('inside');
     if(window.gsap){ gsap.killTweensOf(camera.position); gsap.killTweensOf(controls.target); } flying=false;
     const r=hero.root; r.position.set(0,INSIDE.y,1.5); r.rotation.y=Math.PI; vel.set(0,0,0); dest=null; yAir=0; vy=0; grounded=true;
-    controls.minDistance=2.5; controls.maxDistance=9; controls.target.set(0,INSIDE.y+1.2,1.2); camera.position.set(0,INSIDE.y+3.7,6.6); RONG_FRONT.forEach(o=>o.visible=false);
-    INSIDE.light.intensity=14; INSIDE.fill.intensity=5; INSIDE.flare=1;
-    toast('Em đang ở trong Nhà Rông. Đến gần đồ vật và bấm E (hoặc chạm nút vàng) để tương tác.');
+    INSIDE.group.visible=true; r.position.set(0,INSIDE.y,3.6);
+    controls.minDistance=2.5; controls.maxDistance=8; controls.target.set(0,INSIDE.y+1.4,1.2); camera.position.set(0,INSIDE.y+3.3,5.5);
+    INSIDE.light.intensity=16; INSIDE.fill.intensity=9; INSIDE.doorLight.intensity=6; INSIDE.flare=1; document.getElementById('inHud').hidden=false; renderInHud();
+    toast('Em đang ở trong Nhà Rông. Đến gần đồ vật và bấm E để tương tác. Muốn ra ngoài: bấm nút “Ra ngoài” góc trên hoặc phím Esc.');
     if(student) log('rong','enter','inside'); });
 }
 function exitRong(){
   fadeDo(()=>{ INSIDE.on=false; document.body.classList.remove('inside'); closeLearn(); if(INSIDE.wearGui && INSIDE.wearGui.parent){ INSIDE.wearGui.parent.remove(INSIDE.wearGui); INSIDE.gui.visible=true; }
     const r=hero.root; r.position.set(0,heightAt(0,7.6),7.6); r.rotation.y=Math.PI; vel.set(0,0,0); dest=null;
-    controls.minDistance=2.8; controls.maxDistance=34; RONG_FRONT.forEach(o=>o.visible=true); INSIDE.light.intensity=0; INSIDE.fill.intensity=0;
+    controls.minDistance=2.8; controls.maxDistance=34; INSIDE.group.visible=false; INSIDE.light.intensity=0; INSIDE.fill.intensity=0; INSIDE.doorLight.intensity=0; GG.on=false; showGG(''); document.getElementById('inHud').hidden=true; document.getElementById('elderSub').hidden=true;
     const f=followPose(); camera.position.set(...f.cam); controls.target.set(...f.tgt); });
 }
 function updateInterior(t,dt){
@@ -4673,7 +4828,10 @@ function updateInterior(t,dt){
   INSIDE.light.intensity=(12+3*Math.sin(t*11)+2*Math.sin(t*17))*(1+INSIDE.flare*.5); INSIDE.glow.material.opacity=.3+.08*Math.sin(t*13)+INSIDE.flare*.15;
   INSIDE.gongs.forEach(g=>{ if(g.userData.swing>0){ g.userData.swing=Math.max(0,g.userData.swing-dt*.9); g.rotation.x=Math.sin(t*14)*.18*g.userData.swing; } });
   // giữ camera trong lòng nhà
-  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-4.7,4.7); camera.position.z=THREE.MathUtils.clamp(camera.position.z,Math.max(-2.7,hero.root.position.z+1.6),9.5); camera.position.y=THREE.MathUtils.clamp(camera.position.y,INSIDE.y+1.3,INSIDE.y+7);
+  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-INSIDE.HX+.4,INSIDE.HX-.4); camera.position.z=THREE.MathUtils.clamp(camera.position.z,-INSIDE.HZ+.4,INSIDE.HZ-.4); camera.position.y=THREE.MathUtils.clamp(camera.position.y,INSIDE.y+1.2,Math.min(INSIDE.y+7.5,INSIDE.roofAt(camera.position.z)-.5));
+  if(INSIDE.smoke) INSIDE.smoke.forEach(s=>{ const k=(t*.12+s.userData.ph)%1; s.position.set(Math.sin(t*.5+s.userData.ph*6)*.3*k,1.2+k*7,Math.cos(t*.4+s.userData.ph*5)*.2*k); s.scale.setScalar(.6+k*2.4); s.material.opacity=.2*(1-k); });
+  if(INSIDE.elder) INSIDE.elder.update(dt,t,{speed:0, lookYaw: Math.atan2(hero.root.position.x-INSIDE.elder.root.position.x, hero.root.position.z-INSIDE.elder.root.position.z)-INSIDE.elder.root.rotation.y});
+  if(INSIDE.exitGlow){ const s=1+.1*Math.sin(t*3); INSIDE.exitGlow.scale.set(s,s,s); INSIDE.exitGlow.material.opacity=.45+.25*Math.sin(t*3); }
 }
 
 const discCam=id=>{ const d=DISC_BY[id]; return { cam:[d.cam[0],d.cam[1],d.cam[2]], tgt:[d.look[0],heightAt(d.look[0],d.look[1])+4,d.look[1]] }; };
