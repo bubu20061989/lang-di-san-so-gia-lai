@@ -551,7 +551,7 @@ body.inside #compass,body.inside #miniWrap{opacity:.35}
       <label style="display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px"><input type="checkbox" id="wTour" checked> Xem giới thiệu từng địa điểm khi vào làng (khoảng 1,5 phút, có thể bấm Tiếp)</label>
       <div class="btnrow"><button class="btn solid" type="submit">Bắt đầu</button><button class="btn ghost" type="button" id="wDemo">Xem nhanh (giáo viên)</button></div>
     </form>
-    <p class="note">Dùng mã học sinh, không nhập họ tên. Dữ liệu chỉ lưu trên máy này cho đến khi giáo viên xuất file.</p>
+    <p class="note">Dùng mã học sinh, không nhập họ tên. Kết quả được gửi về bảng tính của giáo viên để phục vụ nghiên cứu.</p>
   </div>
 </div>
 
@@ -749,7 +749,7 @@ const canvas = document.getElementById('scene');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({canvas, antialias:true, powerPreference:'high-performance'}); }
 catch(e){ document.getElementById('loadMsg').textContent='Máy này chưa bật WebGL nên không hiển thị được cảnh 3D. Hãy mở bằng Chrome hoặc Edge bản mới.'; throw e; }
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.72;
@@ -804,7 +804,7 @@ const gradePass = new ShaderPass({ uniforms:{ tDiffuse:{value:null}, sat:{value:
   fragmentShader:'uniform sampler2D tDiffuse; uniform float sat,contrast,warm,vig; varying vec2 vUv; void main(){ vec4 c=texture2D(tDiffuse,vUv); float l=dot(c.rgb,vec3(.299,.587,.114)); c.rgb=mix(vec3(l),c.rgb,sat); c.rgb=(c.rgb-.5)*contrast+.5; c.rgb+=vec3(warm,warm*.4,-warm*.6); float d=distance(vUv,vec2(.5)); c.rgb*=1.0-vig*smoothstep(.38,.9,d); gl_FragColor=c; }' });
 composer.addPass(gradePass);
 function applyQuality(){
-  renderer.setPixelRatio(HQ ? Math.min(devicePixelRatio,2) : 1);
+  renderer.setPixelRatio(HQ ? Math.min(devicePixelRatio,1.5) : 1);
   composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(innerWidth, innerHeight); if(gtaoPass) gtaoPass.setSize(innerWidth*renderer.getPixelRatio(), innerHeight*renderer.getPixelRatio());
   const ms = HQ ? 2048 : 1024; if(dir.shadow.mapSize.x!==ms){ dir.shadow.mapSize.set(ms,ms); if(dir.shadow.map){ dir.shadow.map.dispose(); dir.shadow.map=null; } }
   if(typeof grass!=='undefined') grass.count = HQ ? grass.userData.full : Math.floor(grass.userData.full*.3);
@@ -3717,7 +3717,8 @@ function startAs(code){
   { const f=followPose(); if(!(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO'))) flyToPose(f.cam,f.tgt,1.6); }
   if(document.getElementById('wTour').checked && (!state.tourSeen || code==='GV-DEMO')) playTour(); else toast('Chào '+code+'! Đi tới các vòng sáng để mở trạm, tìm 7 điểm khám phá trên la bàn.');
 }
-document.getElementById('wForm').addEventListener('submit',e=>{ e.preventDefault(); const v=document.getElementById('maHS').value.trim().toUpperCase();
+document.getElementById('maHS').addEventListener('input',()=>{ document.getElementById('wErr').textContent=''; });
+document.getElementById('wForm').addEventListener('submit',e=>{ e.preventDefault(); const v=document.getElementById('maHS').value.normalize('NFKC').replace(/[\u2010-\u2015\u2212]/g,'-').replace(/\s+/g,'').toUpperCase(); document.getElementById('maHS').value=v;
   if(!/^[0-9A-Z][0-9A-Z\-_.]{1,15}$/.test(v)){ document.getElementById('wErr').textContent='Mã chỉ gồm chữ, số và dấu gạch, ví dụ 9A1-07.'; return; } startAs(v); });
 document.getElementById('wDemo').addEventListener('click',()=>startAs('GV-DEMO'));
 document.getElementById('switchUser').addEventListener('click',()=>{ if(currentStation==='buddy') maybeAskPost(); hidePanel(); document.getElementById('maHS').value=''; showWelcome(); });
@@ -4264,13 +4265,16 @@ function renderPortraits(){
 const v3=new THREE.Vector3(); const clock=new THREE.Clock();
 const PERF={ last:performance.now(), acc:0, n:0, warm:0 };
 function autoQuality(){ // máy yếu: tự giảm hiệu ứng để điều khiển không bị giật
-  const now=performance.now(), d=now-PERF.last; PERF.last=now; if(document.hidden || d>500 || (!student && !previewing)) { PERF.acc=PERF.n=0; return; }
+  const now=performance.now(), d=now-PERF.last; PERF.last=now; if(document.hidden || d>500 || !student || previewing) { PERF.acc=PERF.n=0; return; }
   PERF.warm+=d; if(PERF.warm<4000) return; PERF.acc+=d; PERF.n++;
   if(PERF.acc>3000){ const fps=1000*PERF.n/PERF.acc; PERF.acc=PERF.n=0;
     if(HQ && gtaoPass && gtaoPass.enabled && fps<40){ gtaoPass.enabled=false; PERF.noAO=true; }
     else if(HQ && fps<28){ HQ=false; store.set('gl_hq',false); applyQuality(); toast('Máy hơi chậm nên đã chuyển sang đồ hoạ nhẹ cho mượt. Có thể bật lại ở nút ✦.'); }
-    else if(!HQ && fps<22 && renderer.getPixelRatio()>.8){ renderer.setPixelRatio(.75); } } }
+    else if(!HQ && fps<22 && renderer.getPixelRatio()>.8){ renderer.setPixelRatio(.75); composer.setPixelRatio(.75); composer.setSize(innerWidth,innerHeight); } } }
+// màn chào: vẽ 30 khung/giây (20 khung/giây nếu để yên lâu) để máy không nóng lên rồi giật
+let lastInput=performance.now(), lastDraw=0; ['pointermove','pointerdown','keydown','wheel','touchstart'].forEach(ev=>addEventListener(ev,()=>{ lastInput=performance.now(); },{passive:true}));
 function frame(){
+  if(previewing){ const now=performance.now(), gap=now-lastInput>45000?50:33; if(now-lastDraw<gap-2){ requestAnimationFrame(frame); return; } lastDraw=now; }
   const dt=Math.min(clock.getDelta(),.05), t=clock.elapsedTime; autoQuality();
   controls.update(); uTime.value=t;
   OCC.cam.value.copy(camera.position); if(explore){ OCC.hero.value.copy(hero.root.position); OCC.hero.value.y+=1.1; } else OCC.hero.value.set(0,-999,0);
